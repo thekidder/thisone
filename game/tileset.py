@@ -1,3 +1,4 @@
+import data.tilesets
 import kidgine.resource
 
 
@@ -16,6 +17,7 @@ class Tileset(object):
 
     def __init__(self, filename):
         self.images = dict()
+        self.collidables = data.tilesets.all[filename]
 
         image = kidgine.resource.load_texture(filename)
 
@@ -33,3 +35,7 @@ class Tileset(object):
 
     def get(self, offset):
         return self.images[offset]
+
+
+    def collides(self, offset):
+        return offset in self.collidables

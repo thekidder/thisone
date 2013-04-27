@@ -27,10 +27,10 @@ class Game(object):
         self._renderer.add_drawable(0, self._gamerenderer)
 
         self.character = character.GirlCharacter()
-        self.level = level.Level('data/levels/test.json')
+        self.level,self.level_renderable = level.load('data/levels/test.json')
 
         self._gamerenderer.add_character(self.character)
-        self._gamerenderer.set_level(self.level)
+        self._gamerenderer.set_level(self.level_renderable)
 
 
     def frame(self, dt):
