@@ -35,7 +35,7 @@ class Level(object):
                     continue
 
                 x = i % width
-                y = i / width
+                y = height - i / width
 
                 s = pyglet.sprite.Sprite(tiles.get(tile), batch=self.batch)
                 s.x = x * self.tile_width
