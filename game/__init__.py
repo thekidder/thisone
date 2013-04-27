@@ -1,3 +1,4 @@
+import character
 import pyglet.clock
 
 import inputs
@@ -17,6 +18,8 @@ class Game(object):
         self._gamerenderer = renderer.Renderer(self)
 
         self._renderer.add_drawable(0, self._gamerenderer)
+        self.character = character.TestCharacter()
+        self._gamerenderer.add_character(self.character)
 
 
     def frame(self, dt):
@@ -31,4 +34,5 @@ class Game(object):
 
 
     def update(self, dt, inputs):
-        pass
+        velocity = kidgine.math.vector.Vector(inputs.leftright * dt * 100, inputs.updown * dt * 100)
+        self.character.move(velocity)

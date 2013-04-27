@@ -1,18 +1,18 @@
 import logging
 
 import pyglet.graphics
-import pyglet.media
-import pyglet.sprite
-
+from pyglet.gl import *
+import character
 import kidgine.math.vector
 import kidgine.renderer.camera
-import sprites
 
 
 logger = logging.getLogger(__name__)
 
 class Renderer(object):
     def __init__(self, game):
+        glClearColor(1.0, 1.0, 1.0, 1.0)
+
         self._game = game
         self.keystate = pyglet.window.key.KeyStateHandler()
         self.batch = pyglet.graphics.Batch()
@@ -21,8 +21,13 @@ class Renderer(object):
             return kidgine.math.vector.constant_zero
         self.camera = kidgine.renderer.camera.CenteredCamera(camera_anchor, kidgine.math.vector.Vector(1, 1))
 
+        self.characters = set()
+
 
     def draw(self, window):
+        for i in self.characters:
+            i.update()
+
         self.camera.apply()
         self.batch.draw()
 
@@ -33,6 +38,16 @@ class Renderer(object):
 
         self.camera.world_size  = kidgine.math.vector.Vector(camera_size, camera_size * ratio)
         self.camera.window_size = kidgine.math.vector.Vector(width, height)
+
+
+    def add_character(self, c):
+        self.characters.add(character.CharacterRenderable(self.batch, c, c.get_sprite_name()))
+
+
+    def remove_character(self, character):
+        c = self.characters[character]
+        c.delete()
+        self.characters.remove(character)
 
 
     def on_key_press(self, symbol, modifiers):

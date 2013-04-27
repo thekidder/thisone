@@ -11,7 +11,10 @@ __all_sprites = {
     #   a_y = y coordinate of anchor
 
     #   name                spritesheet                       x     y    w   h   a_x  a_y
-
+    'test_left'           : ('data/images/test_left.png',     0,    0,   32, 32, 16,  16),
+    'test_right'          : ('data/images/test_right.png',    0,    0,   32, 32, 16,  16),
+    'test_top'            : ('data/images/test_top.png',      0,    0,   32, 32, 16,  16),
+    'test_bottom'         : ('data/images/test_bottom.png',   0,    0,   32, 32, 16,  16),
 }
 
 
