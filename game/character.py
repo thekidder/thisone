@@ -16,6 +16,7 @@ from kidgine.math.vector import Vector
 logger = logging.getLogger(__name__)
 
 Facing = kidgine.utils.enum('left', 'right', 'top', 'bottom')
+Tags   = kidgine.utils.enum(MOVEABLE = 1)
 
 class Character(object):
     idle_delay     = 3.0
@@ -148,7 +149,11 @@ class CollidableCharacter(Character):
         # resolve collision
         collision = collision_detector.can_move_to(self.token, self.position)
         if collision is not None:
-            self.position += collision.translation_vector
+            if Tags.MOVEABLE in collision.shape2.tags:
+                self.position += 0.5 * collision.translation_vector
+                collision.shape2.owner.position -= 0.5 * collision.translation_vector
+            else:
+                self.position += collision.translation_vector
         collision_detector.update_collidable(self.token, self.collidable)
 
 
@@ -174,6 +179,7 @@ class MeleeEnemy(CollidableCharacter):
     def __init__(self, target, collision_detector):
         super(MeleeEnemy, self).__init__(collision_detector)
         self.target = target
+        self.collidable.tags.add(Tags.MOVEABLE)
 
 
     def update(self, t, dt, collision_detector):
