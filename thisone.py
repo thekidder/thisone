@@ -29,7 +29,7 @@ def create_cvars():
 
 
 def main():
-    kidgine.utils.add_file_logger('LD26', 'client')
+    kidgine.utils.add_file_logger('this_one', 'client')
 
     configs = kidgine.config.GameConfigs(None, create_cvars())
 
