@@ -1,6 +1,7 @@
 # -*- mode: python -*-
 
 def Datafiles(*filenames, **kw):
+    import glob
     import os
 
     def datafile(path, strip_path=False):
@@ -10,13 +11,17 @@ def Datafiles(*filenames, **kw):
             name = os.path.basename(path)
         return name, path, 'DATA'
 
+    tmp = list()
+    for filename in filenames:
+        tmp.extend(glob.glob(filename))
+
     strip_path = kw.get('strip_path', False)
     return TOC(
         datafile(filename, strip_path=strip_path)
-        for filename in filenames
+        for filename in tmp
         if os.path.isfile(filename))
 
-a = Analysis(['.\\launcher.py'],
+a = Analysis(['.\\thisone.py'],
              pathex=['D:\\Documents\\src\\ludumdarewarmup'],
              hiddenimports=[],
              hookspath=None)
@@ -24,7 +29,7 @@ pyz = PYZ(a.pure)
 exe = EXE(pyz,
           a.scripts,
           exclude_binaries=1,
-          name=os.path.join('build\\pyi.win32\\launcher', 'launcher.exe'),
+          name=os.path.join('build\\pyi.win32\\thisone', 'thisone.exe'),
           debug=False,
           strip=None,
           upx=True,
@@ -35,8 +40,10 @@ coll = COLLECT(exe,
                a.zipfiles,
                a.datas,
                [('avbin.dll', '.\\avbin.dll', 'BINARY')],
-#               Datafiles('data/images/sq.png', strip_path=False),
+               Datafiles('data/images/girl/*.png', strip_path=False),
+               Datafiles('data/images/*.png', strip_path=False),
+               Datafiles('data/levels/test.json', strip_path=False),
 #               Datafiles('data/sounds/move.wav', strip_path=False),
                strip=None,
                upx=True,
-               name=os.path.join('dist', 'launcher'))
+               name=os.path.join('dist', 'thisone'))
