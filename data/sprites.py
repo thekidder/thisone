@@ -15,29 +15,11 @@ __all_sprites = {
     'girl_right'          : ('data/images/girl/girl_right.png',        0,    0,   32, 48, 16,  0),
     'girl_top'            : ('data/images/girl/girl_top.png',          0,    0,   32, 48, 16,  0),
     'girl_bottom'         : ('data/images/girl/girl_bottom.png',       0,    0,   32, 48, 16,  0),
-    'girl_walk_right_1'   : ('data/images/girl/girl_walk_right.png',   0,    0,   32, 48, 16,  0),
-    'girl_walk_right_2'   : ('data/images/girl/girl_walk_right.png',  32,    0,   32, 48, 16,  0),
-    'girl_walk_right_3'   : ('data/images/girl/girl_walk_right.png',  64,    0,   32, 48, 16,  0),
-    'girl_walk_right_4'   : ('data/images/girl/girl_walk_right.png',  96,    0,   32, 48, 16,  0),
-    'girl_walk_left_4'    : ('data/images/girl/girl_walk_left.png',    0,    0,   32, 48, 16,  0),
-    'girl_walk_left_3'    : ('data/images/girl/girl_walk_left.png',   32,    0,   32, 48, 16,  0),
-    'girl_walk_left_2'    : ('data/images/girl/girl_walk_left.png',   64,    0,   32, 48, 16,  0),
-    'girl_walk_left_1'    : ('data/images/girl/girl_walk_left.png',   96,    0,   32, 48, 16,  0),
-    'girl_walk_top_1'     : ('data/images/girl/girl_walk_top.gif',     0,    0,   32, 48, 16,  0),
-    'girl_walk_top_2'     : ('data/images/girl/girl_walk_top.gif',    32,    0,   32, 48, 16,  0),
-    'girl_walk_top_3'     : ('data/images/girl/girl_walk_top.gif',    64,    0,   32, 48, 16,  0),
-    'girl_walk_top_4'     : ('data/images/girl/girl_walk_top.gif',    96,    0,   32, 48, 16,  0),
-    'girl_walk_bottom_1'  : ('data/images/girl/girl_walk_bottom.gif',  0,    0,   32, 48, 16,  0),
-    'girl_walk_bottom_2'  : ('data/images/girl/girl_walk_bottom.gif', 32,    0,   32, 48, 16,  0),
-    'girl_walk_bottom_3'  : ('data/images/girl/girl_walk_bottom.gif', 64,    0,   32, 48, 16,  0),
-    'girl_walk_bottom_4'  : ('data/images/girl/girl_walk_bottom.gif', 96,    0,   32, 48, 16,  0),
-
-    'girl_idle_1'         : ('data/images/girl/girl_idle.png',         0,    0,   32, 48, 16,  0),
-    'girl_idle_2'         : ('data/images/girl/girl_idle.png',        32,    0,   32, 48, 16,  0),
-    'girl_idle_3'         : ('data/images/girl/girl_idle.png',        64,    0,   32, 48, 16,  0),
-    'girl_idle_4'         : ('data/images/girl/girl_idle.png',        96,    0,   32, 48, 16,  0),
-
-
+    'girl_walk_right'     : ('data/images/girl/girl_walk_right.png',   0,    0,  128, 48,  0,  0),
+    'girl_walk_left'      : ('data/images/girl/girl_walk_left.png',    0,    0,  128, 48,  0,  0),
+    'girl_walk_top'       : ('data/images/girl/girl_walk_top.gif',     0,    0,  128, 48,  0,  0),
+    'girl_walk_bottom'    : ('data/images/girl/girl_walk_bottom.gif',  0,    0,  128, 48,  0,  0),
+    'girl_idle'           : ('data/images/girl/girl_idle.png',         0,    0,  416, 48,  0,  0),
 }
 
 
