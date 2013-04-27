@@ -5,21 +5,46 @@ import os.path
 import pyglet.graphics
 import pyglet.sprite
 
+import kidgine.collision.rectangle
+from kidgine.math.vector import Vector
 import tileset
 
 
 logger = logging.getLogger(__name__)
 
-def load(filename):
+def load(filename, collision_detector=None):
     with open(filename) as f:
         json_level = json.load(f)
 
-    return Level(filename, json_level),LevelRenderable(filename, json_level)
+    l = None
+    if collision_detector is not None:
+        l = Level(filename, json_level, collision_detector)
+    r= LevelRenderable(filename, json_level)
+
+    return l,r
 
 
 class Level(object):
-    def __init__(self, filename, json_level):
-        pass
+    def __init__(self, filename, json_level, collision_detector):
+        self.collidables = dict() # token -> collidable
+        tiles = _get_tileset(filename, json_level['tilesets'][0]['image'])
+
+        for layer in json_level['layers']:
+            for i,tile in enumerate(layer['data']):
+                if tile == 0:
+                    continue
+
+                x = i % width
+                y = height - i / width
+
+                tl = Vector(x, y)
+                br = Vector(x + 32, y + 32)
+
+                token = '{}_{}_{}'.format(filename, x, y)
+                c = kidgine.collision.Rectangle(tl, br)
+
+                self.collidables[token] = c
+                collision_detector.update_collidable(token, c)
 
 
 class LevelRenderable(object):

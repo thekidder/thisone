@@ -1,12 +1,8 @@
-import character
 import pyglet.clock
 
-import inputs
 import kidgine.math.vector
 import kidgine.renderer
-import kidgine.resource
-import renderer
-import level
+import scene
 
 
 class Game(object):
@@ -14,37 +10,37 @@ class Game(object):
 
     def __init__(self, configs):
         pyglet.clock.schedule_interval(self.frame, self.FRAME_TIME)
-        self._inputs = inputs.Inputs()
         self._accumulator = 0.0
         self._gametime = 0.0
+        self.scene = None
 
         icon_path = 'data/images/icon.png'
         file = pyglet.resource.file(icon_path)
         icon = pyglet.image.load(icon_path, file, decoder=pyglet.image.codecs.pil.PILImageDecoder())
 
         self._renderer = kidgine.renderer.Renderer(configs, 'This One', icon)
-        self._gamerenderer = renderer.Renderer(self)
-        self._renderer.add_drawable(0, self._gamerenderer)
 
-        self.character = character.GirlCharacter()
-        self.level,self.level_renderable = level.load('data/levels/test.json')
-
-        self._gamerenderer.add_character(self.character)
-        self._gamerenderer.set_level(self.level_renderable)
+        self.set_scene(scene.CombatScene('data/levels/test.json'))
 
 
     def frame(self, dt):
         self._accumulator += dt
 
         while self._accumulator > self.FRAME_TIME:
-            self._inputs.update(self._gamerenderer.keystate)
-            self.update(self._gametime, self.FRAME_TIME, self._inputs)
+            self.update(self._gametime, self.FRAME_TIME)
             self._accumulator -= self.FRAME_TIME
             self._gametime += self.FRAME_TIME
 
         self._renderer.on_draw()
 
 
-    def update(self, t, dt, inputs):
-        direction = kidgine.math.vector.Vector(inputs.leftright * 100, inputs.updown * 100)
-        self.character.update(t, dt, direction)
+    def update(self, t, dt):
+        if self.scene is not None:
+            self.scene.update(t, dt)
+
+
+    def set_scene(self, scene):
+        if self.scene is not None:
+            self._renderer.remove_drawable(self.scene.drawable)
+        self.scene = scene
+        self._renderer.add_drawable(0, self.scene.drawable)
