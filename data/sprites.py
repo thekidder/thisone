@@ -32,6 +32,11 @@ __all_sprites = {
     'girl_walk_bottom_3'  : ('data/images/girl/girl_walk_bottom.gif', 64,    0,   32, 48, 16,  0),
     'girl_walk_bottom_4'  : ('data/images/girl/girl_walk_bottom.gif', 96,    0,   32, 48, 16,  0),
 
+    'girl_idle_1'         : ('data/images/girl/girl_idle.png',         0,    0,   32, 48, 16,  0),
+    'girl_idle_2'         : ('data/images/girl/girl_idle.png',        32,    0,   32, 48, 16,  0),
+    'girl_idle_3'         : ('data/images/girl/girl_idle.png',        64,    0,   32, 48, 16,  0),
+    'girl_idle_4'         : ('data/images/girl/girl_idle.png',        96,    0,   32, 48, 16,  0),
+
 
 }
 

@@ -1,6 +1,11 @@
+import logging
+
 import pyglet.image
 
 import game.imagecache
+
+
+logger = logging.getLogger(__name__)
 
 all = {
     'girl_walk_right' : [
@@ -22,7 +27,12 @@ all = {
         (0.25, 'girl_walk_bottom_1'),
         (0.25, 'girl_walk_bottom_2'),
         (0.25, 'girl_walk_bottom_3'),
-        (0.25, 'girl_walk_bottom_4') ]
+        (0.25, 'girl_walk_bottom_4') ],
+    'girl_idle' : [
+        (0.25, 'girl_idle_1'),
+        (0.25, 'girl_idle_2'),
+        (0.25, 'girl_idle_3'),
+        (0.25, 'girl_idle_4') ],
     }
 
 

@@ -16,6 +16,7 @@ class Game(object):
         pyglet.clock.schedule_interval(self.frame, self.FRAME_TIME)
         self._inputs = inputs.Inputs()
         self._accumulator = 0.0
+        self._gametime = 0.0
 
         icon_path = 'data/images/icon.png'
         file = pyglet.resource.file(icon_path)
@@ -37,12 +38,13 @@ class Game(object):
 
         while self._accumulator > self.FRAME_TIME:
             self._inputs.update(self._gamerenderer.keystate)
-            self.update(self.FRAME_TIME, self._inputs)
+            self.update(self._gametime, self.FRAME_TIME, self._inputs)
             self._accumulator -= self.FRAME_TIME
+            self._gametime += self.FRAME_TIME
 
         self._renderer.on_draw()
 
 
-    def update(self, dt, inputs):
-        velocity = kidgine.math.vector.Vector(inputs.leftright * dt * 100, inputs.updown * dt * 100)
-        self.character.move(velocity)
+    def update(self, t, dt, inputs):
+        direction = kidgine.math.vector.Vector(inputs.leftright * 100, inputs.updown * 100)
+        self.character.update(t, dt, direction)
