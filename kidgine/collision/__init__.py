@@ -9,11 +9,13 @@ logger = logging.getLogger(__name__)
 DEBUG = False
 
 class CollisionInfo(object):
-    def __init__(self, distance, translation_vector, shape1, shape2):
+    def __init__(self, distance, translation_vector, shape1, shape2, token1, token2):
         self.distance = distance
         self.translation_vector = translation_vector
         self.shape1 = shape1
         self.shape2 = shape2
+        self.token1 = token1
+        self.token2 = token2
 
 
 def collides(shape1, shape2, shape1_pos=None, shape2_pos=None):
@@ -36,7 +38,7 @@ def collides(shape1, shape2, shape1_pos=None, shape2_pos=None):
         else:
             return None
 
-    return CollisionInfo(min_distance, -min_translation_vector, shape1, shape2)
+    return CollisionInfo(min_distance, -min_translation_vector, shape1, shape2, None, None)
 
 
 def _overlap(min_a, max_a, min_b, max_b):
@@ -48,7 +50,7 @@ def _overlap(min_a, max_a, min_b, max_b):
 
 
 class SpatialHash(object):
-    GRID_SIZE = 48 # must not be smaller than the largest collidable
+    GRID_SIZE = 32 # must not be smaller than the largest collidable
 
     @staticmethod
     def _hash_func(position):
@@ -223,6 +225,7 @@ class CollisionDetector(object):
 
         if new_pos is None:
             if collidable is not None:
+                #new_pos = collidable.transformed_point(vector.constant_zero)
                 new_pos = collidable.owner.position
             elif token is not None:
                 new_pos = self.spatial_hash.get(token).owner.position
@@ -266,6 +269,8 @@ class CollisionDetector(object):
 
             collision_info = collides(collidable, shape, new_pos)
             if collision_info is not None:
+                collision_info.token1 = token
+                collision_info.token2 = t
                 return collision_info
 
         return None

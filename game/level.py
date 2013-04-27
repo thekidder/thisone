@@ -9,6 +9,7 @@ import kidgine.collision.rectangle
 import kidgine.collision.shape
 import tileset
 from kidgine.math.vector import Vector
+from collision import Tags
 
 
 logger = logging.getLogger(__name__)
@@ -49,7 +50,7 @@ class Level(object):
 
                 token = '{}_{}_{}'.format(filename, x, y)
                 c = kidgine.collision.rectangle.Rectangle(None, tl, br, center = center)
-                c.tags = set([kidgine.collision.shape.tags.IMPEEDS_MOVEMENT])
+                c.tags = set([kidgine.collision.shape.tags.IMPEEDS_MOVEMENT, Tags.ENVIRONMENT])
                 collision_detector.update_collidable(token, c)
 
 

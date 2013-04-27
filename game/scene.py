@@ -1,3 +1,5 @@
+import logging
+
 import character
 import inputs
 import kidgine.collision
@@ -5,6 +7,8 @@ import level
 import renderer
 from kidgine.math.vector import Vector
 
+
+logger = logging.getLogger(__name__)
 
 class Scene(object):
     def __init__(self, level_name):
@@ -16,6 +20,7 @@ class Scene(object):
 
 
     def update(self, t, dt):
+        #self._collision_detector.log_stats(logging.INFO)
         self._collision_detector.start_frame()
         for obj in self.updatables:
             obj.update(t, dt, self._collision_detector)
@@ -35,11 +40,13 @@ class CombatScene(Scene):
         player_character = character.GirlCharacter(self._inputs, self._collision_detector)
         player_character.position = Vector(32 * 10, 32 * 10)
 
-        enemy = character.MeleeEnemy(player_character, self._collision_detector)
-        enemy.position = Vector(32 * 8, 32 * 8)
-
         self.add_character(player_character)
-        self.add_character(enemy)
+
+        for i in xrange(5):
+            enemy = character.MeleeEnemy(player_character, self._collision_detector)
+            enemy.position = Vector(32 * (4 + i), 32 * (4 + i))
+            self.add_character(enemy)
+
 
 
     def update(self, t, dt):
