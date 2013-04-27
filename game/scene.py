@@ -25,7 +25,12 @@ class CombatScene(Scene):
 
         self.character = character.GirlCharacter(self._collision_detector)
         self.character.position = Vector(32 * 10, 32 * 10)
+
+        self.enemy = character.MeleeEnemy(self.character, self._collision_detector)
+        self.enemy.position = Vector(32 * 8, 32 * 8)
+
         self.drawable.add_character(self.character)
+        self.drawable.add_character(self.enemy)
 
 
     def update(self, t, dt):
@@ -33,6 +38,7 @@ class CombatScene(Scene):
         self._inputs.update(self.drawable.keystate)
 
         self.character.update(t, dt, self._inputs, self._collision_detector)
+        self.enemy.update(t, dt, self._collision_detector)
 
 
 class Cutscene(object):

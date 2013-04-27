@@ -50,6 +50,7 @@ class Character(object):
         self.position += dt * direction
 
 
+
     def update_idle(self, t, dt):
         if self.moving:
             self.time_to_idle = self.idle_delay
@@ -124,23 +125,23 @@ class CharacterRenderable(object):
             self.sprites.delete()
 
 
-class GirlCharacter(Character):
+class CollidableCharacter(Character):
+    counter = 0
     def __init__(self, collision_detector):
-        super(GirlCharacter, self).__init__()
+        super(CollidableCharacter, self).__init__()
 
         tl = Vector(-16,   0)
         br = Vector( 16,  32)
 
-        self.token = 'pc'
+        self.token = 'character{}'.format(CollidableCharacter.counter)
+        CollidableCharacter.counter += 1
         self.collidable = kidgine.collision.rectangle.Rectangle(self, tl, br)
 
         collision_detector.update_collidable(self.token, self.collidable)
 
 
-    def update(self, t, dt, inputs, collision_detector):
-        # move to new position
-        direction = Vector(inputs.leftright * 100, inputs.updown * 100)
-        super(GirlCharacter, self).update(t, dt, direction)
+    def update(self, t, dt, direction, collision_detector):
+        super(CollidableCharacter, self).update(t, dt, direction)
 
         # resolve collision
         collision = collision_detector.can_move_to(self.token, self.position)
@@ -149,6 +150,33 @@ class GirlCharacter(Character):
 
 
 
+class GirlCharacter(CollidableCharacter):
+    def __init__(self, collision_detector):
+        super(GirlCharacter, self).__init__(collision_detector)
+
+
+    def update(self, t, dt, inputs, collision_detector):
+        # move to new position
+        direction = Vector(inputs.leftright * 100, inputs.updown * 100)
+        super(GirlCharacter, self).update(t, dt, direction, collision_detector)
+
 
     def get_sprite_name(self):
         return 'girl'
+
+
+class MeleeEnemy(CollidableCharacter):
+    def __init__(self, target, collision_detector):
+        super(MeleeEnemy, self).__init__(collision_detector)
+        self.target = target
+
+
+    def update(self, t, dt, collision_detector):
+        direction = (self.target.position - self.position).normalized()
+        direction *= 90
+
+        super(MeleeEnemy, self).update(t, dt, direction, collision_detector)
+
+
+    def get_sprite_name(self):
+        return 'test'

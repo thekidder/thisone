@@ -14,6 +14,13 @@ all = {
     'girl_walk_top'     : ('girl_walk_top',       32, 48,  2,       0.25),
     'girl_walk_bottom'  : ('girl_walk_bottom',    32, 48,  2,       0.25),
     'girl_idle'         : ('girl_idle',           32, 48, 13,       0.04),
+
+    'test_walk_right'   : ('test_walk_right',     32, 32,  1,       0.25),
+    'test_walk_left'    : ('test_walk_left',      32, 32,  1,       0.25),
+    'test_walk_top'     : ('test_walk_top',       32, 32,  1,       0.25),
+    'test_walk_bottom'  : ('test_walk_bottom',    32, 32,  1,       0.25),
+    'test_idle'         : ('test_idle',           32, 32,  1,       0.04),
+
 }
 
 
