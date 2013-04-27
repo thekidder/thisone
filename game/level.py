@@ -23,8 +23,6 @@ class Level(object):
         tileset_path = os.path.normcase(os.path.normpath(tileset_path))
         # this is hacky: pyglet.resource expects forward slashes
         tileset_path = tileset_path.replace('\\', '/')
-        logger.info('got tileset {}'.format(tileset_path))
-
         tiles = tileset.get_tileset(tileset_path)
 
         self.batch = pyglet.graphics.Batch()
@@ -32,19 +30,18 @@ class Level(object):
 
         width  = json_level['layers'][0]['width']
         height = json_level['layers'][0]['height']
-        #for layer in json_level['layers']:
-        layer = json_level['layers'][0]
-        for i,tile in enumerate(layer['data']):
-            if tile == 0:
-                continue
+        for layer in json_level['layers']:
+            for i,tile in enumerate(layer['data']):
+                if tile == 0:
+                    continue
 
-            x = i % width
-            y = i / width
+                x = i % width
+                y = i / width
 
-            s = pyglet.sprite.Sprite(tiles.get(tile), batch=self.batch)
-            s.x = x * self.tile_width
-            s.y = y * self.tile_height
-            self.sprites.append(s)
+                s = pyglet.sprite.Sprite(tiles.get(tile), batch=self.batch)
+                s.x = x * self.tile_width
+                s.y = y * self.tile_height
+                self.sprites.append(s)
 
 
     def draw(self):

@@ -27,8 +27,8 @@ class Tileset(object):
                 self.images[i + j*width+1] = image.get_region(
                     i * self.tile_width,
                     image.height - ((j + 1) * self.tile_height),
-                    (i + 1) * self.tile_width,
-                    image.height - j * self.tile_height)
+                    self.tile_width,
+                    self.tile_height)
 
 
     def get(self, offset):

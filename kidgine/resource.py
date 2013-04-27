@@ -49,7 +49,5 @@ def load_texture(path):
 
 def _load_private(path, x, y, width, height):
     img = load_texture(path)
-    # index y from top of texture, not bottom
-    #real_y = img.height - height - y
     img = img.get_region(x, y, width, height)
     return img
