@@ -18,10 +18,12 @@ class Character(object):
     def __init__(self):
         self.facing = Facing.left
         self.position = Vector(0, 0)
+        self.moving = False
 
 
     def move(self, velocity):
         if velocity.magnitude_sqr() > 0.1:
+            self.moving = True
             if math.fabs(velocity.x) > math.fabs(velocity.y):
                 if velocity.x > 0:
                     self.facing = Facing.right
@@ -32,6 +34,8 @@ class Character(object):
                     self.facing = Facing.top
                 else:
                     self.facing = Facing.bottom
+        else:
+            self.moving = False
 
         self.position += velocity
 
@@ -41,17 +45,32 @@ class CharacterRenderable(object):
         self.character = character
 
         self.sprites = list()
+        # 0-3: left,right,top,bottom
+        # 4-7: walk; left,right,top,bottom
         self.sprites.append(pyglet.sprite.Sprite(imagecache.get_sprite(sprite_base + '_left'), batch = batch))
         self.sprites.append(pyglet.sprite.Sprite(imagecache.get_sprite(sprite_base + '_right'), batch = batch))
         self.sprites.append(pyglet.sprite.Sprite(imagecache.get_sprite(sprite_base + '_top'), batch = batch))
         self.sprites.append(pyglet.sprite.Sprite(imagecache.get_sprite(sprite_base + '_bottom'), batch = batch))
 
+        self.sprites.append(pyglet.sprite.Sprite(imagecache.get_animation(sprite_base + '_walk_left'),
+                                                 batch = batch))
+        self.sprites.append(pyglet.sprite.Sprite(imagecache.get_animation(sprite_base + '_walk_right'),
+                                                 batch = batch))
+        self.sprites.append(pyglet.sprite.Sprite(imagecache.get_animation(sprite_base + '_walk_top'),
+                                                 batch = batch))
+        self.sprites.append(pyglet.sprite.Sprite(imagecache.get_animation(sprite_base + '_walk_bottom'),
+                                                 batch = batch))
+
+
 
     def update(self):
-        for i in xrange(4):
-            self.sprites[i].visible = (self.character.facing == i)
+        used_sprite_index = self.character.facing
+        if self.character.moving:
+            used_sprite_index += 4
+        for i,sprite in enumerate(self.sprites):
+            sprite.visible = (used_sprite_index == i)
 
-        utils.set_sprite_pos(self.sprites[self.character.facing], self.character.position)
+        utils.set_sprite_pos(self.sprites[used_sprite_index], self.character.position)
 
 
     def delete(self):
@@ -59,10 +78,10 @@ class CharacterRenderable(object):
             self.sprites.delete()
 
 
-class TestCharacter(Character):
+class GirlCharacter(Character):
     def __init__(self):
-        super(TestCharacter, self).__init__()
+        super(GirlCharacter, self).__init__()
 
 
     def get_sprite_name(self):
-        return 'test'
+        return 'girl'

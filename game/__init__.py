@@ -25,7 +25,7 @@ class Game(object):
         self._gamerenderer = renderer.Renderer(self)
         self._renderer.add_drawable(0, self._gamerenderer)
 
-        self.character = character.TestCharacter()
+        self.character = character.GirlCharacter()
         self.level = level.Level('data/levels/test.json')
 
         self._gamerenderer.add_character(self.character)
