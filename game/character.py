@@ -17,8 +17,8 @@ logger = logging.getLogger(__name__)
 Facing = kidgine.utils.enum('left', 'right', 'top', 'bottom')
 
 class Character(object):
-    idle_delay     = 1.0
-    idle_delay_two = 5.0
+    idle_delay     = 3.0
+    idle_delay_two = 4.0
 
     """represents a character, player controlled or otherwise. has position and a facing"""
     def __init__(self):
