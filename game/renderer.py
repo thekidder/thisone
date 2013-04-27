@@ -2,6 +2,7 @@ import logging
 
 import pyglet.graphics
 from pyglet.gl import *
+
 import character
 import kidgine.math.vector
 import kidgine.renderer.camera

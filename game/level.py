@@ -1,11 +1,10 @@
-import pyglet.sprite
-import pyglet.graphics
-
 import json
 import logging
 import os.path
 
-import data.tilesets
+import pyglet.graphics
+import pyglet.sprite
+
 import tileset
 
 

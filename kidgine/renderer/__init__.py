@@ -10,7 +10,7 @@ from ..config import RangeVar, BooleanVar
 logger = logging.getLogger(__name__)
 
 class Renderer(object):
-    def __init__(self, configs):
+    def __init__(self, configs, caption='', icon=None):
         width      = configs.client.get('cl_screen_width')
         height     = configs.client.get('cl_screen_height')
         fullscreen = configs.client.get('cl_fullscreen')
@@ -28,7 +28,10 @@ class Renderer(object):
             alpha_size    = 8)
 
         self._window = pyglet.window.Window(
-            width=width, height=height, fullscreen=fullscreen, vsync=vsync, config=gl_config)
+            width=width, height=height, fullscreen=fullscreen, vsync=vsync, config=gl_config, caption=caption)
+
+        if icon:
+            self._window.set_icon(icon)
 
         self._window.push_handlers(self)
 

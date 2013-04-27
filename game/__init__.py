@@ -4,6 +4,7 @@ import pyglet.clock
 import inputs
 import kidgine.math.vector
 import kidgine.renderer
+import kidgine.resource
 import renderer
 import level
 
@@ -16,7 +17,11 @@ class Game(object):
         self._inputs = inputs.Inputs()
         self._accumulator = 0.0
 
-        self._renderer = kidgine.renderer.Renderer(configs)
+        icon_path = 'data/images/icon.png'
+        file = pyglet.resource.file(icon_path)
+        icon = pyglet.image.load(icon_path, file, decoder=pyglet.image.codecs.pil.PILImageDecoder())
+
+        self._renderer = kidgine.renderer.Renderer(configs, 'This One', icon)
         self._gamerenderer = renderer.Renderer(self)
         self._renderer.add_drawable(0, self._gamerenderer)
 
