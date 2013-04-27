@@ -6,8 +6,9 @@ import pyglet.graphics
 import pyglet.sprite
 
 import kidgine.collision.rectangle
-from kidgine.math.vector import Vector
+import kidgine.collision.shape
 import tileset
+from kidgine.math.vector import Vector
 
 
 logger = logging.getLogger(__name__)
@@ -26,24 +27,29 @@ def load(filename, collision_detector=None):
 
 class Level(object):
     def __init__(self, filename, json_level, collision_detector):
-        self.collidables = dict() # token -> collidable
         tiles = _get_tileset(filename, json_level['tilesets'][0]['image'])
+
+        width  = json_level['layers'][0]['width']
+        height = json_level['layers'][0]['height']
 
         for layer in json_level['layers']:
             for i,tile in enumerate(layer['data']):
                 if tile == 0:
                     continue
 
-                x = i % width
-                y = height - i / width
+                if not tiles.collides(tile):
+                    continue
 
-                tl = Vector(x, y)
-                br = Vector(x + 32, y + 32)
+                x = 32 * (i % width)
+                y = 32 * (height - i / width)
+
+                center = Vector(x + 16, y + 16)
+                tl = Vector(-16, -16)
+                br = Vector(16, 16)
 
                 token = '{}_{}_{}'.format(filename, x, y)
-                c = kidgine.collision.Rectangle(tl, br)
-
-                self.collidables[token] = c
+                c = kidgine.collision.rectangle.Rectangle(None, tl, br, center = center)
+                c.tags = set([kidgine.collision.shape.tags.IMPEEDS_MOVEMENT])
                 collision_detector.update_collidable(token, c)
 
 

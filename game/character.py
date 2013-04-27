@@ -8,6 +8,7 @@ import imagecache
 import kidgine.utils
 import sprite
 import utils
+import kidgine.collision.rectangle
 from kidgine.math.vector import Vector
 
 
@@ -124,8 +125,29 @@ class CharacterRenderable(object):
 
 
 class GirlCharacter(Character):
-    def __init__(self):
+    def __init__(self, collision_detector):
         super(GirlCharacter, self).__init__()
+
+        tl = Vector(-16,   0)
+        br = Vector( 16,  32)
+
+        self.token = 'pc'
+        self.collidable = kidgine.collision.rectangle.Rectangle(self, tl, br)
+
+        collision_detector.update_collidable(self.token, self.collidable)
+
+
+    def update(self, t, dt, inputs, collision_detector):
+        # move to new position
+        direction = Vector(inputs.leftright * 100, inputs.updown * 100)
+        super(GirlCharacter, self).update(t, dt, direction)
+
+        # resolve collision
+        collision = collision_detector.can_move_to(self.token, self.position)
+        if collision is not None:
+            self.position += collision.translation_vector
+
+
 
 
     def get_sprite_name(self):

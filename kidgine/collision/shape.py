@@ -68,5 +68,7 @@ class Shape(serializedobject.SerializedObject):
             center = override
         elif self.owner is not None:
             center = self.owner.position
+        elif self.center is not None:
+            center = self.center
 
         return p + center

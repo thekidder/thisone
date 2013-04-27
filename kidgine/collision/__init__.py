@@ -48,7 +48,7 @@ def _overlap(min_a, max_a, min_b, max_b):
 
 
 class SpatialHash(object):
-    GRID_SIZE = 64 # must not be smaller than the largest collidable
+    GRID_SIZE = 48 # must not be smaller than the largest collidable
 
     @staticmethod
     def _hash_func(position):
@@ -85,7 +85,9 @@ class SpatialHash(object):
 
         info = SpatialHash._Info(collidable)
         if info.index not in self.hash:
+            #logger.info('adding info at {}'.format(info.index))
             self.hash[info.index] = dict()
+        #logger.info('adding {} {} to {}'.format(token,collidable, info.index))
         self.collidables[token] = info
         self.hash[info.index][token] = info
 
@@ -98,6 +100,9 @@ class SpatialHash(object):
     def potential_collidables(self, token=None, collidable=None, new_pos=None):
         if token is not None and collidable is not None:
             raise RuntimeError('may pass in token or collidable but not both')
+
+        #for k,v in self.hash.iteritems():
+        #    logger.info('{} at {}'.format(len(v), k))
 
         if new_pos is None:
             if token is not None:
@@ -222,6 +227,8 @@ class CollisionDetector(object):
             elif token is not None:
                 new_pos = self.spatial_hash.get(token).owner.position
 
+        #logger.info('looking for collision from {} at {}'.format(token, new_pos))
+
         all = list()
         potential = self.spatial_hash.potential_collidables(
             token=token, collidable=collidable, new_pos=new_pos)
@@ -241,7 +248,8 @@ class CollisionDetector(object):
 
             self.broad_phase_checks += 1
 
-            if(shape.owner.position.closer_than(new_pos, 2 * SpatialHash.GRID_SIZE)):
+            pos = shape.transformed_point(vector.constant_zero)
+            if(pos.closer_than(new_pos, 2 * SpatialHash.GRID_SIZE)):
                 all.append((t,shape))
 
         return all

@@ -3,6 +3,7 @@ import pyglet.clock
 import kidgine.math.vector
 import kidgine.renderer
 import scene
+import debug
 
 
 class Game(object):
@@ -19,6 +20,7 @@ class Game(object):
         icon = pyglet.image.load(icon_path, file, decoder=pyglet.image.codecs.pil.PILImageDecoder())
 
         self._renderer = kidgine.renderer.Renderer(configs, 'This One', icon)
+        self._renderer.add_drawable(20, debug.DebugOverlay())
 
         self.set_scene(scene.CombatScene('data/levels/test.json'))
 
@@ -43,4 +45,4 @@ class Game(object):
         if self.scene is not None:
             self._renderer.remove_drawable(self.scene.drawable)
         self.scene = scene
-        self._renderer.add_drawable(0, self.scene.drawable)
+        self._renderer.add_drawable(10, self.scene.drawable)
