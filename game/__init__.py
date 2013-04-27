@@ -5,6 +5,7 @@ import inputs
 import kidgine.math.vector
 import kidgine.renderer
 import renderer
+import level
 
 
 class Game(object):
@@ -14,12 +15,16 @@ class Game(object):
         pyglet.clock.schedule_interval(self.frame, self.FRAME_TIME)
         self._inputs = inputs.Inputs()
         self._accumulator = 0.0
+
         self._renderer = kidgine.renderer.Renderer(configs)
         self._gamerenderer = renderer.Renderer(self)
-
         self._renderer.add_drawable(0, self._gamerenderer)
+
         self.character = character.TestCharacter()
+        self.level = level.Level('data/levels/test.json')
+
         self._gamerenderer.add_character(self.character)
+        self._gamerenderer.set_level(self.level)
 
 
     def frame(self, dt):

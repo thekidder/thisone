@@ -18,10 +18,11 @@ class Renderer(object):
         self.batch = pyglet.graphics.Batch()
 
         def camera_anchor():
-            return kidgine.math.vector.constant_zero
+            return self.player_character.position
         self.camera = kidgine.renderer.camera.CenteredCamera(camera_anchor, kidgine.math.vector.Vector(1, 1))
 
         self.characters = set()
+        self.level = None
 
 
     def draw(self, window):
@@ -29,6 +30,10 @@ class Renderer(object):
             i.update()
 
         self.camera.apply()
+
+        if self.level:
+            self.level.draw()
+
         self.batch.draw()
 
 
@@ -40,7 +45,13 @@ class Renderer(object):
         self.camera.window_size = kidgine.math.vector.Vector(width, height)
 
 
+    def set_level(self, l):
+        self.level = l
+
+
     def add_character(self, c):
+        if len(self.characters) == 0:
+            self.player_character = c
         self.characters.add(character.CharacterRenderable(self.batch, c, c.get_sprite_name()))
 
 

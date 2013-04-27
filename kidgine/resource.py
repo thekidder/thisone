@@ -1,4 +1,5 @@
 import pyglet
+from pyglet.gl import *
 
 
 def _fudge_tex_borders (fn):
@@ -38,12 +39,17 @@ def load_from_spritesheet(path, x, y, width, height, anchor_x, anchor_y):
     return img
 
 
-
-def _load_private(path, x, y, width, height):
+def load_texture(path):
     file = pyglet.resource.file(path)
     img = pyglet.image.load(path, file, decoder=pyglet.image.codecs.pil.PILImageDecoder())
-    img = img.get_texture()
+    tex =  img.get_texture()
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
+    return tex
+
+
+def _load_private(path, x, y, width, height):
+    img = load_texture(path)
     # index y from top of texture, not bottom
-    real_y = img.height - height - y
-    img = img.get_region(x, real_y, width, height)
+    #real_y = img.height - height - y
+    img = img.get_region(x, y, width, height)
     return img

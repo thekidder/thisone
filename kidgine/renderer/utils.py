@@ -11,7 +11,7 @@ def ortho_projection(x, y, width, height):
     glOrtho(
         x,
         x + width,
-        y,
         y + height,
+        y,
         -1, 1)
     glMatrixMode(gl.GL_MODELVIEW)

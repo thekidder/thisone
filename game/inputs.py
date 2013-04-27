@@ -37,9 +37,9 @@ class Inputs(object):
             self.right = True
 
         if self.up:
-            self.updown = 1
-        elif self.down:
             self.updown = -1
+        elif self.down:
+            self.updown = 1
 
         if self.left:
             self.leftright = -1
