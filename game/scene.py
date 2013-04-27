@@ -7,38 +7,44 @@ from kidgine.math.vector import Vector
 
 
 class Scene(object):
-    def __init__(self, level_name, collision_detector=None):
-        self.level,self.level_renderable = level.load(level_name, collision_detector)
+    def __init__(self, level_name):
+        self._collision_detector = kidgine.collision.CollisionDetector()
+        self.level,self.level_renderable = level.load(level_name, self._collision_detector)
         self.drawable = renderer.SceneRenderer(self.level_renderable)
 
-
-    def update(self, t, dt):
-        pass
-
-
-class CombatScene(Scene):
-    def __init__(self, level_name):
-        self._inputs = inputs.Inputs()
-        self._collision_detector = kidgine.collision.CollisionDetector()
-
-        super(CombatScene, self).__init__(level_name, self._collision_detector)
-
-        self.character = character.GirlCharacter(self._collision_detector)
-        self.character.position = Vector(32 * 10, 32 * 10)
-
-        self.enemy = character.MeleeEnemy(self.character, self._collision_detector)
-        self.enemy.position = Vector(32 * 8, 32 * 8)
-
-        self.drawable.add_character(self.character)
-        self.drawable.add_character(self.enemy)
+        self.updatables = list()
 
 
     def update(self, t, dt):
         self._collision_detector.start_frame()
-        self._inputs.update(self.drawable.keystate)
+        for obj in self.updatables:
+            obj.update(t, dt, self._collision_detector)
 
-        self.character.update(t, dt, self._inputs, self._collision_detector)
-        self.enemy.update(t, dt, self._collision_detector)
+
+    def add_character(self, c):
+        self.updatables.append(c)
+        self.drawable.add_character(c)
+
+
+class CombatScene(Scene):
+    def __init__(self, level_name):
+        super(CombatScene, self).__init__(level_name)
+
+        self._inputs = inputs.Inputs()
+
+        player_character = character.GirlCharacter(self._inputs, self._collision_detector)
+        player_character.position = Vector(32 * 10, 32 * 10)
+
+        enemy = character.MeleeEnemy(player_character, self._collision_detector)
+        enemy.position = Vector(32 * 8, 32 * 8)
+
+        self.add_character(player_character)
+        self.add_character(enemy)
+
+
+    def update(self, t, dt):
+        self._inputs.update(self.drawable.keystate)
+        super(CombatScene, self).update(t, dt)
 
 
 class Cutscene(object):

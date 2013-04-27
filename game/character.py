@@ -5,10 +5,11 @@ import pyglet.sprite
 
 import data.animations
 import imagecache
+import kidgine.collision.rectangle
+import kidgine.collision.shape
 import kidgine.utils
 import sprite
 import utils
-import kidgine.collision.rectangle
 from kidgine.math.vector import Vector
 
 
@@ -136,6 +137,7 @@ class CollidableCharacter(Character):
         self.token = 'character{}'.format(CollidableCharacter.counter)
         CollidableCharacter.counter += 1
         self.collidable = kidgine.collision.rectangle.Rectangle(self, tl, br)
+        self.collidable.tags = set([kidgine.collision.shape.tags.IMPEEDS_MOVEMENT])
 
         collision_detector.update_collidable(self.token, self.collidable)
 
@@ -147,17 +149,20 @@ class CollidableCharacter(Character):
         collision = collision_detector.can_move_to(self.token, self.position)
         if collision is not None:
             self.position += collision.translation_vector
+        collision_detector.update_collidable(self.token, self.collidable)
 
 
 
 class GirlCharacter(CollidableCharacter):
-    def __init__(self, collision_detector):
+    def __init__(self, inputs, collision_detector):
         super(GirlCharacter, self).__init__(collision_detector)
 
+        self.inputs = inputs
 
-    def update(self, t, dt, inputs, collision_detector):
+
+    def update(self, t, dt, collision_detector):
         # move to new position
-        direction = Vector(inputs.leftright * 100, inputs.updown * 100)
+        direction = Vector(self.inputs.leftright * 100, self.inputs.updown * 100)
         super(GirlCharacter, self).update(t, dt, direction, collision_detector)
 
 
