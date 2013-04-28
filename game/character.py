@@ -1,6 +1,7 @@
 import logging
 import math
 
+import ability
 import data.animations
 import kidgine.collision.rectangle
 import kidgine.collision.shape
@@ -28,7 +29,7 @@ class Character(object):
         self.idle = False
         self.idle_time = data.animations.animation_duration(self.renderable_type.sprite_name + '_idle')
         self.health = self.max_health
-
+        self.last_hit = 0
 
     def update(self, t, dt, direction):
         if direction.magnitude_sqr() > 0.1:
@@ -47,6 +48,11 @@ class Character(object):
             self.moving = False
 
         self.update_idle(t, dt)
+
+
+    def damage(self, t, amount):
+        self.last_hit = t
+        self.health = max(0, self.health - amount)
 
 
     def alive(self):
@@ -108,6 +114,10 @@ class CollidableCharacter(Character):
         self.forces = Vector()
 
 
+    def removed(self, collision_detector):
+        collision_detector.remove_collidable(self.token)
+
+
     def update(self, t, dt, direction, collision_detector):
         super(CollidableCharacter, self).update(t, dt, direction)
         candidate_pos = self.position + direction * dt + self.forces
@@ -136,9 +146,13 @@ class GirlCharacter(CollidableCharacter):
         super(GirlCharacter, self).__init__(collision_detector)
 
         self.inputs = inputs
-        self.last_hit = 0
 
         self.collidable.tags = set([kidgine.collision.shape.tags.IMPEEDS_MOVEMENT, Tags.PLAYER, Tags.MOVEABLE])
+
+        self.ability_one   = ability.FireboltAbility
+        self.ability_two   = None
+        self.ability_three = None
+        self.ability_four  = None
 
 
     def update(self, t, dt, collision_detector):
@@ -147,20 +161,29 @@ class GirlCharacter(CollidableCharacter):
         direction = direction.normalized() * 140.0
         super(GirlCharacter, self).update(t, dt, direction, collision_detector)
 
+        # activate abilities
+        new_objs = list()
+        if self.ability_one and self.inputs.one:
+            self.ability_one.activate(t, dt, collision_detector, self, new_objs)
+        if self.ability_two and self.inputs.two:
+            self.ability_two.activate(t, dt, collision_detector, self, new_objs)
+        if self.ability_three and self.inputs.three:
+            self.ability_three.activate(t, dt, collision_detector, self, new_objs)
+        if self.ability_four and self.inputs.four:
+            self.ability_four.activate(t, dt, collision_detector, self, new_objs)
+
+        # regen health
         if t - self.last_hit > self.regen_delay:
             self.health += self.regen_rate * dt
             self.health = min(self.max_health, self.health)
 
-
-    def damage(self, t, amount):
-        self.last_hit = t
-        self.health = max(0, self.health - amount)
+        return new_objs
 
 
 class MeleeEnemy(CollidableCharacter):
     player_filter = set([Tags.PLAYER])
     damage_delay = 0.5
-    max_health = 80.0
+    max_health = 60.0
     renderable_type = renderable.MeleeEnemyRenderable
 
     def __init__(self, target, collision_detector):
@@ -171,7 +194,8 @@ class MeleeEnemy(CollidableCharacter):
 
 
     def collides(self, t, shape):
-        self.do_damage(t, shape)
+        if Tags.PLAYER in shape.tags:
+            self.do_damage(t, shape)
 
 
     def do_damage(self, t, shape):

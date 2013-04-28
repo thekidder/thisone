@@ -38,11 +38,17 @@ class Scene(object):
             self._add_force(c.shape1.owner, c.shape1.tags, force)
             self._add_force(c.shape2.owner, c.shape2.tags, -force)
 
+        all_new_objs = list()
         for obj in self.updatables:
-            obj.update(t, dt, self._collision_detector)
+            new_things = obj.update(t, dt, self._collision_detector)
+            if new_things is not None:
+                all_new_objs.extend(new_things)
 
         for obj in self.updatables:
             self._reset_force(obj)
+
+        for o in all_new_objs:
+            self.add_updatable(o)
 
 
     def _reset_force(self, obj):
@@ -61,12 +67,13 @@ class Scene(object):
             pass
 
 
-    def remove_character(self, c):
+    def remove_updatable(self, c):
+        c.removed(self._collision_detector)
         self.updatables.remove(c)
         self.drawable.remove_renderable(c)
 
 
-    def add_character(self, c):
+    def add_updatable(self, c):
         self.updatables.add(c)
         self.drawable.add_renderable(c)
 
@@ -80,21 +87,28 @@ class CombatScene(Scene):
         self.player_character = character.GirlCharacter(self._inputs, self._collision_detector)
         self.player_character.position = Vector(32 * 10, 32 * 10)
 
-        self.add_character(self.player_character)
+        self.add_updatable(self.player_character)
 
         for i in xrange(12):
             enemy = character.MeleeEnemy(self.player_character, self._collision_detector)
             enemy.position = Vector(32 * (1 + i), 32 * (1 + i))
-            self.add_character(enemy)
+            self.add_updatable(enemy)
 
 
     def update(self, t, dt):
         self._inputs.update(self.drawable.keystate)
         super(CombatScene, self).update(t, dt)
 
-        if self.player_character and self.player_character.health == 0.0:
-            self.remove_character(self.player_character)
-            self.player_character = None
+        to_remove = list()
+        for obj in self.updatables:
+            if not obj.alive():
+                to_remove.append(obj)
+
+        for obj in to_remove:
+            if obj == self.player_character:
+                self.player_character = None
+
+            self.remove_updatable(obj)
 
 
 class Cutscene(object):

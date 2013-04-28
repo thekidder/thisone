@@ -6,13 +6,18 @@ import utils
 
 
 class StaticSpriteRenderable(object):
-    def __init__(self, batch, parent, image):
+    def __init__(self, batch, parent, image, rotation = 0):
         self.sprite = pyglet.sprite.Sprite(imagecache.get_sprite(image), batch = batch)
+        self.sprite.rotation = rotation
         self.parent = parent
 
 
-    def update(self):
+    def update(self, t, dt):
         utils.set_sprite_pos(self.sprite, self.parent.position)
+
+
+    def delete(self):
+        self.sprite.delete()
 
 
 
