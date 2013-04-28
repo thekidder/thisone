@@ -23,13 +23,45 @@ class Ability(object):
             new_objs.append(self.ability_type(parent, collision_detector))
 
 
-class Firebolt(object):
+# stays around for a certain duration applying an effect to all collidables
+class TimedAbility(object):
     filter = set([Tags.ENEMY])
+
+    def __init__(self):
+        self.time_left = self.duration
+
+
+    def removed(self, collision_detector):
+        collision_detector.remove_collidable(self.token)
+
+
+    def update(self, t, dt, collision_detector):
+        self.time_left -= dt
+
+        all = collision_detector.collides(token=self.token,
+                                          filters=self.filter)
+
+        for c in all:
+            self.apply(t, dt, c)
+
+
+    def alive(self):
+        return self.time_left > 0.0
+
+
+    def create_renderable(self):
+        def wrapped(batch):
+            return renderable.StaticSpriteRenderable(batch, self, self.sprite_name, rotation=self.rotation)
+        return wrapped
+
+
+class Firebolt(TimedAbility):
     damage = 80 # per second
     duration = 0.2
+    sprite_name = 'fire_peak'
 
     def __init__(self, parent, collision_detector):
-        self.time_left = self.duration
+        super(Firebolt, self).__init__()
         self.rotation = parent.move_direction * 45.0
 
         offset = kidgine.math.vector.from_radians(math.radians(self.rotation)) * 48
@@ -49,30 +81,18 @@ class Firebolt(object):
 
 
     def update(self, t, dt, collision_detector):
-        self.time_left -= dt
-
-        all = collision_detector.collides(token=self.token,
-                                          filters=self.filter)
-
-        for c in all:
-            try:
-                c.shape2.owner.damage(t, dt * self.damage)
-            except AttributeError:
-                pass
+        super(Firebolt, self).update(t, dt, collision_detector)
 
 
-    def removed(self, collision_detector):
-        collision_detector.remove_collidable(self.token)
+    def apply(self, t, dt, c):
+        try:
+            c.shape2.owner.damage(t, dt * self.damage)
+        except AttributeError:
+            pass
 
 
-    def alive(self):
-        return self.time_left > 0.0
-
-
-    def create_renderable(self):
-        def wrapped(batch):
-            return renderable.StaticSpriteRenderable(batch, self, 'fire_peak', rotation=self.rotation)
-        return wrapped
+class Earthquake(object):
+    pass
 
 
 FireboltAbility = Ability(Firebolt, 0.8)
