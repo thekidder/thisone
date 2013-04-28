@@ -9,6 +9,7 @@ import renderer
 import kidgine.math.vector
 from kidgine.math.vector import Vector
 from collision import Tags
+import dialog
 
 
 logger = logging.getLogger(__name__)
@@ -26,11 +27,20 @@ class Scene(object):
         self.player_character = character.GirlCharacter(self._inputs, self._collision_detector)
         self.add_updatable(self.player_character)
 
+        self.dialog = None
+
 
     def update(self, t, dt):
         #self._collision_detector.log_stats(logging.INFO)
         self._inputs.update(self.drawable.keystate)
         self._collision_detector.start_frame()
+
+        if self.dialog is not None:
+            self.dialog.update(self._inputs, t, dt)
+            if self.dialog.is_done():
+                self.drawable.remove_ui_renderable(self.dialog)
+                self.dialog = None
+            return
 
         # calculate collision forces
         all = self._collision_detector.all_collisions()
@@ -107,12 +117,19 @@ class Scene(object):
             self.add_updatable(enemy)
 
 
+    def run_dialog(self, dialog):
+        self.drawable.add_ui_renderable(dialog)
+        self.dialog = dialog
+
+
 class ActOne(Scene):
     def __init__(self):
         super(ActOne, self).__init__('data/levels/act_one.json')
         self.player_character.position = Vector(32 * 10, 32 * 100)
 
         self.spawn_wave(Vector(10 * 32, 80 * 32), character.MeleeEnemy, 6)
+
+        self.run_dialog(dialog.Dialog('data/dialog/act_one_warlord_1.json'))
 
 
 class Cutscene(object):

@@ -25,13 +25,15 @@ class Inputs(object):
         self.left  = False
         self.right = False
 
+        self.updown = 0
+        self.leftright = 0
+
         self.one   = False
         self.two   = False
         self.three = False
         self.four  = False
 
-        self.updown = 0
-        self.leftright = 0
+        self.dialog_dismiss = False
 
 
     def update(self, keys):
