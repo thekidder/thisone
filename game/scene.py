@@ -63,9 +63,6 @@ class Scene(object):
             if new_things is not None:
                 all_new_objs.extend(new_things)
 
-        for obj in self.updatables:
-            self._reset_force(obj)
-
         # add new things
         for o in all_new_objs:
             self.add_updatable(o)

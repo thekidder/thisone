@@ -68,6 +68,12 @@ class Vector(object):#serializedobject.SerializedObject):
         return self._do_operation(operator.mul, x)
 
     __rmul__ = __mul__
+	
+	
+    def __imul__(self, x):
+        self.x *= x
+        self.y *= x
+        return self
 
 
     def __neg__(self):

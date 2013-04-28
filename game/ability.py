@@ -4,6 +4,7 @@ import math
 import kidgine.collision.circle
 import kidgine.collision.rectangle
 import renderable
+import random
 from collision import Tags
 from kidgine.math.vector import Vector
 
@@ -122,7 +123,7 @@ class Earthquake(TimedAbility):
 
 
     def apply(self, t, dt, c):
-        self.last_trigger = t
+        self.last_trigger_time = t
         try:
             c.shape2.owner.slow(t, self.slow)
         except AttributeError:
@@ -133,8 +134,48 @@ class Earthquake(TimedAbility):
         super(Earthquake, self).update(t, dt, collision_detector)
 
 
+class Windblast(TimedAbility):
+    filter = set([Tags.ENEMY])
+    duration = 2
+    force = 4.0
+    taper_point = 0.5
+    
+    spread = 0.8 #radians
+    sprite_name = 'wind_peak'
+    size = 64
+    
+    def __init__(self, parent, collision_detector):
+        super(Windblast, self).__init__()
+        
+        self.parent = parent
+        self.position = parent.position + Vector(0, 16)
+        
+        tl = Vector(-self.size, -self.size)
+        br = Vector( self.size,  self.size)
+        self.collidable = kidgine.collision.rectangle.Rectangle(self, tl, br)
+        
+        self.token = 'windblast'
+        
+        collision_detector.update_collidable(self.token, self.collidable)
+    
+    def apply(self, t, dt, c):
+        p1 = c.shape1.owner.position
+        p2 = c.shape2.owner.position
+        start_vector = Vector(p2.x - p1.x, p2.y - p1.y)
+        #taper_factor = (start_vector.magnitude() - taper_point * self.size)
+        eject_mag = self.force / (start_vector.magnitude() / self.size ) ** 2
+        eject_vector = start_vector.normalized().rotate((random.random() - 0.5) * self.spread)
+        eject_vector *= eject_mag
+        c.shape2.owner.apply_force(eject_vector)
+    
+    def update(self, t, dt, collision_detector):
+        print "wb update"
+        self.position = self.parent.position + Vector(0, 16)
+        collision_detector.update_collidable(self.token, self.collidable)
+        super(Windblast, self).update(t, dt, collision_detector)
 
 
 
 FireboltAbility   = Ability(Firebolt, 0.8)
 EarthquakeAbility = Ability(Earthquake, 1.6)
+WindblastAbility = Ability(Windblast, 3)

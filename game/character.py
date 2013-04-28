@@ -59,6 +59,7 @@ class Character(object):
         self.update_idle(t, dt)
 
 
+
     def damage(self, t, amount):
         self.last_hit = t
         self.health = max(0, self.health - amount)
@@ -115,8 +116,14 @@ class CollidableCharacter(Character):
         self.forces = Vector()
 
 
-    def apply_force(self, force):
+    def apply_force(self, force, debug=False):
+        if debug:
+            print self
+            print 'incoming force', force
+            print 'old forces', self.forces
         self.forces += force
+        if debug:
+            print 'new forces', self.forces
 
 
     def reset_force(self):
@@ -141,6 +148,8 @@ class CollidableCharacter(Character):
             self.position += normal
 
         collision_detector.update_collidable(self.token, self.collidable)
+        
+        self.reset_force()
 
 
 class GirlCharacter(CollidableCharacter):
@@ -159,7 +168,7 @@ class GirlCharacter(CollidableCharacter):
 
         self.ability_one   = ability.FireboltAbility
         self.ability_two   = ability.EarthquakeAbility
-        self.ability_three = None
+        self.ability_three = ability.WindblastAbility
         self.ability_four  = None
 
 

@@ -5,4 +5,5 @@ Tags = kidgine.utils.enum(
     ENVIRONMENT = 2,
     PLAYER = 3,
     ENEMY = 4,
-    NOT_SLOWED = 5)
+    NOT_SLOWED = 5,
+	PROJECTILE = 6)

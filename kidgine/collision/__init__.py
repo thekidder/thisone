@@ -51,7 +51,7 @@ def _overlap(min_a, max_a, min_b, max_b):
 
 
 class SpatialHash(object):
-    GRID_SIZE = 64 # must not be smaller than the largest collidable
+    GRID_SIZE = 128 # must not be smaller than the largest collidable
 
     @staticmethod
     def _hash_func(position):
