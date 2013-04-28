@@ -10,6 +10,7 @@ import kidgine.collision.shape
 import kidgine.utils
 import sprite
 import utils
+import kidgine.math.vector
 from kidgine.math.vector import Vector
 from collision import Tags
 
@@ -50,6 +51,9 @@ class Character(object):
 
         self.update_idle(t, dt)
 
+
+    def collides(self, t, shape):
+        pass
 
 
     def update_idle(self, t, dt):
@@ -92,6 +96,10 @@ class CollidableCharacter(Character):
         self.forces += force
 
 
+    def reset_force(self):
+        self.forces = Vector()
+
+
     def update(self, t, dt, direction, collision_detector):
         super(CollidableCharacter, self).update(t, dt, direction)
         candidate_pos = self.position + direction * dt + self.forces
@@ -118,7 +126,6 @@ class CollidableCharacter(Character):
         #         else:
         #             self.position += collision.translation_vector
         collision_detector.update_collidable(self.token, self.collidable)
-        self.forces = Vector()
 
 
 class GirlCharacter(CollidableCharacter):
@@ -129,7 +136,7 @@ class GirlCharacter(CollidableCharacter):
         super(GirlCharacter, self).__init__(collision_detector)
 
         self.inputs = inputs
-        self.health = 10.0
+        self.health = 80.0
         self.last_hit = 0
 
         self.collidable.tags = set([kidgine.collision.shape.tags.IMPEEDS_MOVEMENT, Tags.PLAYER, Tags.MOVEABLE])
@@ -156,23 +163,34 @@ class GirlCharacter(CollidableCharacter):
 
 class MeleeEnemy(CollidableCharacter):
     player_filter = set([Tags.PLAYER])
+    damage_delay = 0.5
 
     def __init__(self, target, collision_detector):
         super(MeleeEnemy, self).__init__(collision_detector)
         self.target = target
         self.collidable.tags = set([kidgine.collision.shape.tags.IMPEEDS_MOVEMENT, Tags.MOVEABLE])
+        self.last_damage_time = 0
 
 
-    def do_damage(self, t, collision):
-        try:
-            collision.shape2.owner.damage(t, 10)
-        except AttributeError:
-            pass
+    def collides(self, t, shape):
+        self.do_damage(t, shape)
+
+
+    def do_damage(self, t, shape):
+        if t - self.last_damage_time > self.damage_delay:
+            self.last_damage_time = t
+            try:
+                shape.owner.damage(t, 10)
+                shape.owner.apply_force((shape.owner.position - self.position).normalized() * 16)
+            except AttributeError:
+                pass
 
 
     def update(self, t, dt, collision_detector):
-        direction = (self.target.position - self.position).normalized()
-        direction *= 90
+        direction = kidgine.math.vector.constant_zero
+        if self.target:
+            direction = (self.target.position - self.position).normalized()
+            direction *= 90
 
         collision = collision_detector.collides(token=self.token, filters=self.player_filter)
         if collision is not None:
@@ -239,7 +257,7 @@ class CharacterRenderable(object):
 
     def delete(self):
         for i in self.sprites:
-            self.sprites.delete()
+            i.delete()
 
 
 class MeleeEnemyRenderable(CharacterRenderable):

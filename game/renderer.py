@@ -23,11 +23,11 @@ class SceneRenderer(object):
             return self.player_character.position
         self.camera = kidgine.renderer.camera.CenteredCamera(camera_anchor, kidgine.math.vector.Vector(1, 1))
 
-        self.characters = set()
+        self.characters = dict()
 
 
     def draw(self, t, dt, window):
-        for i in self.characters:
+        for i in self.characters.itervalues():
             i.update(t, dt)
 
         self.camera.apply()
@@ -49,13 +49,13 @@ class SceneRenderer(object):
     def add_character(self, c):
         if len(self.characters) == 0:
             self.player_character = c
-        self.characters.add(c.renderable_type()(self.batch, c))
+        self.characters[c] = c.renderable_type()(self.batch, c)
 
 
     def remove_character(self, character):
         c = self.characters[character]
         c.delete()
-        self.characters.remove(character)
+        del self.characters[character]
 
 
     def on_key_press(self, symbol, modifiers):

@@ -17,6 +17,8 @@ logger.addHandler(sh)
 
 logger.setLevel(logging.DEBUG)
 
+PROFILE = False
+
 def create_cvars():
     c = kidgine.config.Config()
 
@@ -38,4 +40,8 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    if PROFILE:
+        import cProfile
+        cProfile.run('main()', '.cprofile')
+    else:
+        main()

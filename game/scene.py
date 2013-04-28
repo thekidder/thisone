@@ -18,7 +18,7 @@ class Scene(object):
         self.level,self.level_renderable = level.load(level_name, self._collision_detector)
         self.drawable = renderer.SceneRenderer(self.level_renderable)
 
-        self.updatables = list()
+        self.updatables = set()
 
 
     def update(self, t, dt):
@@ -29,6 +29,9 @@ class Scene(object):
         for c in all:
             if Tags.MOVEABLE not in c.shape1.tags or Tags.MOVEABLE not in c.shape2.tags:
                 continue
+
+            c.shape1.owner.collides(t, c.shape2)
+            c.shape2.owner.collides(t, c.shape1)
 
             #c1 = c.shape1.transformed_point(kidgine.math.vector.constant_zero)
             #c2 = c.shape2.transformed_point(kidgine.math.vector.constant_zero)
@@ -50,6 +53,16 @@ class Scene(object):
         for obj in self.updatables:
             obj.update(t, dt, self._collision_detector)
 
+        for obj in self.updatables:
+            self._reset_force(obj)
+
+
+    def _reset_force(self, obj):
+        try:
+            obj.reset_force()
+        except AttributeError:
+            pass
+
 
     def _add_force(self, obj, tags, force):
         if Tags.PLAYER in tags:
@@ -60,8 +73,13 @@ class Scene(object):
             pass
 
 
+    def remove_character(self, c):
+        self.updatables.remove(c)
+        self.drawable.remove_character(c)
+
+
     def add_character(self, c):
-        self.updatables.append(c)
+        self.updatables.add(c)
         self.drawable.add_character(c)
 
 
@@ -71,21 +89,24 @@ class CombatScene(Scene):
 
         self._inputs = inputs.Inputs()
 
-        player_character = character.GirlCharacter(self._inputs, self._collision_detector)
-        player_character.position = Vector(32 * 10, 32 * 10)
+        self.player_character = character.GirlCharacter(self._inputs, self._collision_detector)
+        self.player_character.position = Vector(32 * 10, 32 * 10)
 
-        self.add_character(player_character)
+        self.add_character(self.player_character)
 
         for i in xrange(6):
-            enemy = character.MeleeEnemy(player_character, self._collision_detector)
-            enemy.position = Vector(32 * (4 + i), 32 * (4 + i))
+            enemy = character.MeleeEnemy(self.player_character, self._collision_detector)
+            enemy.position = Vector(32 * (1 + i), 32 * (1 + i))
             self.add_character(enemy)
-
 
 
     def update(self, t, dt):
         self._inputs.update(self.drawable.keystate)
         super(CombatScene, self).update(t, dt)
+
+        if self.player_character and self.player_character.health == 0.0:
+            self.remove_character(self.player_character)
+            self.player_character = None
 
 
 class Cutscene(object):
