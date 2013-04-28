@@ -61,7 +61,8 @@ class Shape(serializedobject.SerializedObject):
         return self._points
 
     def transformed_point(self, p, override = None):
-        #p = p.rotate(self.rotation)
+        if self.rotation != 0:
+            p = p.rotate(self.rotation)
 
         center = vector.constant_zero
         if override is not None:
