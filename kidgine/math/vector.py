@@ -4,10 +4,10 @@ import operator
 from ..net import serializedobject
 
 
-class Vector(serializedobject.SerializedObject):
-    _SERIALIZED_MEMBERS = {
-        'x' : serializedobject.float,
-        'y' : serializedobject.float}
+class Vector(object):#serializedobject.SerializedObject):
+#    _SERIALIZED_MEMBERS = {
+#        'x' : serializedobject.float,
+#        'y' : serializedobject.float}
 
     def __init__(self, x=0., y=0.):
         super(Vector, self).__init__()
@@ -30,7 +30,11 @@ class Vector(serializedobject.SerializedObject):
 
 
     def __add__(self, x):
-        return self._do_operation(operator.add, x)
+        try:
+            return Vector(self.x + x.x, self.y + x.y)
+        except AttributeError:
+            return Vector(x + self.x, x + self.y)
+        #return self._do_operation(operator.add, x)
 
     __radd__ = __add__
 
@@ -93,8 +97,8 @@ class Vector(serializedobject.SerializedObject):
 
 
     def rotate(self, angle):
-        """roates the current vector around the origin by angle
-        radians and return the result"""
+        #"""roates the current vector around the origin by angle
+        #radians and return the result"""
         return Vector(self.x * math.cos(angle) - self.y * math.sin(angle),
                       self.x * math.sin(angle) + self.y * math.cos(angle))
 
@@ -134,7 +138,7 @@ constant_up    = up()
 
 
 def from_radians(direction):
-    """takes a direction in radians"""
+    #"""takes a direction in radians"""
     return Vector(math.cos(direction), math.sin(direction))
 
 

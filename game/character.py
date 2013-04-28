@@ -168,7 +168,7 @@ class MeleeEnemy(CollidableCharacter):
     def __init__(self, target, collision_detector):
         super(MeleeEnemy, self).__init__(collision_detector)
         self.target = target
-        self.collidable.tags = set([kidgine.collision.shape.tags.IMPEEDS_MOVEMENT, Tags.MOVEABLE])
+        self.collidable.tags = set([kidgine.collision.shape.tags.IMPEEDS_MOVEMENT, Tags.MOVEABLE, Tags.ENEMY])
         self.last_damage_time = 0
 
 

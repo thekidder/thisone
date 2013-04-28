@@ -104,6 +104,7 @@ class CombatScene(Scene):
         self._inputs.update(self.drawable.keystate)
         super(CombatScene, self).update(t, dt)
 
+
         if self.player_character and self.player_character.health == 0.0:
             self.remove_character(self.player_character)
             self.player_character = None
