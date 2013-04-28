@@ -114,6 +114,9 @@ class GirlCharacter(CollidableCharacter):
         self.health = 10.0
         self.last_hit = 0
 
+        self.collidable.tags = set([kidgine.collision.shape.tags.IMPEEDS_MOVEMENT])
+        self.collidable.tags.add(Tags.PLAYER)
+
 
     def update(self, t, dt, collision_detector):
         # move to new position
@@ -135,6 +138,8 @@ class GirlCharacter(CollidableCharacter):
 
 
 class MeleeEnemy(CollidableCharacter):
+    player_filter = set([Tags.PLAYER])
+
     def __init__(self, target, collision_detector):
         super(MeleeEnemy, self).__init__(collision_detector)
         self.target = target
@@ -142,9 +147,20 @@ class MeleeEnemy(CollidableCharacter):
         self.collidable.tags.add(Tags.MOVEABLE)
 
 
+    def do_damage(self, t, collision):
+        try:
+            collision.shape2.owner.damage(t, 10)
+        except AttributeError:
+            pass
+
+
     def update(self, t, dt, collision_detector):
         direction = (self.target.position - self.position).normalized()
         direction *= 90
+
+        collision = collision_detector.collides(token=self.token, filters=self.player_filter)
+        if collision is not None:
+            self.do_damage(t, collision)
 
         super(MeleeEnemy, self).update(t, dt, direction, collision_detector)
 
