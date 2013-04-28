@@ -51,7 +51,7 @@ def _overlap(min_a, max_a, min_b, max_b):
 
 
 class SpatialHash(object):
-    GRID_SIZE = 32 # must not be smaller than the largest collidable
+    GRID_SIZE = 64 # must not be smaller than the largest collidable
 
     @staticmethod
     def _hash_func(position):
@@ -86,6 +86,7 @@ class SpatialHash(object):
             old = self.collidables[token]
             del self.hash[old.index][token]
 
+        #collidable.update()
         info = SpatialHash._Info(collidable)
         if info.index not in self.hash:
             #logger.info('adding info at {}'.format(info.index))
@@ -154,6 +155,7 @@ class CollisionDetector(object):
         self.can_move_filters = set([shape.tags.IMPEEDS_MOVEMENT])
 
         self.spatial_hash = SpatialHash()
+        self.total_vectors = 0
         self.start_frame()
 
 
@@ -162,6 +164,8 @@ class CollisionDetector(object):
         self.num_checks = 0
         self.broad_phase_checks = 0
         self.narrow_phase_checks = 0
+        self.vectors_per_frame = vector.counter - self.total_vectors
+        self.total_vectors = vector.counter
 
 
     def log_stats(self, level):
@@ -175,8 +179,10 @@ class CollisionDetector(object):
         logger.log(level, '-----------COLLISION DETECTOR-----------')
         stats1 = '\t {:4d} collision checks; avg. {:6.1f} broad phase checks and {:6.1f} narrow phase checks'
         stats2 = '\t                       total {:6d} broad phase checks and {:6d} narrow phase checks'
+        stats3 = '\t {} vector creations last frame'
         logger.log(level, stats1.format(self.num_checks, broad, narrow))
         logger.log(level, stats2.format(self.broad_phase_checks, self.narrow_phase_checks))
+        logger.log(level, stats3.format(self.vectors_per_frame))
 
 
     def clear(self):

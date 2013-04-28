@@ -22,7 +22,7 @@ class Scene(object):
 
 
     def update(self, t, dt):
-        #self._collision_detector.log_stats(logging.INFO)
+        self._collision_detector.log_stats(logging.INFO)
         self._collision_detector.start_frame()
 
         all = self._collision_detector.all_collisions()

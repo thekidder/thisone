@@ -4,13 +4,20 @@ import operator
 from ..net import serializedobject
 
 
+counter = 0
+
+
 class Vector(object):#serializedobject.SerializedObject):
 #    _SERIALIZED_MEMBERS = {
 #        'x' : serializedobject.float,
 #        'y' : serializedobject.float}
 
+    __slots__ = ('x','y')
+
     def __init__(self, x=0., y=0.):
+        global counter
         super(Vector, self).__init__()
+        counter += 1
         self.x = x
         self.y = y
 

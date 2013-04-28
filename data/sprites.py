@@ -41,7 +41,9 @@ __all_sprites = {
     'enemy_1_walk_bottom' : ('data/images/derp/enemy_1_walk_bottom.png',0,    0,   60, 33,  0,  0),
     'enemy_1_idle'        : ('data/images/derp/enemy_1_idle.png',       0,    0,   30, 33,  0,  0),
 
+    # attacks
     'fire_peak'           : ('data/images/fire_peak.png',               0,    0,   96, 96, 48, 48),
+    'earth_peak'          : ('data/images/earth_peak.png',              0,    0,   96, 96, 48, 48),
 }
 
 

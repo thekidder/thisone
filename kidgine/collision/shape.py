@@ -12,7 +12,8 @@ class Shape(serializedobject.SerializedObject):
         'rotation': serializedobject.float, } # in radians
 
     def __init__(self, owner=None):
-        self._points = []
+        self._points = list()
+        #self._transformed_points = list()
         self.owner = owner
         self.tags = set()
         self.rotation = 0.0
@@ -36,6 +37,10 @@ class Shape(serializedobject.SerializedObject):
             last_point = point
 
         return axes
+
+
+    def update(self):
+        pass
 
 
     def project_onto_axis(self, pos_override, axis):
