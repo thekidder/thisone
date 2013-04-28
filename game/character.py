@@ -261,7 +261,7 @@ class CharacterRenderable(object):
 
 
 class MeleeEnemyRenderable(CharacterRenderable):
-    sprite_name = 'test'
+    sprite_name = 'enemy_1'
     def __init__(self, batch, character):
         super(MeleeEnemyRenderable, self).__init__(batch, character, self.sprite_name)
 
