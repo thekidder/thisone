@@ -104,13 +104,14 @@ class CollidableCharacter(Character):
 
 
 class GirlCharacter(CollidableCharacter):
+    max_health = 80.0
     regen_delay = 2
-    regen_rate = 3 # units/sec
+    regen_rate = 30 # units/sec
     def __init__(self, inputs, collision_detector):
         super(GirlCharacter, self).__init__(collision_detector)
 
         self.inputs = inputs
-        self.health = 40.0
+        self.health = 10.0
         self.last_hit = 0
 
 
@@ -118,6 +119,10 @@ class GirlCharacter(CollidableCharacter):
         # move to new position
         direction = Vector(self.inputs.leftright * 100, self.inputs.updown * 100)
         super(GirlCharacter, self).update(t, dt, direction, collision_detector)
+
+        if t - self.last_hit > self.regen_delay:
+            self.health += self.regen_rate * dt
+            self.health = min(self.max_health, self.health)
 
 
     def damage(self, t, amount):
@@ -215,7 +220,27 @@ class GirlRenderable(CharacterRenderable):
     sprite_name = 'girl'
     def __init__(self, batch, character):
         super(GirlRenderable, self).__init__(batch, character, self.sprite_name)
+        self.last_blink = 0
+        self.frame = 0
 
 
     def update(self, t, dt):
         super(GirlRenderable, self).update(t, dt)
+
+        if self.character.max_health - self.character.health < 10.1:
+            self.frame = 0
+        else:
+            self.last_blink += dt
+
+            blink_time = 0.4 * (1.0 - (self.character.max_health - self.character.health) / 80.0)
+
+            if self.last_blink > blink_time:
+                self.last_blink = 0
+                self.frame += 1
+                if self.frame == 2:
+                    self.frame = 0
+
+        if self.frame == 1:
+            self.sprites[self.last_sprite_index].color = (255, 128, 128)
+        else:
+            self.sprites[self.last_sprite_index].color = (255, 255, 255)
