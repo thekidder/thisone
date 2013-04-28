@@ -1,18 +1,14 @@
 import logging
 import math
 
-import pyglet.sprite
-
 import data.animations
-import imagecache
 import kidgine.collision.rectangle
 import kidgine.collision.shape
-import kidgine.utils
-import sprite
-import utils
 import kidgine.math.vector
-from kidgine.math.vector import Vector
+import kidgine.utils
+import renderables
 from collision import Tags
+from kidgine.math.vector import Vector
 
 
 logger = logging.getLogger(__name__)
@@ -30,7 +26,7 @@ class Character(object):
         self.moving = False
         self.time_to_idle = self.idle_delay
         self.idle = False
-        self.idle_time = data.animations.animation_duration(self.renderable_type().sprite_name + '_idle')
+        self.idle_time = data.animations.animation_duration(self.renderable_type.sprite_name + '_idle')
 
 
     def update(self, t, dt, direction):
@@ -70,6 +66,13 @@ class Character(object):
                 else:
                     self.idle = True
                     self.time_to_idle = self.idle_time
+
+
+    def create_renderable(self):
+        def wrapped(batch):
+            return self.renderable_type(batch, self)
+        return wrapped
+
 
 
 class CollidableCharacter(Character):
@@ -115,16 +118,6 @@ class CollidableCharacter(Character):
                     normal += c.translation_vector
             self.position = candidate_pos + normal
 
-        # if self.moving:
-        #     # resolve collision
-        #     collision = collision_detector.can_move_to(self.token, self.position)
-        #     if collision is not None:
-        #         if Tags.MOVEABLE in collision.shape2.tags:
-        #             self.position += 0.20 * collision.translation_vector
-        #             if collision_detector.collides(token=collision.token2, filters=self.environment_filters) is None:
-        #                 collision.shape2.owner.position -= 0.25 * collision.translation_vector
-        #         else:
-        #             self.position += collision.translation_vector
         collision_detector.update_collidable(self.token, self.collidable)
 
 
@@ -132,6 +125,8 @@ class GirlCharacter(CollidableCharacter):
     max_health = 80.0
     regen_delay = 2
     regen_rate = 30 # units/sec
+    renderable_type = renderables.GirlRenderable
+
     def __init__(self, inputs, collision_detector):
         super(GirlCharacter, self).__init__(collision_detector)
 
@@ -144,7 +139,8 @@ class GirlCharacter(CollidableCharacter):
 
     def update(self, t, dt, collision_detector):
         # move to new position
-        direction = Vector(self.inputs.leftright * 100, self.inputs.updown * 100)
+        direction = Vector(self.inputs.leftright, self.inputs.updown)
+        direction = direction.normalized() * 140.0
         super(GirlCharacter, self).update(t, dt, direction, collision_detector)
 
         if t - self.last_hit > self.regen_delay:
@@ -157,14 +153,11 @@ class GirlCharacter(CollidableCharacter):
         self.health = max(0, self.health - amount)
 
 
-    def renderable_type(self):
-        return GirlRenderable
-
-
 class MeleeEnemy(CollidableCharacter):
     player_filter = set([Tags.PLAYER])
     damage_delay = 0.5
     max_health = 80.0
+    renderable_type = renderables.MeleeEnemyRenderable
 
     def __init__(self, target, collision_detector):
         super(MeleeEnemy, self).__init__(collision_detector)
@@ -199,116 +192,3 @@ class MeleeEnemy(CollidableCharacter):
             self.do_damage(t, collision)
 
         super(MeleeEnemy, self).update(t, dt, direction, collision_detector)
-
-
-    def renderable_type(self):
-        return MeleeEnemyRenderable
-
-
-class CharacterRenderable(object):
-    def __init__(self, batch, character, sprite_base):
-        self.character = character
-        self.last_sprite_index = 0
-
-        self.sprites = list()
-        # 0-3 : left,right,top,bottom
-        # 4-7 : walk; left,right,top,bottom
-        # 8   : idle
-
-        # stationary
-        self.sprites.append(pyglet.sprite.Sprite(imagecache.get_sprite(sprite_base + '_left'), batch = batch))
-        self.sprites.append(pyglet.sprite.Sprite(imagecache.get_sprite(sprite_base + '_right'), batch = batch))
-        self.sprites.append(pyglet.sprite.Sprite(imagecache.get_sprite(sprite_base + '_top'), batch = batch))
-        self.sprites.append(pyglet.sprite.Sprite(imagecache.get_sprite(sprite_base + '_bottom'), batch = batch))
-
-        # walk
-        self.sprites.append(sprite.AnimatedSprite(imagecache.get_animation(sprite_base + '_walk_left'),
-                                                  batch = batch))
-        self.sprites.append(sprite.AnimatedSprite(imagecache.get_animation(sprite_base + '_walk_right'),
-                                                  batch = batch))
-        self.sprites.append(sprite.AnimatedSprite(imagecache.get_animation(sprite_base + '_walk_top'),
-                                                  batch = batch))
-        self.sprites.append(sprite.AnimatedSprite(imagecache.get_animation(sprite_base + '_walk_bottom'),
-                                                  batch = batch))
-
-        #idle
-        self.sprites.append(sprite.AnimatedSprite(imagecache.get_animation(sprite_base + '_idle'), batch = batch))
-
-
-    def update(self, t, dt):
-        if self.character.idle:
-            used_sprite_index = 8
-        else:
-            used_sprite_index = self.character.facing
-            if self.character.moving:
-                used_sprite_index += 4
-
-        if used_sprite_index != self.last_sprite_index:
-            new = self.sprites[used_sprite_index]
-            if isinstance(new, sprite.AnimatedSprite):
-                new.set_frame(0)
-                new.play()
-
-            self.last_sprite_index = used_sprite_index
-
-        for i,s in enumerate(self.sprites):
-            s.visible = (used_sprite_index == i)
-
-        utils.set_sprite_pos(self.sprites[used_sprite_index], self.character.position)
-
-
-    def delete(self):
-        for i in self.sprites:
-            i.delete()
-
-
-class BlinkOnDamage(object):
-    def __init__(self, parent):
-        self.last_blink = 0
-        self.frame = 0
-        self.parent = parent
-
-
-    def update(self, t, dt):
-        if self.parent.character.max_health - self.parent.character.health < 10.1:
-            self.frame = 0
-        else:
-            self.last_blink += dt
-
-            blink_time = 0.4 * (1.0 - (self.parent.character.max_health - self.parent.character.health) /
-                                self.parent.character.max_health)
-
-            if self.last_blink > blink_time:
-                self.last_blink = 0
-                self.frame += 1
-                if self.frame == 2:
-                    self.frame = 0
-
-        if self.frame == 1:
-            self.parent.sprites[self.parent.last_sprite_index].color = (255, 128, 128)
-        else:
-            self.parent.sprites[self.parent.last_sprite_index].color = (255, 255, 255)
-
-
-class MeleeEnemyRenderable(CharacterRenderable):
-    sprite_name = 'enemy_1'
-    def __init__(self, batch, character):
-        super(MeleeEnemyRenderable, self).__init__(batch, character, self.sprite_name)
-        self.blinker = BlinkOnDamage(self)
-
-
-    def update(self, t, dt):
-        super(MeleeEnemyRenderable, self).update(t, dt)
-        self.blinker.update(t, dt)
-
-
-class GirlRenderable(CharacterRenderable):
-    sprite_name = 'girl'
-    def __init__(self, batch, character):
-        super(GirlRenderable, self).__init__(batch, character, self.sprite_name)
-        self.blinker = BlinkOnDamage(self)
-
-
-    def update(self, t, dt):
-        super(GirlRenderable, self).update(t, dt)
-        self.blinker.update(t, dt)

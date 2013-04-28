@@ -33,22 +33,10 @@ class Scene(object):
             c.shape1.owner.collides(t, c.shape2)
             c.shape2.owner.collides(t, c.shape1)
 
-            #c1 = c.shape1.transformed_point(kidgine.math.vector.constant_zero)
-            #c2 = c.shape2.transformed_point(kidgine.math.vector.constant_zero)
-
-            #separation = c2 - c1
-            #force = 1.0 / separation.magnitude_sqr() * c.translation_vector.normalized()
-
             force = c.translation_vector * 0.4
-
-            #force = c.translation_vector * c.translation_vector * 0.1
-
-            #logger.info('force v = {}'.format(force))
 
             self._add_force(c.shape1.owner, c.shape1.tags, force)
             self._add_force(c.shape2.owner, c.shape2.tags, -force)
-            #logger.info('{} -> {}: apply {}'.format(c.shape1.owner.position,c.shape2.owner.position, force))
-            #logger.info('({}, {}) with ({}, {})'.format(c.token1, c.shape1, c.token2, c.shape2))
 
         for obj in self.updatables:
             obj.update(t, dt, self._collision_detector)
@@ -75,12 +63,12 @@ class Scene(object):
 
     def remove_character(self, c):
         self.updatables.remove(c)
-        self.drawable.remove_character(c)
+        self.drawable.remove_renderable(c)
 
 
     def add_character(self, c):
         self.updatables.add(c)
-        self.drawable.add_character(c)
+        self.drawable.add_renderable(c)
 
 
 class CombatScene(Scene):
@@ -103,7 +91,6 @@ class CombatScene(Scene):
     def update(self, t, dt):
         self._inputs.update(self.drawable.keystate)
         super(CombatScene, self).update(t, dt)
-
 
         if self.player_character and self.player_character.health == 0.0:
             self.remove_character(self.player_character)

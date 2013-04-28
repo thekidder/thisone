@@ -18,16 +18,19 @@ class SceneRenderer(object):
 
         self.level = level
         self.batch = pyglet.graphics.Batch()
+        self.player_character = None
 
         def camera_anchor():
+            if self.player_character is None:
+                return kidgine.math.vector.Vector(32*10, 32*10)
             return self.player_character.position
         self.camera = kidgine.renderer.camera.CenteredCamera(camera_anchor, kidgine.math.vector.Vector(1, 1))
 
-        self.characters = dict()
+        self.renderables = dict()
 
 
     def draw(self, t, dt, window):
-        for i in self.characters.itervalues():
+        for i in self.renderables.itervalues():
             i.update(t, dt)
 
         self.camera.apply()
@@ -46,16 +49,16 @@ class SceneRenderer(object):
         self.camera.window_size = kidgine.math.vector.Vector(width, height)
 
 
-    def add_character(self, c):
-        if len(self.characters) == 0:
-            self.player_character = c
-        self.characters[c] = c.renderable_type()(self.batch, c)
+    def add_renderable(self, d):
+        if len(self.renderables) == 0:
+            self.player_character = d
+        self.renderables[d] = d.create_renderable()(self.batch)
 
 
-    def remove_character(self, character):
-        c = self.characters[character]
-        c.delete()
-        del self.characters[character]
+    def remove_renderable(self, object):
+        r = self.renderables[object]
+        r.delete()
+        del self.renderables[object]
 
 
     def on_key_press(self, symbol, modifiers):
