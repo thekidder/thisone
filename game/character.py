@@ -6,7 +6,7 @@ import kidgine.collision.rectangle
 import kidgine.collision.shape
 import kidgine.math.vector
 import kidgine.utils
-import renderables
+import renderable
 from collision import Tags
 from kidgine.math.vector import Vector
 
@@ -27,6 +27,7 @@ class Character(object):
         self.time_to_idle = self.idle_delay
         self.idle = False
         self.idle_time = data.animations.animation_duration(self.renderable_type.sprite_name + '_idle')
+        self.health = self.max_health
 
 
     def update(self, t, dt, direction):
@@ -46,6 +47,10 @@ class Character(object):
             self.moving = False
 
         self.update_idle(t, dt)
+
+
+    def alive(self):
+        return self.health > 0.0
 
 
     def collides(self, t, shape):
@@ -125,13 +130,12 @@ class GirlCharacter(CollidableCharacter):
     max_health = 80.0
     regen_delay = 2
     regen_rate = 30 # units/sec
-    renderable_type = renderables.GirlRenderable
+    renderable_type = renderable.GirlRenderable
 
     def __init__(self, inputs, collision_detector):
         super(GirlCharacter, self).__init__(collision_detector)
 
         self.inputs = inputs
-        self.health = 80.0
         self.last_hit = 0
 
         self.collidable.tags = set([kidgine.collision.shape.tags.IMPEEDS_MOVEMENT, Tags.PLAYER, Tags.MOVEABLE])
@@ -157,14 +161,13 @@ class MeleeEnemy(CollidableCharacter):
     player_filter = set([Tags.PLAYER])
     damage_delay = 0.5
     max_health = 80.0
-    renderable_type = renderables.MeleeEnemyRenderable
+    renderable_type = renderable.MeleeEnemyRenderable
 
     def __init__(self, target, collision_detector):
         super(MeleeEnemy, self).__init__(collision_detector)
         self.target = target
         self.collidable.tags = set([kidgine.collision.shape.tags.IMPEEDS_MOVEMENT, Tags.MOVEABLE, Tags.ENEMY])
         self.last_damage_time = 0
-        self.health = self.max_health
 
 
     def collides(self, t, shape):

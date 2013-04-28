@@ -5,6 +5,17 @@ import sprite
 import utils
 
 
+class StaticSpriteRenderable(object):
+    def __init__(self, batch, parent, image):
+        self.sprite = pyglet.sprite.Sprite(imagecache.get_sprite(image), batch = batch)
+        self.parent = parent
+
+
+    def update(self):
+        utils.set_sprite_pos(self.sprite, self.parent.position)
+
+
+
 class CharacterRenderable(object):
     def __init__(self, batch, character, sprite_base):
         self.character = character
