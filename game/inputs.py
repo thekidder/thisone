@@ -3,20 +3,30 @@ from pyglet.window import key
 
 class Inputs(object):
     # WASD by default
-    up_key     = key.W
-    left_key   = key.A
-    down_key   = key.S
-    right_key  = key.D
+    up_key            = key.UP
+    left_key          = key.LEFT
+    down_key          = key.DOWN
+    right_key         = key.RIGHT
+
+    ability_one_key   = key.A
+    ability_two_key   = key.S
+    ability_three_key = key.D
+    ability_four_key  = key.F
 
     def __init__(self):
         self._reset()
 
 
     def _reset(self):
-        self.up = False
-        self.down = False
-        self.left = False
+        self.up    = False
+        self.down  = False
+        self.left  = False
         self.right = False
+
+        self.one   = False
+        self.two   = False
+        self.three = False
+        self.four  = False
 
         self.updown = 0
         self.leftright = 0
@@ -35,6 +45,15 @@ class Inputs(object):
             self.left = True
         elif keys[self.right_key] and not keys[self.left_key]:
             self.right = True
+
+        if keys[self.ability_one_key]:
+            self.one = True
+        if keys[self.ability_two_key]:
+            self.two = True
+        if keys[self.ability_three_key]:
+            self.three = True
+        if keys[self.ability_four_key]:
+            self.four = True
 
         if self.up:
             self.updown = 1

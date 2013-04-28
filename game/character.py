@@ -164,12 +164,14 @@ class GirlCharacter(CollidableCharacter):
 class MeleeEnemy(CollidableCharacter):
     player_filter = set([Tags.PLAYER])
     damage_delay = 0.5
+    max_health = 80.0
 
     def __init__(self, target, collision_detector):
         super(MeleeEnemy, self).__init__(collision_detector)
         self.target = target
         self.collidable.tags = set([kidgine.collision.shape.tags.IMPEEDS_MOVEMENT, Tags.MOVEABLE, Tags.ENEMY])
         self.last_damage_time = 0
+        self.health = self.max_health
 
 
     def collides(self, t, shape):
@@ -260,29 +262,21 @@ class CharacterRenderable(object):
             i.delete()
 
 
-class MeleeEnemyRenderable(CharacterRenderable):
-    sprite_name = 'enemy_1'
-    def __init__(self, batch, character):
-        super(MeleeEnemyRenderable, self).__init__(batch, character, self.sprite_name)
-
-
-class GirlRenderable(CharacterRenderable):
-    sprite_name = 'girl'
-    def __init__(self, batch, character):
-        super(GirlRenderable, self).__init__(batch, character, self.sprite_name)
+class BlinkOnDamage(object):
+    def __init__(self, parent):
         self.last_blink = 0
         self.frame = 0
+        self.parent = parent
 
 
     def update(self, t, dt):
-        super(GirlRenderable, self).update(t, dt)
-
-        if self.character.max_health - self.character.health < 10.1:
+        if self.parent.character.max_health - self.parent.character.health < 10.1:
             self.frame = 0
         else:
             self.last_blink += dt
 
-            blink_time = 0.4 * (1.0 - (self.character.max_health - self.character.health) / 80.0)
+            blink_time = 0.4 * (1.0 - (self.parent.character.max_health - self.parent.character.health) /
+                                self.parent.character.max_health)
 
             if self.last_blink > blink_time:
                 self.last_blink = 0
@@ -291,6 +285,30 @@ class GirlRenderable(CharacterRenderable):
                     self.frame = 0
 
         if self.frame == 1:
-            self.sprites[self.last_sprite_index].color = (255, 128, 128)
+            self.parent.sprites[self.parent.last_sprite_index].color = (255, 128, 128)
         else:
-            self.sprites[self.last_sprite_index].color = (255, 255, 255)
+            self.parent.sprites[self.parent.last_sprite_index].color = (255, 255, 255)
+
+
+class MeleeEnemyRenderable(CharacterRenderable):
+    sprite_name = 'enemy_1'
+    def __init__(self, batch, character):
+        super(MeleeEnemyRenderable, self).__init__(batch, character, self.sprite_name)
+        self.blinker = BlinkOnDamage(self)
+
+
+    def update(self, t, dt):
+        super(MeleeEnemyRenderable, self).update(t, dt)
+        self.blinker.update(t, dt)
+
+
+class GirlRenderable(CharacterRenderable):
+    sprite_name = 'girl'
+    def __init__(self, batch, character):
+        super(GirlRenderable, self).__init__(batch, character, self.sprite_name)
+        self.blinker = BlinkOnDamage(self)
+
+
+    def update(self, t, dt):
+        super(GirlRenderable, self).update(t, dt)
+        self.blinker.update(t, dt)
