@@ -29,7 +29,7 @@ class Character(object):
         self.moving = False
         self.time_to_idle = self.idle_delay
         self.idle = False
-        self.idle_time = data.animations.animation_duration(self.get_sprite_name() + '_idle')
+        self.idle_time = data.animations.animation_duration(self.renderable_type().sprite_name + '_idle')
 
 
     def update(self, t, dt, direction):
@@ -69,6 +69,85 @@ class Character(object):
                     self.time_to_idle = self.idle_time
 
 
+class CollidableCharacter(Character):
+    counter = 0
+    environment_filters = set([Tags.ENVIRONMENT, kidgine.collision.shape.tags.IMPEEDS_MOVEMENT])
+
+    def __init__(self, collision_detector):
+        super(CollidableCharacter, self).__init__()
+
+        tl = Vector(-16,   0)
+        br = Vector( 16,  32)
+
+        self.token = 'character{}'.format(CollidableCharacter.counter)
+        CollidableCharacter.counter += 1
+        self.collidable = kidgine.collision.rectangle.Rectangle(self, tl, br)
+        self.collidable.tags = set([kidgine.collision.shape.tags.IMPEEDS_MOVEMENT])
+
+        collision_detector.update_collidable(self.token, self.collidable)
+
+
+    def update(self, t, dt, direction, collision_detector):
+        super(CollidableCharacter, self).update(t, dt, direction)
+
+        if self.moving:
+            # resolve collision
+            collision = collision_detector.can_move_to(self.token, self.position)
+            if collision is not None:
+                if Tags.MOVEABLE in collision.shape2.tags:
+                    self.position += 0.20 * collision.translation_vector
+                    if collision_detector.collides(token=collision.token2, filters=self.environment_filters) is None:
+                        collision.shape2.owner.position -= 0.25 * collision.translation_vector
+                else:
+                    self.position += collision.translation_vector
+            collision_detector.update_collidable(self.token, self.collidable)
+
+
+class GirlCharacter(CollidableCharacter):
+    regen_delay = 2
+    regen_rate = 3 # units/sec
+    def __init__(self, inputs, collision_detector):
+        super(GirlCharacter, self).__init__(collision_detector)
+
+        self.inputs = inputs
+        self.health = 40.0
+        self.last_hit = 0
+
+
+    def update(self, t, dt, collision_detector):
+        # move to new position
+        direction = Vector(self.inputs.leftright * 100, self.inputs.updown * 100)
+        super(GirlCharacter, self).update(t, dt, direction, collision_detector)
+
+
+    def damage(self, t, amount):
+        self.last_hit = t
+        self.health = max(0, self.health - amount)
+
+
+    def renderable_type(self):
+        return GirlRenderable
+
+
+class MeleeEnemy(CollidableCharacter):
+    def __init__(self, target, collision_detector):
+        super(MeleeEnemy, self).__init__(collision_detector)
+        self.target = target
+        self.collidable.tags = set([kidgine.collision.shape.tags.IMPEEDS_MOVEMENT])
+        self.collidable.tags.add(Tags.MOVEABLE)
+
+
+    def update(self, t, dt, collision_detector):
+        direction = (self.target.position - self.position).normalized()
+        direction *= 90
+
+        super(MeleeEnemy, self).update(t, dt, direction, collision_detector)
+
+
+    def renderable_type(self):
+        return MeleeEnemyRenderable
+
+
 class CharacterRenderable(object):
     def __init__(self, batch, character, sprite_base):
         self.character = character
@@ -99,8 +178,7 @@ class CharacterRenderable(object):
         self.sprites.append(sprite.AnimatedSprite(imagecache.get_animation(sprite_base + '_idle'), batch = batch))
 
 
-
-    def update(self):
+    def update(self, t, dt):
         if self.character.idle:
             used_sprite_index = 8
         else:
@@ -127,72 +205,17 @@ class CharacterRenderable(object):
             self.sprites.delete()
 
 
-class CollidableCharacter(Character):
-    counter = 0
-    environment_filters = set([Tags.ENVIRONMENT, kidgine.collision.shape.tags.IMPEEDS_MOVEMENT])
-
-    def __init__(self, collision_detector):
-        super(CollidableCharacter, self).__init__()
-
-        tl = Vector(-16,   0)
-        br = Vector( 16,  32)
-
-        self.token = 'character{}'.format(CollidableCharacter.counter)
-        CollidableCharacter.counter += 1
-        self.collidable = kidgine.collision.rectangle.Rectangle(self, tl, br)
-        self.collidable.tags = set([kidgine.collision.shape.tags.IMPEEDS_MOVEMENT])
-
-        collision_detector.update_collidable(self.token, self.collidable)
+class MeleeEnemyRenderable(CharacterRenderable):
+    sprite_name = 'test'
+    def __init__(self, batch, character):
+        super(MeleeEnemyRenderable, self).__init__(batch, character, self.sprite_name)
 
 
-    def update(self, t, dt, direction, collision_detector):
-        super(CollidableCharacter, self).update(t, dt, direction)
-
-        if self.moving:
-            # resolve collision
-            collision = collision_detector.can_move_to(self.token, self.position)
-            if collision is not None:
-                if Tags.MOVEABLE in collision.shape2.tags:
-                    self.position += 0.25 * collision.translation_vector
-                    if collision_detector.collides(token=collision.token2, filters=self.environment_filters) is None:
-                        collision.shape2.owner.position -= 0.25 * collision.translation_vector
-                else:
-                    self.position += collision.translation_vector
-            collision_detector.update_collidable(self.token, self.collidable)
+class GirlRenderable(CharacterRenderable):
+    sprite_name = 'girl'
+    def __init__(self, batch, character):
+        super(GirlRenderable, self).__init__(batch, character, self.sprite_name)
 
 
-
-class GirlCharacter(CollidableCharacter):
-    def __init__(self, inputs, collision_detector):
-        super(GirlCharacter, self).__init__(collision_detector)
-
-        self.inputs = inputs
-
-
-    def update(self, t, dt, collision_detector):
-        # move to new position
-        direction = Vector(self.inputs.leftright * 100, self.inputs.updown * 100)
-        super(GirlCharacter, self).update(t, dt, direction, collision_detector)
-
-
-    def get_sprite_name(self):
-        return 'girl'
-
-
-class MeleeEnemy(CollidableCharacter):
-    def __init__(self, target, collision_detector):
-        super(MeleeEnemy, self).__init__(collision_detector)
-        self.target = target
-        self.collidable.tags = set([kidgine.collision.shape.tags.IMPEEDS_MOVEMENT])
-        self.collidable.tags.add(Tags.MOVEABLE)
-
-
-    def update(self, t, dt, collision_detector):
-        direction = (self.target.position - self.position).normalized()
-        direction *= 90
-
-        super(MeleeEnemy, self).update(t, dt, direction, collision_detector)
-
-
-    def get_sprite_name(self):
-        return 'test'
+    def update(self, t, dt):
+        super(GirlRenderable, self).update(t, dt)

@@ -33,7 +33,7 @@ class Game(object):
             self._accumulator -= self.FRAME_TIME
             self._gametime += self.FRAME_TIME
 
-        self._renderer.on_draw()
+        self._renderer.on_draw(self._gametime, self.FRAME_TIME)
 
 
     def update(self, t, dt):

@@ -8,6 +8,6 @@ class DebugOverlay(object):
         self._clock = pyglet.clock.ClockDisplay()
 
 
-    def draw(self, window):
+    def draw(self, t, dt, window):
         kidgine.renderer.utils.screen_projection(window)
         self._clock.draw()

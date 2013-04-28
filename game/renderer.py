@@ -26,9 +26,9 @@ class SceneRenderer(object):
         self.characters = set()
 
 
-    def draw(self, window):
+    def draw(self, t, dt, window):
         for i in self.characters:
-            i.update()
+            i.update(t, dt)
 
         self.camera.apply()
 
@@ -49,7 +49,7 @@ class SceneRenderer(object):
     def add_character(self, c):
         if len(self.characters) == 0:
             self.player_character = c
-        self.characters.add(character.CharacterRenderable(self.batch, c, c.get_sprite_name()))
+        self.characters.add(c.renderable_type()(self.batch, c))
 
 
     def remove_character(self, character):

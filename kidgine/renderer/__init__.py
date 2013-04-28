@@ -66,11 +66,11 @@ class Renderer(object):
                 del self.drawables[index]
 
 
-    def on_draw(self):
+    def on_draw(self, t, dt):
         self._window.clear()
 
         for order,drawable in self.drawables:
-            drawable.draw(self._window)
+            drawable.draw(t, dt, self._window)
 
         self._window.flip()
 
