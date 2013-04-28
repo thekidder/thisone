@@ -1,4 +1,5 @@
 import logging
+import random
 
 import character
 import inputs
@@ -85,14 +86,7 @@ class CombatScene(Scene):
         self._inputs = inputs.Inputs()
 
         self.player_character = character.GirlCharacter(self._inputs, self._collision_detector)
-        self.player_character.position = Vector(32 * 10, 32 * 10)
-
         self.add_updatable(self.player_character)
-
-        for i in xrange(5):
-            enemy = character.MeleeEnemy(self.player_character, self._collision_detector)
-            enemy.position = Vector(32 * (1 + i), 32 * (1 + i))
-            self.add_updatable(enemy)
 
 
     def update(self, t, dt):
@@ -109,6 +103,21 @@ class CombatScene(Scene):
                 self.player_character = None
 
             self.remove_updatable(obj)
+
+
+    def spawn_wave(self, position, enemy_type, num_enemies):
+        for i in xrange(num_enemies):
+            enemy = enemy_type(self.player_character, self._collision_detector)
+            enemy.position = position + Vector(random.uniform(-128,128), random.uniform(-128,128))
+            self.add_updatable(enemy)
+
+
+class ActOne(CombatScene):
+    def __init__(self):
+        super(ActOne, self).__init__('data/levels/act_one.json')
+        self.player_character.position = Vector(32 * 10, 32 * 100)
+
+        self.spawn_wave(Vector(10 * 32, 80 * 32), character.MeleeEnemy, 6)
 
 
 class Cutscene(object):
