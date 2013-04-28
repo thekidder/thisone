@@ -40,10 +40,16 @@ class Vector(object):#serializedobject.SerializedObject):
         try:
             return Vector(self.x + x.x, self.y + x.y)
         except AttributeError:
-            return Vector(x + self.x, x + self.y)
-        #return self._do_operation(operator.add, x)
+            return Vector(self.x + x[0], self.y + x[1])
+
 
     __radd__ = __add__
+
+
+    def __iadd__(self, x):
+        self.x += x.x
+        self.y += x.y
+        return self
 
 
     def __sub__(self, x):
