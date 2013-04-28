@@ -3,7 +3,7 @@ from ..math import vector
 
 
 class Rectangle(shape.Shape):
-    _SERIALIZED_MEMBERS = shape.Shape._SERIALIZED_MEMBERS
+#    _SERIALIZED_MEMBERS = shape.Shape._SERIALIZED_MEMBERS
 
     def __init__(self, owner, tl, br, center = None):
         super(Rectangle, self).__init__(owner)

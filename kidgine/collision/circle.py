@@ -4,9 +4,9 @@ from ..net import serializedobject
 
 
 class Circle(shape.Shape):
-    _SERIALIZED_MEMBERS = shape.Shape._SERIALIZED_MEMBERS.copy()
-    _SERIALIZED_MEMBERS.update({
-            'radius' : serializedobject.float })
+#    _SERIALIZED_MEMBERS = shape.Shape._SERIALIZED_MEMBERS.copy()
+#    _SERIALIZED_MEMBERS.update({
+#            'radius' : serializedobject.float })
 
     def __init__(self, owner=None, position=vector.zero(), radius=1):
         super(Circle, self).__init__(owner)

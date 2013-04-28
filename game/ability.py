@@ -42,7 +42,7 @@ class TimedAbility(object):
     def update(self, t, dt, collision_detector):
         self.time_left -= dt
 
-        if self.pulse and t - self.last_trigger_time > self.pulse_rate:
+        if not self.pulse or t - self.last_trigger_time > self.pulse_rate:
             self.last_trigger_time = t
             all = collision_detector.collides(token=self.token,
                                               filters=self.filter)

@@ -86,12 +86,10 @@ class SpatialHash(object):
             old = self.collidables[token]
             del self.hash[old.index][token]
 
-        #collidable.update()
+        collidable.update()
         info = SpatialHash._Info(collidable)
         if info.index not in self.hash:
-            #logger.info('adding info at {}'.format(info.index))
             self.hash[info.index] = dict()
-        #logger.info('adding {} {} to {}'.format(token,collidable, info.index))
         self.collidables[token] = info
         self.hash[info.index][token] = info
 
