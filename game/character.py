@@ -34,7 +34,6 @@ class Character(object):
 
     def update(self, t, dt, direction):
         if direction.magnitude_sqr() > 0.1:
-            self.position += dt * direction
             self.moving = True
             if math.fabs(direction.x) > math.fabs(direction.y):
                 if direction.x > 0:
@@ -86,21 +85,40 @@ class CollidableCharacter(Character):
 
         collision_detector.update_collidable(self.token, self.collidable)
 
+        self.forces = Vector()
+
+
+    def apply_force(self, force):
+        self.forces += force
+
 
     def update(self, t, dt, direction, collision_detector):
         super(CollidableCharacter, self).update(t, dt, direction)
+        candidate_pos = self.position + direction * dt + self.forces
 
-        if self.moving:
-            # resolve collision
-            collision = collision_detector.can_move_to(self.token, self.position)
-            if collision is not None:
-                if Tags.MOVEABLE in collision.shape2.tags:
-                    self.position += 0.20 * collision.translation_vector
-                    if collision_detector.collides(token=collision.token2, filters=self.environment_filters) is None:
-                        collision.shape2.owner.position -= 0.25 * collision.translation_vector
-                else:
-                    self.position += collision.translation_vector
-            collision_detector.update_collidable(self.token, self.collidable)
+        all = collision_detector.collides(token=self.token, position = candidate_pos,
+                                          filters=self.environment_filters)
+        if len(all) == 0:
+            self.position = candidate_pos
+        else:
+            normal = Vector()
+            for c in all:
+                if normal.dot(c.translation_vector) == 0:
+                    normal += c.translation_vector
+            self.position = candidate_pos + normal
+
+        # if self.moving:
+        #     # resolve collision
+        #     collision = collision_detector.can_move_to(self.token, self.position)
+        #     if collision is not None:
+        #         if Tags.MOVEABLE in collision.shape2.tags:
+        #             self.position += 0.20 * collision.translation_vector
+        #             if collision_detector.collides(token=collision.token2, filters=self.environment_filters) is None:
+        #                 collision.shape2.owner.position -= 0.25 * collision.translation_vector
+        #         else:
+        #             self.position += collision.translation_vector
+        collision_detector.update_collidable(self.token, self.collidable)
+        self.forces = Vector()
 
 
 class GirlCharacter(CollidableCharacter):
@@ -114,8 +132,7 @@ class GirlCharacter(CollidableCharacter):
         self.health = 10.0
         self.last_hit = 0
 
-        self.collidable.tags = set([kidgine.collision.shape.tags.IMPEEDS_MOVEMENT])
-        self.collidable.tags.add(Tags.PLAYER)
+        self.collidable.tags = set([kidgine.collision.shape.tags.IMPEEDS_MOVEMENT, Tags.PLAYER, Tags.MOVEABLE])
 
 
     def update(self, t, dt, collision_detector):
@@ -143,8 +160,7 @@ class MeleeEnemy(CollidableCharacter):
     def __init__(self, target, collision_detector):
         super(MeleeEnemy, self).__init__(collision_detector)
         self.target = target
-        self.collidable.tags = set([kidgine.collision.shape.tags.IMPEEDS_MOVEMENT])
-        self.collidable.tags.add(Tags.MOVEABLE)
+        self.collidable.tags = set([kidgine.collision.shape.tags.IMPEEDS_MOVEMENT, Tags.MOVEABLE])
 
 
     def do_damage(self, t, collision):

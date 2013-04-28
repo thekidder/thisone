@@ -68,6 +68,10 @@ class Vector(serializedobject.SerializedObject):
         return "(" + str(self.x) + ", " + str(self.y) + ")"
 
 
+    def dot(self, v):
+        return self.x * v.x + self.y * v.y
+
+
     def distance_sqr(self, v):
         d = self - v
         return d.x * d.x + d.y * d.y

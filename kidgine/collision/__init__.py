@@ -1,3 +1,4 @@
+import itertools
 import logging
 
 import shape
@@ -99,12 +100,23 @@ class SpatialHash(object):
         del self.collidables[token]
 
 
+    def all_potential_collidables(self):
+        for index,bucket in self.hash.iteritems():
+            adjacent = (
+                index,
+                (index[0] + 1, index[1] - 1),
+                (index[0] + 1, index[1]    ),
+                (index[0] + 1, index[1] + 1),
+                (index[0]    , index[1] + 1))
+            for index in adjacent:
+                if index in self.hash:
+                    for a,b in itertools.product(bucket.iteritems(), self.hash[index].iteritems()):
+                        yield a,b
+
+
     def potential_collidables(self, token=None, collidable=None, new_pos=None):
         if token is not None and collidable is not None:
             raise RuntimeError('may pass in token or collidable but not both')
-
-        #for k,v in self.hash.iteritems():
-        #    logger.info('{} at {}'.format(len(v), k))
 
         if new_pos is None:
             if token is not None:
@@ -220,6 +232,37 @@ class CollisionDetector(object):
         return collision
 
 
+    def all_collisions(self, filters = set()):
+        for a,b in self._all_broad_phase(filters):
+            c = self._single_narrow_phase(a[0], a[1].collidable, b[0], b[1].collidable)
+            if c is not None:
+                yield c
+
+
+    def _all_broad_phase(self, filters):
+        for a,b in self.spatial_hash.all_potential_collidables():
+
+            a_token,a_info = a
+            b_token,b_info = b
+
+            if (not filters.issubset(a_info.collidable.tags)
+                and not filters.issubset(b_info.collidable.tags)):
+                continue
+
+            if a_info.collidable.owner == b_info.collidable.owner:
+                continue
+
+            if a_token == b_token:
+                continue
+
+            self.broad_phase_checks += 1
+
+            a_pos = a_info.collidable.transformed_point(vector.constant_zero)
+            b_pos = b_info.collidable.transformed_point(vector.constant_zero)
+            if(a_pos.closer_than(b_pos, 2 * SpatialHash.GRID_SIZE)):
+                yield a,b
+
+
     def _broad_phase(self, token=None, collidable=None, new_pos=None, filters=None):
         """return a list of potentially-colliding objects"""
 
@@ -229,8 +272,6 @@ class CollisionDetector(object):
                 new_pos = collidable.owner.position
             elif token is not None:
                 new_pos = self.spatial_hash.get(token).owner.position
-
-        #logger.info('looking for collision from {} at {}'.format(token, new_pos))
 
         all = list()
         potential = self.spatial_hash.potential_collidables(
@@ -258,11 +299,28 @@ class CollisionDetector(object):
         return all
 
 
+    def _single_narrow_phase(self, a_token, a_collidable, b_token, b_collidable):
+        self.narrow_phase_checks += 1
+
+        collision_info = collides(a_collidable, b_collidable)
+        if collision_info is not None:
+            collision_info.token1 = a_token
+            collision_info.token2 = b_token
+            return collision_info
+
+        return None
+
+
+
     def _narrow_phase(self, token=None, collidable=None, new_pos=None, collidable_list=None):
         if collidable is None:
             collidable = self.spatial_hash.get(token)
 
         self.narrow_phase_checks += len(collidable_list)
+
+        all = list()
+        d = 0
+
         for t,shape in collidable_list:
             if token == t:
                 continue
@@ -271,6 +329,10 @@ class CollisionDetector(object):
             if collision_info is not None:
                 collision_info.token1 = token
                 collision_info.token2 = t
-                return collision_info
+                all.append(collision_info)
 
-        return None
+                # if collision_info.distance > d:
+                #     d = collision_info.distance
+                #     c = collision_info
+
+        return all
