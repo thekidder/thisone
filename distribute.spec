@@ -44,6 +44,7 @@ coll = COLLECT(exe,
                Datafiles('data/images/derp/*.png', strip_path=False),
                Datafiles('data/images/*.png', strip_path=False),
                Datafiles('data/levels/*.json', strip_path=False),
+               Datafiles('data/dialog/*.json', strip_path=False),
                strip=None,
                upx=True,
                name=os.path.join('dist', 'thisone'))

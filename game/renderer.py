@@ -6,6 +6,7 @@ from pyglet.gl import *
 import character
 import kidgine.math.vector
 import kidgine.renderer.camera
+import kidgine.renderer.utils
 
 
 logger = logging.getLogger(__name__)
@@ -18,6 +19,7 @@ class SceneRenderer(object):
 
         self.level = level
         self.batch = pyglet.graphics.Batch()
+        self.ui_batch = pyglet.graphics.Batch()
         self.player_character = None
 
         def camera_anchor():
@@ -27,6 +29,7 @@ class SceneRenderer(object):
         self.camera = kidgine.renderer.camera.CenteredCamera(camera_anchor, kidgine.math.vector.Vector(1, 1))
 
         self.renderables = dict()
+        self.ui_renderables = dict()
 
 
     def draw(self, t, dt, window):
@@ -39,6 +42,12 @@ class SceneRenderer(object):
             self.level.draw()
 
         self.batch.draw()
+
+        for i in self.ui_renderables.itervalues():
+            i.update(t, dt, window)
+
+        kidgine.renderer.utils.screen_projection(window)
+        self.ui_batch.draw()
 
 
     def on_resize(self, width, height):
@@ -59,6 +68,16 @@ class SceneRenderer(object):
         r = self.renderables[object]
         r.delete()
         del self.renderables[object]
+
+
+    def add_ui_renderable(self, d):
+        self.ui_renderables[d] = d.create_renderable()(self.ui_batch)
+
+
+    def remove_ui_renderable(self, object):
+        r = self.ui_renderables[object]
+        r.delete()
+        del self.ui_renderables[object]
 
 
     def on_key_press(self, symbol, modifiers):

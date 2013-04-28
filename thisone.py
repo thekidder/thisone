@@ -23,8 +23,8 @@ def create_cvars():
     c = kidgine.config.Config()
 
     c.add('cl_fullscreen',         kidgine.renderer.FullscreenVar(False))
-    c.add('cl_screen_width',       kidgine.renderer.WidthVar(800))
-    c.add('cl_screen_height',      kidgine.renderer.HeightVar(600))
+    c.add('cl_screen_width',       kidgine.renderer.WidthVar(1280))
+    c.add('cl_screen_height',      kidgine.renderer.HeightVar(720))
     c.add('cl_vsync',              kidgine.renderer.VsyncVar(True))
 
     return c

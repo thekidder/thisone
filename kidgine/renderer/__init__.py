@@ -28,7 +28,8 @@ class Renderer(object):
             alpha_size    = 8)
 
         self._window = pyglet.window.Window(
-            width=width, height=height, fullscreen=fullscreen, vsync=vsync, config=gl_config, caption=caption)
+            width=width, height=height, fullscreen=fullscreen, vsync=vsync, resizable=True,
+            config=gl_config, caption=caption)
 
         if icon:
             self._window.set_icon(icon)
