@@ -1,4 +1,5 @@
 import logging
+import math
 
 import kidgine.collision.rectangle
 import renderable
@@ -25,10 +26,17 @@ class Ability(object):
 class Firebolt(object):
     filter = set([Tags.ENEMY])
     damage = 80 # per second
+    duration = 0.2
 
     def __init__(self, parent, collision_detector):
-        self.time_left = 0.2
-        self.position = parent.position
+        self.time_left = self.duration
+        self.rotation = parent.move_direction * 45.0
+
+        offset = kidgine.math.vector.from_radians(math.radians(self.rotation)) * 48
+        offset.y = -offset.y
+        self.position = (parent.position
+                         + offset
+                         + Vector(0, 16))
 
         self.token = 'firebolt'
 
@@ -36,6 +44,7 @@ class Firebolt(object):
         br = Vector( 48,  48)
 
         self.collidable = kidgine.collision.rectangle.Rectangle(self, tl, br)
+        self.collidable.rotation = self.rotation
         collision_detector.update_collidable(self.token, self.collidable)
 
 
@@ -62,7 +71,7 @@ class Firebolt(object):
 
     def create_renderable(self):
         def wrapped(batch):
-            return renderable.StaticSpriteRenderable(batch, self, 'fire_peak')
+            return renderable.StaticSpriteRenderable(batch, self, 'fire_peak', rotation=self.rotation)
         return wrapped
 
 

@@ -15,6 +15,15 @@ from kidgine.math.vector import Vector
 logger = logging.getLogger(__name__)
 
 Facing = kidgine.utils.enum('left', 'right', 'top', 'bottom')
+MoveDirection = kidgine.utils.enum(
+    'right',
+    'righttop',
+    'top',
+    'lefttop',
+    'left',
+    'leftbottom',
+    'bottom',
+    'rightbottom')
 
 class Character(object):
     idle_delay     = 3.0
@@ -146,6 +155,7 @@ class GirlCharacter(CollidableCharacter):
         super(GirlCharacter, self).__init__(collision_detector)
 
         self.inputs = inputs
+        self.move_direction = MoveDirection.left
 
         self.collidable.tags = set([kidgine.collision.shape.tags.IMPEEDS_MOVEMENT, Tags.PLAYER, Tags.MOVEABLE])
 
@@ -158,6 +168,7 @@ class GirlCharacter(CollidableCharacter):
     def update(self, t, dt, collision_detector):
         # move to new position
         direction = Vector(self.inputs.leftright, self.inputs.updown)
+        self._set_move_dir(self.inputs.leftright, self.inputs.updown)
         direction = direction.normalized() * 140.0
         super(GirlCharacter, self).update(t, dt, direction, collision_detector)
 
@@ -178,6 +189,24 @@ class GirlCharacter(CollidableCharacter):
             self.health = min(self.max_health, self.health)
 
         return new_objs
+
+    def _set_move_dir(self, leftright, updown):
+        if   leftright == -1 and updown ==  1:
+            self.move_direction = MoveDirection.leftbottom
+        elif leftright == -1 and updown ==  0:
+            self.move_direction = MoveDirection.left
+        elif leftright == -1 and updown == -1:
+            self.move_direction = MoveDirection.lefttop
+        elif leftright ==  0 and updown ==  1:
+            self.move_direction = MoveDirection.bottom
+        elif leftright ==  0 and updown == -1:
+            self.move_direction = MoveDirection.top
+        elif leftright ==  1 and updown ==  1:
+            self.move_direction = MoveDirection.rightbottom
+        elif leftright ==  1 and updown ==  0:
+            self.move_direction = MoveDirection.right
+        elif leftright ==  1 and updown == -1:
+            self.move_direction = MoveDirection.righttop
 
 
 class MeleeEnemy(CollidableCharacter):
