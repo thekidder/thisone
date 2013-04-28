@@ -7,7 +7,7 @@ import debug
 
 
 class Game(object):
-    FRAME_TIME = 1/60.
+    FRAME_TIME = 1/50.
 
     def __init__(self, configs):
         pyglet.clock.schedule_interval(self.frame, self.FRAME_TIME)
@@ -28,10 +28,10 @@ class Game(object):
     def frame(self, dt):
         self._accumulator += dt
 
-        while self._accumulator > self.FRAME_TIME:
-            self.update(self._gametime, self.FRAME_TIME)
-            self._accumulator -= self.FRAME_TIME
-            self._gametime += self.FRAME_TIME
+        #while self._accumulator > self.FRAME_TIME:
+        self.update(self._gametime, self.FRAME_TIME)
+        #    self._accumulator -= self.FRAME_TIME
+        self._gametime += self.FRAME_TIME
 
         self._renderer.on_draw(self._gametime, self.FRAME_TIME)
 

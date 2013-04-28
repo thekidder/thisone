@@ -39,7 +39,7 @@ class Scene(object):
             #separation = c2 - c1
             #force = 1.0 / separation.magnitude_sqr() * c.translation_vector.normalized()
 
-            force = c.translation_vector * 0.5
+            force = c.translation_vector * 0.4
 
             #force = c.translation_vector * c.translation_vector * 0.1
 
@@ -94,7 +94,7 @@ class CombatScene(Scene):
 
         self.add_character(self.player_character)
 
-        for i in xrange(6):
+        for i in xrange(12):
             enemy = character.MeleeEnemy(self.player_character, self._collision_detector)
             enemy.position = Vector(32 * (1 + i), 32 * (1 + i))
             self.add_character(enemy)
