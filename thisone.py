@@ -40,7 +40,7 @@ def main():
 
 
 if __name__ == '__main__':
-    if PROFILE:
+    if PROFILE or '--profile' in sys.argv:
         import cProfile
         cProfile.run('main()', '.cprofile')
     else:
