@@ -99,7 +99,7 @@ class Firebolt(TimedAbility):
 
 class Earthquake(TimedAbility):
     filter = set([Tags.ENEMY, Tags.NOT_SLOWED])
-    duration = 60.0
+    duration = 1.4
     slow = 0.5
     sprite_name = 'earth_peak'
     size = 48
@@ -131,6 +131,9 @@ class Earthquake(TimedAbility):
 
     def update(self, t, dt, collision_detector):
         super(Earthquake, self).update(t, dt, collision_detector)
+
+
+
 
 
 FireboltAbility   = Ability(Firebolt, 0.8)
