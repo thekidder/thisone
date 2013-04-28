@@ -22,7 +22,7 @@ class Scene(object):
 
 
     def update(self, t, dt):
-        self._collision_detector.log_stats(logging.INFO)
+        #self._collision_detector.log_stats(logging.INFO)
         self._collision_detector.start_frame()
 
         all = self._collision_detector.all_collisions()
@@ -89,7 +89,7 @@ class CombatScene(Scene):
 
         self.add_updatable(self.player_character)
 
-        for i in xrange(10):
+        for i in xrange(5):
             enemy = character.MeleeEnemy(self.player_character, self._collision_detector)
             enemy.position = Vector(32 * (1 + i), 32 * (1 + i))
             self.add_updatable(enemy)

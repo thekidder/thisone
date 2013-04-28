@@ -14,12 +14,15 @@ class Shape(object):#serializedobject.SerializedObject):
     def __init__(self, owner=None):
         self._points = list()
         self._transformed_points = list()
+        self._cached_axes = list()
         self.owner = owner
         self.tags = set()
         self.rotation = 0.0
 
 
-    def all_projecting_axes(self, pos_override, shape, shape_override):
+    def all_projecting_axes(self, pos_override, shape, shape_override, calculate = False):
+        if pos_override is None and not calculate:
+            return self._cached_axes
         axes = []
 
         last_point = None
@@ -44,6 +47,8 @@ class Shape(object):#serializedobject.SerializedObject):
         del self._transformed_points[0:len(self._transformed_points)]
         for p in self._points:
             self._transformed_points.append(self.transformed_point(p))
+
+        self._cached_axes = self.all_projecting_axes(None, None, None, calculate = True)
 
 
     def _all(self, pos_override):

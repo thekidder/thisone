@@ -129,18 +129,16 @@ class CollidableCharacter(Character):
 
     def update(self, t, dt, direction, collision_detector):
         super(CollidableCharacter, self).update(t, dt, direction)
-        candidate_pos = self.position + direction * dt + self.forces
+        self.position = self.position + direction * dt + self.forces
 
-        all = collision_detector.collides(token=self.token, position = candidate_pos,
+        all = collision_detector.collides(token=self.token,
                                           filters=self.environment_filters)
-        if len(all) == 0:
-            self.position = candidate_pos
-        else:
+        if len(all) > 0:
             normal = Vector()
             for c in all:
                 if normal.dot(c.translation_vector) == 0:
                     normal += c.translation_vector
-            self.position = candidate_pos + normal
+            self.position += normal
 
         collision_detector.update_collidable(self.token, self.collidable)
 
