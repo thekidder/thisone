@@ -22,7 +22,7 @@ class Game(object):
         self._renderer = kidgine.renderer.Renderer(configs, 'This One', icon)
         self._renderer.add_drawable(20, debug.DebugOverlay())
 
-        self.set_scene(scene.CombatScene('data/levels/test.json'))
+        self.set_scene(scene.ActOne())
 
 
     def frame(self, dt):
