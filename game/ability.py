@@ -136,12 +136,14 @@ class Earthquake(TimedAbility):
 
 class Windblast(TimedAbility):
     filter = set([Tags.ENEMY])
-    duration = 2
+    duration = 0.7
     force = 500
     
     spread = 0.8 #radians
     sprite_name = 'wind_peak'
     size = 48
+    slow = 0.1
+    duration = 1.0
     
     def __init__(self, parent, collision_detector):
         super(Windblast, self).__init__()
@@ -165,6 +167,7 @@ class Windblast(TimedAbility):
         eject_vector = start_vector.normalized().rotate((random.random() - 0.5) * self.spread)
         eject_vector *= (eject_mag * dt)
         c.shape2.owner.apply_force(eject_vector)
+        c.shape2.owner.slow(t, self.slow)
     
     def update(self, t, dt, collision_detector):
         self.position = self.parent.position + Vector(0, 16)
@@ -172,7 +175,60 @@ class Windblast(TimedAbility):
         super(Windblast, self).update(t, dt, collision_detector)
 
 
+class Whirlpool(TimedAbility):
+    filter = set([Tags.ENEMY])
+    duration = 4
+    sprite_name = 'water_peak'
+    size = 48
+    distance = 132
+    force_mult = 2.5
+    pulse = True
+    pulse_rate = 0.4
+    min_slow = 0.9
+    slow_scale = 0.08
+
+    def __init__(self, parent, collision_detector):
+        super(Whirlpool, self).__init__()
+
+        self.rotation = parent.move_direction * 45
+
+        offset = kidgine.math.vector.from_radians(math.radians(self.rotation)) * 132
+        offset.y = -offset.y
+        self.position = (parent.position
+                         + offset)
+
+        tl = Vector(-self.size, -self.size)
+        br = Vector( self.size,  self.size)
+        self.collidable = kidgine.collision.rectangle.Rectangle(self, tl, br)
+
+        self.token = 'whirlpool'
+
+        collision_detector.update_collidable(self.token, self.collidable)
+
+
+    def apply(self, t, dt, c):
+        self.last_trigger_time = t
+        try:
+            # Pull is at a 45 degree slant, getting straighter and weaker toward the middle.
+            # Slow is weak, getting stronger toward the middle.
+            p1 = c.shape1.owner.position
+            p2 = c.shape2.owner.position
+            start_vector = Vector(p1.x - p2.x, p1.y - p2.y)
+            svmag = start_vector.magnitude()
+            pull_mag = svmag * self.force_mult * self.pulse_rate
+            pull_vector = start_vector.normalized().rotate(math.radians(-(45*(1-(self.size / (self.size + svmag))))))
+            pull_vector *= pull_mag**0.5
+            c.shape2.owner.apply_force(pull_vector)
+            c.shape2.owner.slow(t, min(self.min_slow, self.min_slow / (pull_mag * self.slow_scale)))
+        except AttributeError:
+            pass
+
+
+    def update(self, t, dt, collision_detector):
+        super(Whirlpool, self).update(t, dt, collision_detector)
+
 
 FireboltAbility   = Ability(Firebolt, 0.8)
 EarthquakeAbility = Ability(Earthquake, 1.6)
-WindblastAbility = Ability(Windblast, 3)
+WindblastAbility = Ability(Windblast, 2.5)
+WhirlpoolAbility = Ability(Whirlpool, 4.5)

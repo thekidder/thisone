@@ -169,7 +169,7 @@ class GirlCharacter(CollidableCharacter):
         self.ability_one   = ability.FireboltAbility
         self.ability_two   = ability.EarthquakeAbility
         self.ability_three = ability.WindblastAbility
-        self.ability_four  = None
+        self.ability_four  = ability.WhirlpoolAbility
 
 
     def update(self, t, dt, collision_detector):
