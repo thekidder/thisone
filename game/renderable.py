@@ -161,14 +161,15 @@ class HUDRenderable(object):
 
     def update(self, t, dt, window):
         for e in xrange(len(self.normal)):
+
             self.normal[e].y = 24
             self.normal[e].x = 48 + e * 52
 
             self.pressed[e].y = 24
             self.pressed[e].x = 48 + e * 52
 
-            self.normal[e].visible = self.hud.active[e] and not self.hud.disabled
-            self.pressed[e].visible = not self.hud.active[e]
+            self.normal[e].visible = self.hud.active[e] and not self.hud.disabled[e]
+            self.pressed[e].visible = not self.hud.active[e] and not self.hud.disabled[e]
 
             if self.hud.cooldown[e]:
                 self.pressed[e].color = (60,60,60)

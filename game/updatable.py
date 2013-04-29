@@ -49,7 +49,7 @@ class HUD(object):
         self.scene = scene
         self.active = [False] * 4
         self.cooldown = [False] * 4
-        self.disabled = False
+        self.disabled = [False] * 4
 
 
     def removed(self, c):
@@ -58,21 +58,34 @@ class HUD(object):
 
     def update(self, inputs, t, dt, collision_detector):
         if not self.scene.player_character:
-            self.disabled = True
+            self.disabled = [True] * 4
             for s in self.active:
                 s = True
         else:
-            self.disabled = False
-
-            self.active[0] = self.scene.player_character.ability_one.is_active(t)
-            self.active[1] = self.scene.player_character.ability_two.is_active(t)
-            self.active[2] = self.scene.player_character.ability_three.is_active(t)
-            self.active[3] = self.scene.player_character.ability_four.is_active(t)
-
-            self.cooldown[0] = not self.scene.player_character.ability_one.is_recharged(t)
-            self.cooldown[1] = not self.scene.player_character.ability_two.is_recharged(t)
-            self.cooldown[2] = not self.scene.player_character.ability_three.is_recharged(t)
-            self.cooldown[3] = not self.scene.player_character.ability_four.is_recharged(t)
+            if self.scene.player_character.ability_one:
+                self.active[0]   = self.scene.player_character.ability_one.is_active(t)
+                self.cooldown[0] = not self.scene.player_character.ability_one.is_recharged(t)
+                self.disabled[0] = False
+            else:
+                self.disabled[0] = True
+            if self.scene.player_character.ability_two:
+                self.active[1]   = self.scene.player_character.ability_two.is_active(t)
+                self.cooldown[1] = not self.scene.player_character.ability_two.is_recharged(t)
+                self.disabled[1] = False
+            else:
+                self.disabled[1] = True
+            if self.scene.player_character.ability_three:
+                self.active[2]   = self.scene.player_character.ability_three.is_active(t)
+                self.cooldown[2] = not self.scene.player_character.ability_three.is_recharged(t)
+                self.disabled[2] = False
+            else:
+                self.disabled[2] = True
+            if self.scene.player_character.ability_four:
+                self.active[3]   = self.scene.player_character.ability_four.is_active(t)
+                self.cooldown[3] = not self.scene.player_character.ability_four.is_recharged(t)
+                self.disabled[3] = False
+            else:
+                self.disabled[3] = True
 
 
     def alive(self):
