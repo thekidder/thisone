@@ -20,18 +20,14 @@ class Scene(object):
     def __init__(self, level_name):
         self._collision_detector = kidgine.collision.CollisionDetector()
         self.drawable = renderer.SceneRenderer()
+        self._inputs = inputs.Inputs()
 
         self.updatables = set()
-
-        self._inputs = inputs.Inputs()
+        self.preemptible = None
 
         self.level = level.Level(level_name, self._collision_detector)
 
-        self.player_character = character.GirlCharacter(self._inputs, self._collision_detector)
         self.add_updatable(self.level)
-        self.add_updatable(self.player_character)
-
-        self.dialog = None
 
 
     def update(self, t, dt):
@@ -39,11 +35,12 @@ class Scene(object):
         self._inputs.update(self.drawable.keystate)
         self._collision_detector.start_frame()
 
-        if self.dialog is not None:
-            self.dialog.update(self._inputs, t, dt)
-            if self.dialog.is_done():
-                self.drawable.remove_renderable(self.dialog)
-                self.dialog = None
+        if self.preemptible is not None:
+            self.preemptible.update(self._inputs, t, dt, self._collision_detector)
+            if not self.preemptible.alive():
+                self.preemptible.removed(self._collision_detector)
+                self.drawable.remove_renderable(self.preemptible)
+                self.preemptible = None
             return
 
         # calculate collision forces
@@ -63,7 +60,7 @@ class Scene(object):
         # run all updatables
         all_new_objs = list()
         for obj in self.updatables:
-            new_things = obj.update(t, dt, self._collision_detector)
+            new_things = obj.update(self._inputs, t, dt, self._collision_detector)
             if new_things is not None:
                 all_new_objs.extend(new_things)
 
@@ -118,15 +115,21 @@ class Scene(object):
             self.add_updatable(enemy)
 
 
-    def run_dialog(self, dialog):
-        self.drawable.add_renderable(dialog)
-        self.dialog = dialog
+    def run_preemptible(self, preemptible):
+        self.drawable.add_renderable(preemptible)
+        self.preemptible = preemptible
+
+
+    def end_with(self, preemptible):
+        pass
 
 
 class ActOne(Scene):
     def __init__(self):
         super(ActOne, self).__init__('data/levels/act_one.json')
+        self.player_character = character.GirlCharacter(self._inputs, self._collision_detector)
         self.player_character.position = Vector(32 * 10, 32 * 60)
+        self.add_updatable(self.player_character)
 
         self.last_position = self.player_character.position
         self.fader = None
@@ -142,7 +145,7 @@ class ActOne(Scene):
 
         self.spawn_wave(Vector(10 * 32, 40 * 32), character.MeleeEnemy, 6)
 
-        #self.run_dialog(dialog.Dialog('data/dialog/act_one_warlord_1.json'))
+        self.add_updatable(dialog.Dialog('data/dialog/act_one_warlord_1.json'))
 
         self.add_updatable(updatable.fade_from_black(1.0))
 

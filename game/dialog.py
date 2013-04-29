@@ -63,13 +63,17 @@ class Dialog(object):
         return t - self.last_transition_time > self.lines[self.current_line]['minimum_time']
 
 
-    def update(self, inputs, t, dt):
+    def update(self, inputs, t, dt, c):
         if self.last_transition_time == 0:
             self.last_transition_time = t
 
         if self.can_transition(t):
             if inputs.dialog_dismiss:
                 self._transition(t)
+
+
+    def removed(self, c):
+        pass
 
 
     def is_ui(self):
@@ -94,12 +98,12 @@ class Dialog(object):
             #         self.lines[self.current_line]['minimum_time']))
 
 
-    def is_done(self):
-        return self.done
+    def alive(self):
+        return not self.done
 
 
     def create_renderable(self):
-        def wrapped(batch):
-            self.renderable = renderable.DialogRenderable(batch, self)
+        def wrapped(batch, group):
+            self.renderable = renderable.DialogRenderable(batch, group, self)
             return self.renderable
         return wrapped

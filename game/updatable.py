@@ -15,7 +15,7 @@ class OpacityFader(object):
         pass
 
 
-    def update(self, t, dt, collision_detector):
+    def update(self, inputs, t, dt, collision_detector):
         self.time_left -= dt
         self.opacity = kidgine.utils.lerp(
             (self.duration - self.time_left) / self.duration,

@@ -138,7 +138,7 @@ class CollidableCharacter(Character):
         collision_detector.remove_collidable(self.token)
 
 
-    def update(self, t, dt, direction, collision_detector):
+    def update(self, inputs, t, dt, direction, collision_detector):
         super(CollidableCharacter, self).update(t, dt, direction)
         self.position = self.position + direction * dt + self.forces
 
@@ -176,12 +176,12 @@ class GirlCharacter(CollidableCharacter):
         self.ability_four  = ability.WhirlpoolAbility
 
 
-    def update(self, t, dt, collision_detector):
+    def update(self, inputs, t, dt, collision_detector):
         # move to new position
         direction = Vector(self.inputs.leftright, self.inputs.updown)
         self._set_move_dir(self.inputs.leftright, self.inputs.updown)
         direction = direction.normalized() * 140.0
-        super(GirlCharacter, self).update(t, dt, direction, collision_detector)
+        super(GirlCharacter, self).update(inputs, t, dt, direction, collision_detector)
 
         # activate abilities
         new_objs = list()
@@ -260,7 +260,7 @@ class MeleeEnemy(CollidableCharacter):
                 pass
 
 
-    def update(self, t, dt, collision_detector):
+    def update(self, inputs, t, dt, collision_detector):
         direction = kidgine.math.vector.constant_zero
         if self.target:
             direction = (self.target.position - self.position).normalized()
@@ -270,7 +270,7 @@ class MeleeEnemy(CollidableCharacter):
         if collision is not None:
             self.do_damage(t, collision)
 
-        super(MeleeEnemy, self).update(t, dt, direction, collision_detector)
+        super(MeleeEnemy, self).update(inputs, t, dt, direction, collision_detector)
 
         # if we haven't been slowed in a while, reset
         if t - self.slow_time > 0.4:

@@ -53,7 +53,7 @@ class Level(object):
                 collision_detector.update_collidable(token, c)
 
 
-    def update(self, t, dt, collision_detector):
+    def update(self, inputs, t, dt, collision_detector):
         pass
 
 

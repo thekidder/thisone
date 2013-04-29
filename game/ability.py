@@ -41,7 +41,7 @@ class TimedAbility(object):
         collision_detector.remove_collidable(self.token)
 
 
-    def update(self, t, dt, collision_detector):
+    def update(self, inputs, t, dt, collision_detector):
         self.time_left -= dt
 
         if not self.pulse or t - self.last_trigger_time > self.pulse_rate:
@@ -94,10 +94,6 @@ class Firebolt(TimedAbility):
         collision_detector.update_collidable(self.token, self.collidable)
 
 
-    def update(self, t, dt, collision_detector):
-        super(Firebolt, self).update(t, dt, collision_detector)
-
-
     def apply(self, t, dt, c):
         try:
             c.shape2.owner.damage(t, dt * self.damage)
@@ -137,10 +133,6 @@ class Earthquake(TimedAbility):
             pass
 
 
-    def update(self, t, dt, collision_detector):
-        super(Earthquake, self).update(t, dt, collision_detector)
-
-
 class Windblast(TimedAbility):
     filter = set([Tags.ENEMY])
     duration = 0.7
@@ -178,10 +170,10 @@ class Windblast(TimedAbility):
         c.shape2.owner.apply_force(eject_vector)
         c.shape2.owner.slow(t, self.slow)
 
-    def update(self, t, dt, collision_detector):
+    def update(self, inputs, t, dt, collision_detector):
         self.position = self.parent.position + Vector(0, 16)
         collision_detector.update_collidable(self.token, self.collidable)
-        super(Windblast, self).update(t, dt, collision_detector)
+        super(Windblast, self).update(inputs, t, dt, collision_detector)
 
 
 class Whirlpool(TimedAbility):
@@ -233,11 +225,7 @@ class Whirlpool(TimedAbility):
             pass
 
 
-    def update(self, t, dt, collision_detector):
-        super(Whirlpool, self).update(t, dt, collision_detector)
-
-
 FireboltAbility   = Ability(Firebolt, 0.8)
 EarthquakeAbility = Ability(Earthquake, 1.6)
-WindblastAbility = Ability(Windblast, 2.5)
-WhirlpoolAbility = Ability(Whirlpool, 4.5)
+WindblastAbility  = Ability(Windblast, 2.5)
+WhirlpoolAbility  = Ability(Whirlpool, 4.5)
