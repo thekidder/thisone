@@ -353,21 +353,22 @@ class ActTwo(Scene):
             )
         )
 
-        """
         self.add_trigger(
-            trigger.trigger(self, 'all_enemies_dead'),
+            trigger.trigger(self, 'should_start_hermit'),
             action.action_list(
                 [
-                    self.add_trigger(
-                        trigger.trigger(self, 'player_in_area'),
-                        action.action_list(
-                            # Start Recluse cutscene
-                        )
-                    )
+                    action.action(self, 'play_dialog', 'data/dialog/act_two_hermit.json'),
+                    action.action(self, 'end_with',
+                                  game.SceneState.succeeded,
+                                  updatable.fade_to_black(0.5))
                 ]
             )
         )
-        """
+
+
+    def should_start_hermit(self):
+        return self.player_character.position.y > (40 * 32)  # and self.all_enemies_dead()
+
 
 
 class Cutscene(object):
