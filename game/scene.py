@@ -2,6 +2,7 @@ import logging
 import random
 
 import game
+import camera
 import character
 import inputs
 import kidgine.collision
@@ -124,28 +125,26 @@ class Scene(object):
         pass
 
 
+    def set_camera(self, cam):
+        self.drawable.set_camera(cam)
+
+
 class ActOne(Scene):
     def __init__(self):
         super(ActOne, self).__init__('data/levels/act_one.json')
-        self.player_character = character.GirlCharacter(self._inputs, self._collision_detector)
+        self.player_character = character.GirlCharacter(self._collision_detector)
         self.player_character.position = Vector(32 * 10, 32 * 60)
         self.add_updatable(self.player_character)
 
-        self.last_position = self.player_character.position
+
         self.fader = None
         self.success = False
 
-        def camera_anchor():
-            if self.player_character is None:
-                return Vector(32*11, self.last_position.y)
-            self.last_position = self.player_character.position
-            return Vector(32 * 11, self.player_character.position.y)
-        c = kidgine.renderer.camera.CenteredCamera(camera_anchor, kidgine.math.vector.Vector(32*20, 1))
-        self.drawable.set_camera(c)
+        self.set_camera(camera.VerticalPanningCamera(self.player_character, 32 * 11, 32 * 20))
 
         self.spawn_wave(Vector(10 * 32, 40 * 32), character.MeleeEnemy, 6)
 
-        self.add_updatable(dialog.Dialog('data/dialog/act_one_warlord_1.json'))
+        #self.add_updatable(dialog.Dialog('data/dialog/act_one_warlord_1.json'))
 
         self.add_updatable(updatable.fade_from_black(1.0))
 

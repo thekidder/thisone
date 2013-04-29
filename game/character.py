@@ -162,10 +162,9 @@ class GirlCharacter(CollidableCharacter):
     regen_rate = 30 # units/sec
     renderable_type = renderable.GirlRenderable
 
-    def __init__(self, inputs, collision_detector):
+    def __init__(self, collision_detector):
         super(GirlCharacter, self).__init__(collision_detector)
 
-        self.inputs = inputs
         self.move_direction = MoveDirection.left
 
         self.collidable.tags = set([kidgine.collision.shape.tags.IMPEEDS_MOVEMENT, Tags.PLAYER, Tags.MOVEABLE])
@@ -178,20 +177,20 @@ class GirlCharacter(CollidableCharacter):
 
     def update(self, inputs, t, dt, collision_detector):
         # move to new position
-        direction = Vector(self.inputs.leftright, self.inputs.updown)
-        self._set_move_dir(self.inputs.leftright, self.inputs.updown)
+        direction = Vector(inputs.leftright, inputs.updown)
+        self._set_move_dir(inputs.leftright, inputs.updown)
         direction = direction.normalized() * 140.0
         super(GirlCharacter, self).update(inputs, t, dt, direction, collision_detector)
 
         # activate abilities
         new_objs = list()
-        if self.ability_one and self.inputs.one:
+        if self.ability_one and inputs.one:
             self.ability_one.activate(t, dt, collision_detector, self, new_objs)
-        if self.ability_two and self.inputs.two:
+        if self.ability_two and inputs.two:
             self.ability_two.activate(t, dt, collision_detector, self, new_objs)
-        if self.ability_three and self.inputs.three:
+        if self.ability_three and inputs.three:
             self.ability_three.activate(t, dt, collision_detector, self, new_objs)
-        if self.ability_four and self.inputs.four:
+        if self.ability_four and inputs.four:
             self.ability_four.activate(t, dt, collision_detector, self, new_objs)
 
         # regen health
