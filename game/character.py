@@ -173,12 +173,15 @@ class GirlCharacter(CollidableCharacter):
 
         self.move_direction = MoveDirection.left
 
-        self.collidable.tags = set([kidgine.collision.shape.tags.IMPEEDS_MOVEMENT, collision.Tags.PLAYER, collision.Tags.MOVEABLE])
+        self.collidable.tags = set([
+                kidgine.collision.shape.tags.IMPEEDS_MOVEMENT,
+                collision.Tags.PLAYER,
+                collision.Tags.MOVEABLE])
 
-        self.ability_one   = ability.FireboltAbility
-        self.ability_two   = ability.EarthquakeAbility
-        self.ability_three = ability.WindblastAbility
-        self.ability_four  = ability.WhirlpoolAbility
+        self.ability_one   = ability.Ability(ability.Firebolt,   0.8)
+        self.ability_two   = ability.Ability(ability.Whirlpool,  1.6)
+        self.ability_three = ability.Ability(ability.Windblast,  2.5)
+        self.ability_four  = ability.Ability(ability.Earthquake, 4.5)
 
 
     def update(self, inputs, t, dt, collision_detector):
