@@ -2,19 +2,17 @@ import logging
 import random
 
 import action
-import game
 import camera
 import character
+import game
 import inputs
 import kidgine.collision
 import level
 import renderer
-import kidgine.math.vector
-from kidgine.math.vector import Vector
-from collision import Tags
-import dialog
-import updatable
 import trigger
+import updatable
+from collision import Tags
+from kidgine.math.vector import Vector
 
 
 logger = logging.getLogger(__name__)
@@ -27,8 +25,9 @@ class Scene(object):
 
         self.updatables = set()
         self._triggers = dict()
-        self.preemptible = None
+        self.blocking_event = None
 
+        self.player_character = None
         self.return_state = None
 
         self.level = level.Level(level_name, self._collision_detector)
@@ -42,10 +41,10 @@ class Scene(object):
         self._inputs.update(self.drawable.keystate)
         self._collision_detector.start_frame()
 
-        if self.preemptible is not None:
-            self.preemptible.update(self._inputs, t, dt, self._collision_detector)
-            if not self.preemptible.alive():
-                self.remove_preemptible()
+        if self.blocking_event is not None:
+            self.blocking_event.update(self._inputs, t, dt, self._collision_detector)
+            if not self.blocking_event.alive():
+                self.remove_blocking_event()
 
                 if self.return_state:
                     return self.return_state
@@ -122,34 +121,17 @@ class Scene(object):
         self.drawable.remove_renderable(c)
 
 
-    def run_preemptible(self, preemptible):
-        self.remove_preemptible()
-        self.drawable.add_renderable(preemptible)
-        self.preemptible = preemptible
+    def run_blocking_event(self, blocking_event):
+        self.remove_blocking_event()
+        self.drawable.add_renderable(blocking_event)
+        self.blocking_event = blocking_event
 
 
-    def remove_preemptible(self):
-        if self.preemptible is not None:
-            self.preemptible.removed(self._collision_detector)
-            self.drawable.remove_renderable(self.preemptible)
-            self.preemptible = None
-
-
-    def end_with(self, state, preemptible):
-        if self.return_state is None:
-            self.return_state = state
-            self.run_preemptible(preemptible)
-
-
-    def set_camera(self, cam):
-        self.drawable.set_camera(cam)
-
-
-    def spawn_wave(self, position, enemy_type, num_enemies):
-        for i in xrange(num_enemies):
-            p = position + Vector(random.uniform(-128,128), random.uniform(-128,128))
-            enemy = enemy_type(p, self.player_character)
-            self.add_updatable(enemy)
+    def remove_blocking_event(self):
+        if self.blocking_event is not None:
+            self.blocking_event.removed(self._collision_detector)
+            self.drawable.remove_renderable(self.blocking_event)
+            self.blocking_event = None
 
 
     def add_trigger(self, trigger, action):
@@ -160,6 +142,34 @@ class Scene(object):
 
     def remove_trigger(self, trigger):
         del self._triggers[trigger]
+
+
+    def end_with(self, state, updatable):
+        if self.return_state is None:
+            self.return_state = state
+            self.run_blocking_event(updatable)
+
+
+    def set_camera(self, cam):
+        self.drawable.set_camera(cam)
+
+
+    def is_player_alive(self):
+        if self.player_character:
+            return self.player_character.alive()
+        else:
+            return False
+
+
+    def is_player_dead(self):
+        return not self.is_player_alive()
+
+
+    def spawn_wave(self, position, enemy_type, num_enemies):
+        for i in xrange(num_enemies):
+            p = position + Vector(random.uniform(-128,128), random.uniform(-128,128))
+            enemy = enemy_type(p, self.player_character)
+            self.add_updatable(enemy)
 
 
 class ActOne(Scene):
@@ -176,25 +186,20 @@ class ActOne(Scene):
         # create some enemies
         self.spawn_wave(Vector(10 * 32, 40 * 32), character.MeleeEnemy, 6)
 
-        #self.add_updatable(dialog.Dialog('data/dialog/act_one_warlord_1.json'))
-
         # start by fading from black
         self.add_updatable(updatable.fade_from_black(1.0))
 
         # set up some triggers
 
-        # lose after 5 seconds
-        self.add_trigger(trigger.time_trigger(5.0),
-                         action.scene_action(self, 'end_with',
-                                             game.SceneState.failed,
-                                             updatable.fade_to_black(0.5)))
+        # lose when the player dies
+        self.add_trigger(trigger.trigger(self, 'is_player_dead'),
+                         action.action(self, 'end_with',
+                                       game.SceneState.failed,
+                                       updatable.fade_to_black(0.5)))
 
+        # play some dialog
 
-    def update(self, t, dt):
-        if self.player_character is None:
-            self.end_with(game.SceneState.failed, updatable.fade_to_black(1.5))
-
-        return super(ActOne, self).update(t, dt)
+        #self.play_dialog('data/dialog/act_one_warlord_1.json'))
 
 
 class Cutscene(object):

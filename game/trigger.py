@@ -3,3 +3,10 @@ def time_trigger(elapsed_time):
         return t > elapsed_time
 
     return wrapped
+
+
+def trigger(obj, method, *args, **kwargs):
+    def wrapped(inputs, t, dt, collision_detector):
+        return getattr(obj,method)(*args, **kwargs)
+
+    return wrapped
