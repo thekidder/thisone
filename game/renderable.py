@@ -345,7 +345,7 @@ class MeleeEnemyRenderable(CharacterRenderable):
 
 
 class WarlordRenderable(MeleeEnemyRenderable):
-    sprite_name = 'barbarian'
+    sprite_name = 'warlord'
 
 
 class GirlRenderable(CharacterRenderable):
