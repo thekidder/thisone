@@ -258,6 +258,54 @@ class ActOne(Scene):
 
         #self.play_dialog('data/dialog/act_one_warlord_1.json')
 
+class ActTwo(Scene):
+
+    def __init__(self):
+        super(ActTwo, self).__init__('data/levels/act_two.json')
+
+        # create player
+        self.player_character = character.GirlCharacter(Vector(32 * 9, 32 * 78))
+        self.add_updatable(self.player_character)
+
+        # set camera
+        self.set_camera(camera.PlayerCamera(self.player_character, 32 * 20))
+
+        # create some enemies
+
+        # start by fading from black
+        self.add_updatable(updatable.fade_from_black(1.0))
+
+        # set up some triggers
+
+        # lose when the player dies
+        self.add_trigger(
+            trigger.trigger(self, 'is_player_dead'),
+            action.action_list(
+                [
+                    action.action(self, 'play_dialog', 'data/dialog/death_dialog.json'),
+                    action.action(self, 'end_with',
+                                  game.SceneState.failed,
+                                  updatable.fade_to_black(0.5))
+                ]
+            )
+        )
+
+        """
+        self.add_trigger(
+            trigger.trigger(self, 'all_enemies_dead'),
+            action.action_list(
+                [
+                    self.add_trigger(
+                        trigger.trigger(self, 'player_in_area'),
+                        action.action_list(
+                            # Start Recluse cutscene
+                        )
+                    )
+                ]
+            )
+        )
+        """
+
 
 class Cutscene(object):
     pass
