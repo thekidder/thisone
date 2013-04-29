@@ -104,6 +104,10 @@ class Scene(object):
             pass
 
 
+    #
+    # Subclass API starts here
+    #
+
     def remove_updatable(self, c):
         c.removed(self._collision_detector)
         self.updatables.remove(c)
@@ -113,13 +117,6 @@ class Scene(object):
     def add_updatable(self, c):
         self.updatables.add(c)
         self.drawable.add_renderable(c)
-
-
-    def spawn_wave(self, position, enemy_type, num_enemies):
-        for i in xrange(num_enemies):
-            enemy = enemy_type(self.player_character, self._collision_detector)
-            enemy.position = position + Vector(random.uniform(-128,128), random.uniform(-128,128))
-            self.add_updatable(enemy)
 
 
     def run_preemptible(self, preemptible):
@@ -145,11 +142,18 @@ class Scene(object):
         self.drawable.set_camera(cam)
 
 
+    def spawn_wave(self, position, enemy_type, num_enemies):
+        for i in xrange(num_enemies):
+            p = position + Vector(random.uniform(-128,128), random.uniform(-128,128))
+            enemy = enemy_type(p, self.player_character)
+            self.add_updatable(enemy)
+
+
 class ActOne(Scene):
     def __init__(self):
         super(ActOne, self).__init__('data/levels/act_one.json')
-        self.player_character = character.GirlCharacter(self._collision_detector)
-        self.player_character.position = Vector(32 * 10, 32 * 60)
+
+        self.player_character = character.GirlCharacter(Vector(32 * 10, 32 * 60))
         self.add_updatable(self.player_character)
 
         self.set_camera(camera.VerticalPanningCamera(self.player_character, 32 * 11, 32 * 20))

@@ -30,9 +30,9 @@ class Character(object):
     idle_delay_two = 4.0
 
     """represents a character, player controlled or otherwise. has position and a facing"""
-    def __init__(self):
+    def __init__(self, position):
         self.facing = Facing.left
-        self.position = Vector(0, 0)
+        self.position = position
         self.moving = False
         self.time_to_idle = self.idle_delay
         self.idle = False
@@ -104,8 +104,8 @@ class CollidableCharacter(Character):
     counter = 0
     environment_filters = set([Tags.ENVIRONMENT, kidgine.collision.shape.tags.IMPEEDS_MOVEMENT])
 
-    def __init__(self, collision_detector):
-        super(CollidableCharacter, self).__init__()
+    def __init__(self, position):
+        super(CollidableCharacter, self).__init__(position)
 
         tl = Vector(-16,   0)
         br = Vector( 16,  32)
@@ -114,8 +114,6 @@ class CollidableCharacter(Character):
         CollidableCharacter.counter += 1
         self.collidable = kidgine.collision.rectangle.Rectangle(self, tl, br)
         self.collidable.tags = set([kidgine.collision.shape.tags.IMPEEDS_MOVEMENT])
-
-        collision_detector.update_collidable(self.token, self.collidable)
 
         self.forces = Vector()
 
@@ -162,8 +160,8 @@ class GirlCharacter(CollidableCharacter):
     regen_rate = 30 # units/sec
     renderable_type = renderable.GirlRenderable
 
-    def __init__(self, collision_detector):
-        super(GirlCharacter, self).__init__(collision_detector)
+    def __init__(self, position):
+        super(GirlCharacter, self).__init__(position)
 
         self.move_direction = MoveDirection.left
 
@@ -225,8 +223,8 @@ class MeleeEnemy(CollidableCharacter):
     max_health = 60.0
     renderable_type = renderable.MeleeEnemyRenderable
 
-    def __init__(self, target, collision_detector):
-        super(MeleeEnemy, self).__init__(collision_detector)
+    def __init__(self, position, target):
+        super(MeleeEnemy, self).__init__(position)
         self.target = target
         self.collidable.tags = set([
                 kidgine.collision.shape.tags.IMPEEDS_MOVEMENT,

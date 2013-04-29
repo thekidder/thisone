@@ -77,6 +77,10 @@ class SpatialHash(object):
         self.hash.clear()
 
 
+    def contains(self, token):
+        return token in self.collidables
+
+
     def get(self, token):
         return self.collidables[token].collidable
 
@@ -275,7 +279,10 @@ class CollisionDetector(object):
                 #new_pos = collidable.transformed_point(vector.constant_zero)
                 new_pos = collidable.owner.position
             elif token is not None:
-                new_pos = self.spatial_hash.get(token).owner.position
+                if self.spatial_hash.contains(token):
+                    new_pos = self.spatial_hash.get(token).owner.position
+                else:
+                    return list()
 
         all = list()
         potential = self.spatial_hash.potential_collidables(
@@ -317,6 +324,9 @@ class CollisionDetector(object):
 
 
     def _narrow_phase(self, token=None, collidable=None, new_pos=None, collidable_list=None):
+        if len(collidable_list) == 0:
+            return collidable_list
+
         if collidable is None:
             collidable = self.spatial_hash.get(token)
 
