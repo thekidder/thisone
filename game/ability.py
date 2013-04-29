@@ -137,9 +137,7 @@ class Earthquake(TimedAbility):
 class Windblast(TimedAbility):
     filter = set([Tags.ENEMY])
     duration = 2
-    force = 10.0
-    taper_point = 0.5
-    taper_slope = 1
+    force = 500
     
     spread = 0.8 #radians
     sprite_name = 'wind_peak'
@@ -163,13 +161,12 @@ class Windblast(TimedAbility):
         p1 = c.shape1.owner.position
         p2 = c.shape2.owner.position
         start_vector = Vector(p2.x - p1.x, p2.y - p1.y)
-        eject_mag = self.force / (start_vector.magnitude() / self.size )
+        eject_mag = self.force  / (start_vector.magnitude() / self.size )
         eject_vector = start_vector.normalized().rotate((random.random() - 0.5) * self.spread)
-        eject_vector *= eject_mag
+        eject_vector *= (eject_mag * dt)
         c.shape2.owner.apply_force(eject_vector)
     
     def update(self, t, dt, collision_detector):
-        print "wb update"
         self.position = self.parent.position + Vector(0, 16)
         collision_detector.update_collidable(self.token, self.collidable)
         super(Windblast, self).update(t, dt, collision_detector)
