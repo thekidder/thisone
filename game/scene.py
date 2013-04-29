@@ -217,8 +217,10 @@ class ActOne(Scene):
                     action.action(self, 'play_dialog', 'data/dialog/death_dialog.json'),
                     action.action(self, 'end_with',
                                   game.SceneState.failed,
-                                  updatable.fade_to_black(0.5))])
+                                  updatable.fade_to_black(0.5))
+                ]
             )
+        )
 
         # play some dialog
 
