@@ -1,6 +1,7 @@
 import logging
 import random
 
+import action
 import game
 import camera
 import character
@@ -13,6 +14,7 @@ from kidgine.math.vector import Vector
 from collision import Tags
 import dialog
 import updatable
+import trigger
 
 
 logger = logging.getLogger(__name__)
@@ -24,6 +26,7 @@ class Scene(object):
         self._inputs = inputs.Inputs()
 
         self.updatables = set()
+        self._triggers = dict()
         self.preemptible = None
 
         self.return_state = None
@@ -108,15 +111,15 @@ class Scene(object):
     # Subclass API starts here
     #
 
+    def add_updatable(self, c):
+        self.updatables.add(c)
+        self.drawable.add_renderable(c)
+
+
     def remove_updatable(self, c):
         c.removed(self._collision_detector)
         self.updatables.remove(c)
         self.drawable.remove_renderable(c)
-
-
-    def add_updatable(self, c):
-        self.updatables.add(c)
-        self.drawable.add_renderable(c)
 
 
     def run_preemptible(self, preemptible):
@@ -149,20 +152,42 @@ class Scene(object):
             self.add_updatable(enemy)
 
 
+    def add_trigger(self, trigger, action):
+        t = updatable.TriggeredUpdatable(trigger, action)
+        self._triggers[trigger] = t
+        self.add_updatable(t)
+
+
+    def remove_trigger(self, trigger):
+        del self._triggers[trigger]
+
+
 class ActOne(Scene):
     def __init__(self):
         super(ActOne, self).__init__('data/levels/act_one.json')
 
+        # create player
         self.player_character = character.GirlCharacter(Vector(32 * 10, 32 * 60))
         self.add_updatable(self.player_character)
 
+        # set camera
         self.set_camera(camera.VerticalPanningCamera(self.player_character, 32 * 11, 32 * 20))
 
+        # create some enemies
         self.spawn_wave(Vector(10 * 32, 40 * 32), character.MeleeEnemy, 6)
 
         #self.add_updatable(dialog.Dialog('data/dialog/act_one_warlord_1.json'))
 
+        # start by fading from black
         self.add_updatable(updatable.fade_from_black(1.0))
+
+        # set up some triggers
+
+        # lose after 5 seconds
+        self.add_trigger(trigger.time_trigger(5.0),
+                         action.scene_action(self, 'end_with',
+                                             game.SceneState.failed,
+                                             updatable.fade_to_black(0.5)))
 
 
     def update(self, t, dt):
