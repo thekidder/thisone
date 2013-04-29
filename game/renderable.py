@@ -231,6 +231,36 @@ class DialogRenderable(object):
             self.name_text.delete()
 
 
+class BombRenderable(object):
+    def __init__(self, batch, group, bomb):
+        group = pyglet.graphics.OrderedGroup(20, group)
+        self.bomb = bomb
+
+        self.sprite = sprite.AnimatedSprite(imagecache.get_animation('bomb'),
+                                            batch = batch,
+                                            group = group)
+        self.explosion = sprite.AnimatedSprite(imagecache.get_animation('bomb_explosion'),
+                                               batch = batch,
+                                               group = group)
+
+
+    def update(self, t, dt):
+        if self.bomb.explosion_triggered:
+            self.sprite.visible = False
+            self.explosion.visible = True
+        else:
+            self.sprite.visible = True
+            self.explosion.visible = False
+
+        utils.set_sprite_pos(self.sprite, self.bomb.position)
+        utils.set_sprite_pos(self.explosion, self.bomb.position)
+
+
+    def delete(self):
+        self.sprite.delete()
+        self.explosion.delete()
+
+
 class CharacterRenderable(object):
     def __init__(self, batch, group, character, sprite_base):
         group = pyglet.graphics.OrderedGroup(10, group)

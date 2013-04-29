@@ -60,6 +60,12 @@ __all_sprites = {
     'wind_peak'           : ('data/images/wind_peak.png',              0,    0,   96, 96, 48, 48),
     'water_peak'          : ('data/images/water_peak.png',              0,    0,   96, 96, 48, 48),
 
+    # projectiles
+    'bomb'                : ('data/images/projectiles/bomb.png',          0,    0,   20, 15,  0,  0),
+    'bomb_lit'            : ('data/images/projectiles/bomb-lit.png',      0,    0,   32, 32, 16, 16),
+    'bomb_unlit'          : ('data/images/projectiles/bomb-unlit.png',    0,    0,   32, 32, 16, 16),
+    'bomb_explosion'      : ('data/images/projectiles/bomb-explosion.png',0,    0,  160, 32,  0,  0),
+
     # dialog system
     'dialog_bg'           : ('data/images/ui/dialog-box-1.png',            0,    0, 800,270,  0,  0),
     'dialog_name_bg'      : ('data/images/ui/dialog-box-2.png',       0,    0,  214, 57,  0,  0),
