@@ -122,11 +122,19 @@ class Scene(object):
 class ActOne(Scene):
     def __init__(self):
         super(ActOne, self).__init__('data/levels/act_one.json')
-        self.player_character.position = Vector(32 * 10, 32 * 100)
+        self.player_character.position = Vector(32 * 10, 32 * 60)
 
-        self.spawn_wave(Vector(10 * 32, 80 * 32), character.MeleeEnemy, 6)
+        def camera_anchor():
+            if self.player_character is None:
+                return Vector(32*11, 32*10)
+            return Vector(32 * 11, self.player_character.position.y)
+        c = kidgine.renderer.camera.CenteredCamera(camera_anchor, kidgine.math.vector.Vector(32*20, 1))
+        self.drawable.set_camera(c)
 
-        self.run_dialog(dialog.Dialog('data/dialog/act_one_warlord_1.json'))
+
+        self.spawn_wave(Vector(10 * 32, 40 * 32), character.MeleeEnemy, 6)
+
+        #self.run_dialog(dialog.Dialog('data/dialog/act_one_warlord_1.json'))
 
 
 class Cutscene(object):

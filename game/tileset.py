@@ -27,8 +27,11 @@ class Tileset(object):
 
         image = kidgine.resource.load_texture(filename)
 
-        width = image.width / self.tile_width
-        height = image.height / self.tile_height
+        image_width  = (image.width - image.width % self.tile_width)
+        image_height = (image.height - image.height % self.tile_height)
+
+        width =  image_width / self.tile_width
+        height = image_height / self.tile_height
 
         for i in xrange(width):
             for j in xrange(height):

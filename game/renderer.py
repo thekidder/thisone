@@ -7,6 +7,7 @@ import character
 import kidgine.math.vector
 import kidgine.renderer.camera
 import kidgine.renderer.utils
+from kidgine.math.vector import Vector
 
 
 logger = logging.getLogger(__name__)
@@ -22,14 +23,12 @@ class SceneRenderer(object):
         self.ui_batch = pyglet.graphics.Batch()
         self.player_character = None
 
-        def camera_anchor():
-            if self.player_character is None:
-                return kidgine.math.vector.Vector(32*10, 32*10)
-            return self.player_character.position
-        self.camera = kidgine.renderer.camera.CenteredCamera(camera_anchor, kidgine.math.vector.Vector(1, 1))
-
         self.renderables = dict()
         self.ui_renderables = dict()
+
+        self.camera = None
+        self.width = 1.
+        self.height = 1.
 
 
     def draw(self, t, dt, window):
@@ -50,12 +49,21 @@ class SceneRenderer(object):
         self.ui_batch.draw()
 
 
-    def on_resize(self, width, height):
-        ratio = 1. * height / width
-        camera_size = 400
+    def set_camera(self, cam):
+        self.camera = cam
+        self.on_resize(self.width,self.height)
 
-        self.camera.world_size  = kidgine.math.vector.Vector(camera_size, camera_size * ratio)
-        self.camera.window_size = kidgine.math.vector.Vector(width, height)
+
+    def on_resize(self, width, height):
+        self.width = width
+        self.height = height
+
+        ratio = 1. * height / width
+
+        if self.camera:
+            self.camera.world_size  = kidgine.math.vector.Vector(self.camera.world_size.x,
+                                                                 self.camera.world_size.x * ratio)
+            self.camera.window_size = kidgine.math.vector.Vector(width, height)
 
 
     def add_renderable(self, d):

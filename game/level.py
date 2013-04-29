@@ -35,6 +35,8 @@ class Level(object):
         height = json_level['layers'][0]['height']
 
         for layer in json_level['layers']:
+            if not layer['visible']:
+                continue
             for i,tile in enumerate(layer['data']):
                 if tile == 0:
                     continue
@@ -69,6 +71,8 @@ class LevelRenderable(object):
         width  = json_level['layers'][0]['width']
         height = json_level['layers'][0]['height']
         for layer in json_level['layers']:
+            if not layer['visible']:
+                continue
             for i,tile in enumerate(layer['data']):
                 if tile == 0:
                     continue
@@ -78,6 +82,8 @@ class LevelRenderable(object):
 
                 x = i % width
                 y = height - i / width
+
+                #print 'loaded {} at {},{} with flippd {}'.format(tile,x,y,flipped)
 
                 img = tiles.get(tile)
 
@@ -103,6 +109,9 @@ class LevelRenderable(object):
                     flip_x = flip_x,
                     flip_y = flip_y,
                     rotate = rotation)
+
+                img.anchor_x = 0
+                img.anchor_y = 0
 
                 s = pyglet.sprite.Sprite(img, batch=self.batch)
                 s.x = x * self.tile_width
