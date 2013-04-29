@@ -7,6 +7,7 @@ import pyglet.sprite
 
 import kidgine.collision.rectangle
 import kidgine.collision.shape
+import kidgine.utils
 import tileset
 from kidgine.math.vector import Vector
 from collision import Tags
@@ -37,6 +38,8 @@ class Level(object):
             for i,tile in enumerate(layer['data']):
                 if tile == 0:
                     continue
+
+                tile = tile & ~tileset.FLIP_MASK
 
                 if not tiles.collides(tile):
                     continue
@@ -70,10 +73,38 @@ class LevelRenderable(object):
                 if tile == 0:
                     continue
 
+                flipped = tile & tileset.FLIP_MASK
+                tile = tile & ~tileset.FLIP_MASK
+
                 x = i % width
                 y = height - i / width
 
-                s = pyglet.sprite.Sprite(tiles.get(tile), batch=self.batch)
+                img = tiles.get(tile)
+
+                flip_x = flipped & tileset.FLIPPED_HORIZONTAL
+                flip_y = flipped & tileset.FLIPPED_VERTICAL
+
+                if flipped & tileset.FLIPPED_DIAGONAL:
+                    if (flipped & tileset.FLIPPED_HORIZONTAL) and not (flipped & tileset.FLIPPED_VERTICAL):
+                        rotation = 90
+                        flip_x = False
+                    elif not (flipped & tileset.FLIPPED_HORIZONTAL) and (flipped & tileset.FLIPPED_VERTICAL):
+                        rotation = -90
+                        flip_y = False
+                    elif not (flipped & tileset.FLIPPED_HORIZONTAL) and not (flipped & tileset.FLIPPED_VERTICAL):
+                        rotation = -90
+                        flip_x = True
+                    else:
+                        rotation = 90
+                        flip_y = False
+                else:
+                    rotation = 0
+                img = img.get_transform(
+                    flip_x = flip_x,
+                    flip_y = flip_y,
+                    rotate = rotation)
+
+                s = pyglet.sprite.Sprite(img, batch=self.batch)
                 s.x = x * self.tile_width
                 s.y = y * self.tile_height
                 self.sprites.append(s)

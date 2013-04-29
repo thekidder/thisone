@@ -81,13 +81,13 @@ class Dialog(object):
             if self.renderable:
                 self.renderable.new_text()
             self.done = False
-            logger.info('{} {} {} {} {} {}'.format(
-                    self.lines[self.current_line]['portrait'],
-                    self.lines[self.current_line]['portrait_facing'],
-                    self.lines[self.current_line]['name'],
-                    self.lines[self.current_line]['sound'],
-                    self.lines[self.current_line]['dialog'],
-                    self.lines[self.current_line]['minimum_time']))
+            # logger.info('{} {} {} {} {} {}'.format(
+            #         self.lines[self.current_line]['portrait'],
+            #         self.lines[self.current_line]['portrait_facing'],
+            #         self.lines[self.current_line]['name'],
+            #         self.lines[self.current_line]['sound'],
+            #         self.lines[self.current_line]['dialog'],
+            #         self.lines[self.current_line]['minimum_time']))
 
 
     def is_done(self):
