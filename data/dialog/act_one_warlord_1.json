@@ -4,15 +4,13 @@
 	    "portrait"       : "warlord",
 	    "portrait_facing": "left",
 	    "name"           : "WARLORD",
-	    "sound"          : "warlord_1.wav",
-	    "dialog"         : "<b>This one</b> has great power.",
+	    "dialog"         : "This one has great power.",
 	    "minimum_time"   : 2.0
 	},
 	{
 	    "portrait"       : "warlord",
-	    "portrait_facing": "right",
+	    "portrait_facing": "left",
 	    "name"           : "WARLORD",
-	    "sound"          : "warlord_1.wav",
 	    "dialog"         : "You embrace the flame.",
 	    "minimum_time"   : 2.0
 	},
@@ -20,7 +18,6 @@
 	    "portrait"       : "warlord",
 	    "portrait_facing": "left",
 	    "name"           : "WARLORD",
-	    "sound"          : "warlord_1.wav",
 	    "dialog"         : "I am honored to be bested by such rage.",
 	    "minimum_time"   : 1.0
 	}
