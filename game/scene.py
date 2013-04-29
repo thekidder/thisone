@@ -237,11 +237,18 @@ class ActOne(Scene):
                 [
                     action.add_updatable(character.WarlordBoss(Vector(32 * 10, 32 * 60),
                                                                self.player_character)),
-                    action.add_trigger(self,
-                                  trigger.trigger(self, 'all_enemies_dead'),
-                                  action.action(self, 'end_with',
-                                                game.SceneState.succeeded,
-                                                updatable.fade_to_black(0.5)))
+                    action.add_trigger(
+                        self,
+                        trigger.trigger(self, 'all_enemies_dead'),
+                        action.action_list(
+                            [
+                                action.action(self, 'play_dialog', 'data/dialog/act_one_warlord_1.json'),
+                                action.action(self, 'end_with',
+                                              game.SceneState.succeeded,
+                                              updatable.fade_to_black(0.5))
+                            ]
+                        )
+                    )
                 ]
             )
         )
