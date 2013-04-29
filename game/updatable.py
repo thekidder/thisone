@@ -1,6 +1,32 @@
 import kidgine.utils
 import renderable
 
+
+class TriggeredUpdatable(object):
+    def __init__(self, trigger, action):
+        self.trigger = trigger
+        self.action = action
+        self.triggered = False
+
+
+    def update(self, inputs, t, dt, collision_detector):
+        if self.trigger(inputs, t, dt, collision_detector):
+            self.action(inputs, t, dt, collision_detector)
+            self.triggered = True
+
+
+    def removed(self, collision_detector):
+        pass
+
+
+    def create_renderable(self):
+        return None
+
+
+    def alive(self):
+        return not self.triggered
+
+
 class OpacityFader(object):
     def __init__(self, color, start, end, duration):
         self.r,self.g,self.b = color

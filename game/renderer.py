@@ -66,23 +66,34 @@ class SceneRenderer(object):
 
 
     def add_renderable(self, obj):
+        type = obj.create_renderable()
+        if not type:
+            return
+
         if obj.is_ui():
-            renderable = obj.create_renderable()(self.ui_batch, self.ui_group)
+            renderable = type(self.ui_batch, self.ui_group)
             self.ui_renderables[obj] = renderable
         else:
-            renderable = obj.create_renderable()(self.batch, self.group)
+            renderable = type(self.batch, self.group)
             self.renderables[obj] = renderable
 
 
     def remove_renderable(self, obj):
-        if obj.is_ui():
-            r = self.ui_renderables[obj]
-            r.delete()
-            del self.ui_renderables[obj]
+        try:
+            is_ui = obj.is_ui()
+        except AttributeError:
+            pass
         else:
-            r = self.renderables[obj]
-            r.delete()
-            del self.renderables[obj]
+            if is_ui:
+                if obj in self.ui_renderables:
+                    r = self.ui_renderables[obj]
+                    r.delete()
+                    del self.ui_renderables[obj]
+            else:
+                if obj in self.renderables:
+                    r = self.renderables[obj]
+                    r.delete()
+                    del self.renderables[obj]
 
 
     def on_key_press(self, symbol, modifiers):

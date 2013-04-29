@@ -161,23 +161,26 @@ class DialogRenderable(object):
     def new_text(self):
         if self.name_text:
             self.name_text.delete()
+            self.name_text = None
         if self.text:
             self.text.delete()
 
-        self.name_text = pyglet.text.HTMLLabel(
-            text = self.dialog.get_current_line()['name'],
-            batch = self.batch,
-            group = pyglet.graphics.OrderedGroup(10, self.group))
+        if self.dialog.get_current_line()['name']:
+            self.name_text = pyglet.text.HTMLLabel(
+                text = self.dialog.get_current_line()['name'],
+                batch = self.batch,
+                group = pyglet.graphics.OrderedGroup(10, self.group))
+            self.set_style(self.name_text)
+            self.name_text.set_style('font_size', 24)
+
         self.text = pyglet.text.HTMLLabel(
             text = self.dialog.get_current_line()['dialog'],
             width = 800,
             multiline = True,
             batch = self.batch,
             group = pyglet.graphics.OrderedGroup(10, self.group))
-        self.set_style(self.name_text)
-        self.set_style(self.text)
 
-        self.name_text.set_style('font_size', 24)
+        self.set_style(self.text)
         self.text.set_style('font_size', 18)
 
 
@@ -191,6 +194,8 @@ class DialogRenderable(object):
         self.dialog_background.x = (window.width - self.dialog_background.width) / 2
         self.dialog_background.y = 40
 
+        if not self.dialog.get_current_line()['name']:
+            self.dialog_name_background.visible = False
         self.dialog_name_background.x = (window.width - self.dialog_background.width) / 2 - 20
         if self.dialog.get_current_line()['portrait_facing'] == dialog.PortraitFacing.right:
             self.dialog_name_background.x = (window.width

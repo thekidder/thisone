@@ -1,18 +1,20 @@
+import collections
 import logging
 import random
 
-import game
+import action
 import camera
 import character
+import dialog
+import game
 import inputs
 import kidgine.collision
 import level
 import renderer
-import kidgine.math.vector
-from kidgine.math.vector import Vector
-from collision import Tags
-import dialog
+import trigger
 import updatable
+from collision import Tags
+from kidgine.math.vector import Vector
 
 
 logger = logging.getLogger(__name__)
@@ -24,8 +26,11 @@ class Scene(object):
         self._inputs = inputs.Inputs()
 
         self.updatables = set()
-        self.preemptible = None
+        self._triggers = dict()
+        self._blocking_events = collections.deque()
+        self._current_blocking_event = None
 
+        self.player_character = None
         self.return_state = None
 
         self.level = level.Level(level_name, self._collision_detector)
@@ -39,13 +44,13 @@ class Scene(object):
         self._inputs.update(self.drawable.keystate)
         self._collision_detector.start_frame()
 
-        if self.preemptible is not None:
-            self.preemptible.update(self._inputs, t, dt, self._collision_detector)
-            if not self.preemptible.alive():
-                self.remove_preemptible()
-
+        if self._current_blocking_event is not None:
+            self._current_blocking_event.update(self._inputs, t, dt, self._collision_detector)
+            if not self._current_blocking_event.alive():
                 if self.return_state:
                     return self.return_state
+
+                self._remove_blocking_event()
             return game.SceneState.in_progress
 
         # calculate collision forces
@@ -103,10 +108,39 @@ class Scene(object):
         except AttributeError:
             pass
 
+    def _remove_blocking_event(self):
+        if self._current_blocking_event is not None:
+            self._current_blocking_event.removed(self._collision_detector)
+            self.drawable.remove_renderable(self._current_blocking_event)
+            if len(self._blocking_events) > 0:
+                self._current_blocking_event,self.return_state = self._blocking_events.popleft()
+                self.drawable.add_renderable(self._current_blocking_event)
+            else:
+                self._current_blocking_event = None
 
     #
     # Subclass API starts here
     #
+
+
+    # Query Functions
+
+    def is_player_alive(self):
+        if self.player_character:
+            return self.player_character.alive()
+        else:
+            return False
+
+
+    def is_player_dead(self):
+        return not self.is_player_alive()
+
+    # Actions and Setters
+
+    def add_updatable(self, c):
+        self.updatables.add(c)
+        self.drawable.add_renderable(c)
+
 
     def remove_updatable(self, c):
         c.removed(self._collision_detector)
@@ -114,28 +148,35 @@ class Scene(object):
         self.drawable.remove_renderable(c)
 
 
-    def add_updatable(self, c):
-        self.updatables.add(c)
-        self.drawable.add_renderable(c)
+    def add_blocking_event(self, blocking_event, ending_state = None):
+        if self._current_blocking_event is None:
+            self._current_blocking_event = blocking_event
+            self.drawable.add_renderable(self._current_blocking_event)
+            self.return_state = ending_state
+        else:
+            self._blocking_events.append((blocking_event, ending_state))
 
 
-    def run_preemptible(self, preemptible):
-        self.remove_preemptible()
-        self.drawable.add_renderable(preemptible)
-        self.preemptible = preemptible
+    def add_trigger(self, trigger, action):
+        t = updatable.TriggeredUpdatable(trigger, action)
+        self._triggers[trigger] = t
+        self.add_updatable(t)
 
 
-    def remove_preemptible(self):
-        if self.preemptible is not None:
-            self.preemptible.removed(self._collision_detector)
-            self.drawable.remove_renderable(self.preemptible)
-            self.preemptible = None
+    def remove_trigger(self, trigger):
+        del self._triggers[trigger]
 
 
-    def end_with(self, state, preemptible):
-        if self.return_state is None:
-            self.return_state = state
-            self.run_preemptible(preemptible)
+    def end_with(self, state, updatable):
+        self.add_blocking_event(updatable, ending_state = state)
+
+
+    def play_dialog(self, dialog_path, blocking = True):
+        d = dialog.Dialog(dialog_path)
+        if blocking:
+            self.add_blocking_event(d)
+        else:
+            self.add_updatable(d)
 
 
     def set_camera(self, cam):
@@ -153,23 +194,37 @@ class ActOne(Scene):
     def __init__(self):
         super(ActOne, self).__init__('data/levels/act_one.json')
 
+        # create player
         self.player_character = character.GirlCharacter(Vector(32 * 10, 32 * 60))
         self.add_updatable(self.player_character)
 
+        # set camera
         self.set_camera(camera.VerticalPanningCamera(self.player_character, 32 * 11, 32 * 20))
 
+        # create some enemies
         self.spawn_wave(Vector(10 * 32, 40 * 32), character.MeleeEnemy, 6)
 
-        #self.add_updatable(dialog.Dialog('data/dialog/act_one_warlord_1.json'))
-
+        # start by fading from black
         self.add_updatable(updatable.fade_from_black(1.0))
 
+        # set up some triggers
 
-    def update(self, t, dt):
-        if self.player_character is None:
-            self.end_with(game.SceneState.failed, updatable.fade_to_black(1.5))
+        # lose when the player dies
+        self.add_trigger(
+            trigger.trigger(self, 'is_player_dead'),
+            action.action_list(
+                [
+                    action.action(self, 'play_dialog', 'data/dialog/death_dialog.json'),
+                    action.action(self, 'end_with',
+                                  game.SceneState.failed,
+                                  updatable.fade_to_black(0.5))
+                ]
+            )
+        )
 
-        return super(ActOne, self).update(t, dt)
+        # play some dialog
+
+        #self.play_dialog('data/dialog/act_one_warlord_1.json'))
 
 
 class Cutscene(object):
