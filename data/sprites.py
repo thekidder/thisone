@@ -38,12 +38,13 @@ __all_sprites = {
     # attacks
     'fire_peak'           : ('data/images/fire_peak.png',               0,    0,   96, 96, 48, 48),
     'earth_peak'          : ('data/images/earth_peak.png',              0,    0,   96, 96, 48, 48),
+    'wind_peak'           : ('data/images/wind_peak.png',              0,    0,   96, 96, 48, 48),
+    'water_peak'          : ('data/images/water_peak.png',              0,    0,   96, 96, 48, 48),
 
     # dialog system
     'dialog_bg'           : ('data/images/ui/dialog_bg.png',            0,    0,  874,195,  0,  0),
     'dialog_name_bg'      : ('data/images/ui/dialog_name_bg.png',       0,    0,  214, 57,  0,  0),
     'dialog_next'         : ('data/images/ui/dialog_next.png',          0,    0,   83, 47,  0,  0),
-    'wind_peak'          : ('data/images/wind_peak.png',              0,    0,   96, 96, 48, 48),
 }
 
 
