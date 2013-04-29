@@ -278,7 +278,9 @@ class CharacterRenderable(object):
 
 
     def update(self, t, dt):
-        if self.character.idle:
+        if hasattr(self.character, 'charging') and self.character.charging:
+            used_sprite_index = 9
+        elif self.character.idle:
             used_sprite_index = 8
         else:
             used_sprite_index = self.character.facing
@@ -346,6 +348,12 @@ class MeleeEnemyRenderable(CharacterRenderable):
 
 class WarlordRenderable(MeleeEnemyRenderable):
     sprite_name = 'warlord'
+    def __init__(self, batch, group, character):
+        super(WarlordRenderable, self).__init__(batch, group, character)
+        #charging (9)
+        self.sprites.append(sprite.AnimatedSprite(imagecache.get_animation(self.sprite_name + '_spin'),
+                                                  batch = batch,
+                                                  group = group))
 
 
 class GirlRenderable(CharacterRenderable):

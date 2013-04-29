@@ -32,6 +32,7 @@ all = {
     'warlord_walk_top'     : ('warlord_walk_top',    41, 48,  5,       0.25),
     'warlord_walk_bottom'  : ('warlord_walk_bottom', 41, 48,  5,       0.25),
     'warlord_idle'         : ('warlord_idle',        41, 48,  5,       0.25),
+    'warlord_spin'         : ('warlord_spin',        41, 48,  8,       0.1),
 
 }
 

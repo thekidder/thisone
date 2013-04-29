@@ -296,7 +296,7 @@ class WarlordBoss(MeleeEnemy):
     speed = 45
     renderable_type = renderable.WarlordRenderable
     charging = None
-    charge_delay = 0.75
+    charge_delay = 0.45
     charge_length = 1
     charge_rest = 1.25
     charge_direction = None
