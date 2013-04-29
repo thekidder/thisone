@@ -344,6 +344,10 @@ class MeleeEnemyRenderable(CharacterRenderable):
         self.blinker.update(t, dt)
 
 
+class WarlordRenderable(MeleeEnemyRenderable):
+    sprite_name = 'barbarian'
+
+
 class GirlRenderable(CharacterRenderable):
     sprite_name = 'girl'
     def __init__(self, batch, group, character):
