@@ -44,6 +44,55 @@ class ActionEvent(TriggeredUpdatable):
         super(ActionEvent, self).__init__(trigger, action)
 
 
+class HUD(object):
+    def __init__(self, scene):
+        self.scene = scene
+        self.active = [False] * 4
+        self.cooldown = [False] * 4
+        self.disabled = False
+
+
+    def removed(self, c):
+        pass
+
+
+    def update(self, inputs, t, dt, collision_detector):
+        if not self.scene.player_character:
+            self.disabled = True
+            for s in self.active:
+                s = True
+        else:
+            self.disabled = False
+
+            self.active[0] = self.scene.player_character.ability_one.is_active(t)
+            self.active[1] = self.scene.player_character.ability_two.is_active(t)
+            self.active[2] = self.scene.player_character.ability_three.is_active(t)
+            self.active[3] = self.scene.player_character.ability_four.is_active(t)
+
+            self.cooldown[0] = not self.scene.player_character.ability_one.is_recharged(t)
+            self.cooldown[1] = not self.scene.player_character.ability_two.is_recharged(t)
+            self.cooldown[2] = not self.scene.player_character.ability_three.is_recharged(t)
+            self.cooldown[3] = not self.scene.player_character.ability_four.is_recharged(t)
+
+
+    def alive(self):
+        return True
+
+
+    def is_ui(self):
+        return True
+
+
+    def get_tags(self):
+        return set()
+
+
+    def create_renderable(self):
+        def wrapped(batch, group):
+            return renderable.HUDRenderable(batch, group, self)
+        return wrapped
+
+
 class Bomb(object):
     explosion_time = data.animations.animation_duration('bomb_explosion')
     time = 1.5

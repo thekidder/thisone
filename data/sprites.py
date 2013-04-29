@@ -65,13 +65,25 @@ __all_sprites = {
     'bomb_lit'            : ('data/images/projectiles/bomb-lit.png',      0,    0,   32, 32, 16, 16),
     'bomb_unlit'          : ('data/images/projectiles/bomb-unlit.png',    0,    0,   32, 32, 16, 16),
     'bomb_explosion'      : ('data/images/projectiles/bomb-explosion.png',0,    0,  160, 32,  0,  0),
-    
+
     'spear'      : ('data/images/projectiles/spear.png',0,    0,  20, 20,  0,  0),
 
     # dialog system
     'dialog_bg'           : ('data/images/ui/dialog-box-1.png',            0,    0, 800,270,  0,  0),
     'dialog_name_bg'      : ('data/images/ui/dialog-box-2.png',       0,    0,  214, 57,  0,  0),
     'dialog_next'         : ('data/images/ui/dialog-box-3.png',          0,    0,   83, 47,  0,  0),
+
+    # HUD
+    'fire_hud'            : ('data/images/ui/elementbuttons.png',      0,    0,  24, 27,  0,  0),
+    'water_hud'           : ('data/images/ui/elementbuttons.png',     24,    0,  24, 27,  0,  0),
+    'wind_hud'            : ('data/images/ui/elementbuttons.png',     48,    0,  24, 27,  0,  0),
+    'earth_hud'           : ('data/images/ui/elementbuttons.png',     72,    0,  24, 27,  0,  0),
+
+    'fire_pressed_hud'    : ('data/images/ui/elementbuttons-pressed.png',  0,    0,  24, 27,  0,  0),
+    'water_pressed_hud'   : ('data/images/ui/elementbuttons-pressed.png', 24,    0,  24, 27,  0,  0),
+    'wind_pressed_hud'    : ('data/images/ui/elementbuttons-pressed.png', 48,    0,  24, 27,  0,  0),
+    'earth_pressed_hud'   : ('data/images/ui/elementbuttons-pressed.png', 72,    0,  24, 27,  0,  0),
+
 }
 
 

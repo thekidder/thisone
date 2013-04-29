@@ -12,6 +12,7 @@ import level
 import math
 import sprite
 import tileset
+import updatable
 import utils
 
 
@@ -134,7 +135,52 @@ class OpacityFaderRenderable(object):
 
 
 class HUDRenderable(object):
-    pass
+    scale = 2
+
+    def __init__(self, batch, group, hud):
+        self.hud = hud
+
+        self.normal = [
+            pyglet.sprite.Sprite(imagecache.get_sprite('fire_hud'), batch = batch, group = group),
+            pyglet.sprite.Sprite(imagecache.get_sprite('water_hud'), batch = batch, group = group),
+            pyglet.sprite.Sprite(imagecache.get_sprite('wind_hud'), batch = batch, group = group),
+            pyglet.sprite.Sprite(imagecache.get_sprite('earth_hud'), batch = batch, group = group) ]
+
+        self.pressed = [
+            pyglet.sprite.Sprite(imagecache.get_sprite('fire_pressed_hud'), batch = batch, group = group),
+            pyglet.sprite.Sprite(imagecache.get_sprite('water_pressed_hud'), batch = batch, group = group),
+            pyglet.sprite.Sprite(imagecache.get_sprite('wind_pressed_hud'), batch = batch, group = group),
+            pyglet.sprite.Sprite(imagecache.get_sprite('earth_pressed_hud'), batch = batch, group = group) ]
+
+        for s in self.normal:
+            s.scale = self.scale
+        for s in self.pressed:
+            s.scale = self.scale
+
+
+
+    def update(self, t, dt, window):
+        for e in xrange(len(self.normal)):
+            self.normal[e].y = 24
+            self.normal[e].x = 48 + e * 52
+
+            self.pressed[e].y = 24
+            self.pressed[e].x = 48 + e * 52
+
+            self.normal[e].visible = self.hud.active[e] and not self.hud.disabled
+            self.pressed[e].visible = not self.hud.active[e]
+
+            if self.hud.cooldown[e]:
+                self.pressed[e].color = (60,60,60)
+            else:
+                self.pressed[e].color = (255,255,255)
+
+    def delete(self):
+        for i in self.normal:
+            i.delete()
+        for i in self.pressed:
+            i.delete()
+
 
 
 class DialogRenderable(object):

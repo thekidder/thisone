@@ -40,6 +40,7 @@ class Scene(object):
         self.level = level.Level(level_name, self._collision_detector)
 
         self.add_updatable(self.level)
+        self.add_updatable(updatable.HUD(self))
 
 
 

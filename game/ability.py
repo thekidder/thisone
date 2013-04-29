@@ -19,8 +19,15 @@ class Ability(object):
         self.last_activation = -60
 
 
+    def is_recharged(self, t):
+        return t - self.last_activation > self.recharge_time
+
+
+    def is_active(self, t):
+        return t - self.last_activation < self.ability_type.duration
+
     def activate(self, t, dt, collision_detector, parent, new_objs):
-        if t - self.last_activation > self.recharge_time:
+        if self.is_recharged(t):
             self.last_activation = t
 
             new_objs.append(self.ability_type(parent, collision_detector))
