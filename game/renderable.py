@@ -14,7 +14,7 @@ import utils
 logger = logging.getLogger(__name__)
 
 class StaticSpriteRenderable(object):
-    def __init__(self, batch, parent, image, rotation = 0):
+    def __init__(self, batch, group, parent, image, rotation = 0):
         self.sprite = pyglet.sprite.Sprite(imagecache.get_sprite(image), batch = batch)
         self.sprite.rotation = rotation
         self.parent = parent
@@ -29,7 +29,7 @@ class StaticSpriteRenderable(object):
 
 
 class OpacityFaderRenderable(object):
-    def __init__(self, batch, obj):
+    def __init__(self, batch, group, obj):
         self.obj = obj
         self.batch = batch
         self.rect = None
@@ -56,9 +56,9 @@ class OpacityFaderRenderable(object):
 
 
 class DialogRenderable(object):
-    def __init__(self, batch, dialog):
+    def __init__(self, batch, group, dialog):
         self.batch = batch
-        self.group = pyglet.graphics.NullGroup()
+        self.group = group
 
         self.dialog = dialog
 
@@ -150,7 +150,7 @@ class DialogRenderable(object):
 
 
 class CharacterRenderable(object):
-    def __init__(self, batch, character, sprite_base):
+    def __init__(self, batch, group, character, sprite_base):
         self.character = character
         self.last_sprite_index = 0
 
@@ -236,8 +236,8 @@ class BlinkOnDamage(object):
 
 class MeleeEnemyRenderable(CharacterRenderable):
     sprite_name = 'enemy_1'
-    def __init__(self, batch, character):
-        super(MeleeEnemyRenderable, self).__init__(batch, character, self.sprite_name)
+    def __init__(self, batch, group, character):
+        super(MeleeEnemyRenderable, self).__init__(batch, group, character, self.sprite_name)
         self.blinker = BlinkOnDamage(self)
 
 
@@ -248,8 +248,8 @@ class MeleeEnemyRenderable(CharacterRenderable):
 
 class GirlRenderable(CharacterRenderable):
     sprite_name = 'girl'
-    def __init__(self, batch, character):
-        super(GirlRenderable, self).__init__(batch, character, self.sprite_name)
+    def __init__(self, batch, group, character):
+        super(GirlRenderable, self).__init__(batch, group, character, self.sprite_name)
         self.blinker = BlinkOnDamage(self)
 
 

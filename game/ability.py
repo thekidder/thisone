@@ -57,8 +57,8 @@ class TimedAbility(object):
 
 
     def create_renderable(self):
-        def wrapped(batch):
-            return renderable.StaticSpriteRenderable(batch, self, self.sprite_name, rotation=self.rotation)
+        def wrapped(batch, group):
+            return renderable.StaticSpriteRenderable(batch, group, self, self.sprite_name, rotation=self.rotation)
         return wrapped
 
 
@@ -138,27 +138,27 @@ class Windblast(TimedAbility):
     filter = set([Tags.ENEMY])
     duration = 0.7
     force = 500
-    
+
     spread = 0.8 #radians
     sprite_name = 'wind_peak'
     size = 48
     slow = 0.1
     duration = 1.0
-    
+
     def __init__(self, parent, collision_detector):
         super(Windblast, self).__init__()
-        
+
         self.parent = parent
         self.position = parent.position + Vector(0, 16)
-        
+
         tl = Vector(-self.size, -self.size)
         br = Vector( self.size,  self.size)
         self.collidable = kidgine.collision.rectangle.Rectangle(self, tl, br)
-        
+
         self.token = 'windblast'
-        
+
         collision_detector.update_collidable(self.token, self.collidable)
-    
+
     def apply(self, t, dt, c):
         p1 = c.shape1.owner.position
         p2 = c.shape2.owner.position
@@ -168,7 +168,7 @@ class Windblast(TimedAbility):
         eject_vector *= (eject_mag * dt)
         c.shape2.owner.apply_force(eject_vector)
         c.shape2.owner.slow(t, self.slow)
-    
+
     def update(self, t, dt, collision_detector):
         self.position = self.parent.position + Vector(0, 16)
         collision_detector.update_collidable(self.token, self.collidable)

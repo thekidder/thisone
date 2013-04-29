@@ -22,6 +22,10 @@ class SceneRenderer(object):
         self.level = level
         self.batch = pyglet.graphics.Batch()
         self.ui_batch = pyglet.graphics.Batch()
+
+        self.group = pyglet.graphics.NullGroup()
+        self.ui_group = pyglet.graphics.NullGroup()
+
         self.player_character = None
 
         self.renderables = dict()
@@ -70,7 +74,7 @@ class SceneRenderer(object):
     def add_renderable(self, d):
         if len(self.renderables) == 0:
             self.player_character = d
-        self.renderables[d] = d.create_renderable()(self.batch)
+        self.renderables[d] = d.create_renderable()(self.batch, self.group)
 
 
     def remove_renderable(self, object):
@@ -80,7 +84,7 @@ class SceneRenderer(object):
 
 
     def add_ui_renderable(self, d):
-        self.ui_renderables[d] = d.create_renderable()(self.ui_batch)
+        self.ui_renderables[d] = d.create_renderable()(self.ui_batch, self.ui_group)
 
 
     def remove_ui_renderable(self, object):

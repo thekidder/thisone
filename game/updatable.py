@@ -28,8 +28,8 @@ class OpacityFader(object):
 
 
     def create_renderable(self):
-        def wrapped(batch):
-            return renderable.OpacityFaderRenderable(batch, self)
+        def wrapped(batch, group):
+            return renderable.OpacityFaderRenderable(batch, group, self)
         return wrapped
 
 

@@ -90,8 +90,8 @@ class Character(object):
 
 
     def create_renderable(self):
-        def wrapped(batch):
-            return self.renderable_type(batch, self)
+        def wrapped(batch, group):
+            return self.renderable_type(batch, group, self)
         return wrapped
 
 
@@ -148,7 +148,7 @@ class CollidableCharacter(Character):
             self.position += normal
 
         collision_detector.update_collidable(self.token, self.collidable)
-        
+
         self.reset_force()
 
 
