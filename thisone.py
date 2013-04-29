@@ -19,6 +19,8 @@ logger.setLevel(logging.DEBUG)
 
 PROFILE = False
 
+#wut
+
 def create_cvars():
     c = kidgine.config.Config()
 
