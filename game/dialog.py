@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 class Dialog(object):
     default_portrait = None
     default_facing   = PortraitFacing.left
-    default_name     = ''
+    default_name     = None
     default_sound    = None
     default_dialog   = ''
     default_min_time = 0.0
@@ -32,7 +32,7 @@ class Dialog(object):
     def _preprocess(self):
         for line in self.lines:
             if 'portrait' not in line:
-                line['portrait'] = default_portrait
+                line['portrait'] = self.default_portrait
 
             if 'portrait_facing' in line:
                 if line['portrait_facing'] == 'right':
@@ -40,19 +40,19 @@ class Dialog(object):
                 else:
                     line['portrait_facing'] = PortraitFacing.left
             else:
-                line['portrait_facing'] = default_facing
+                line['portrait_facing'] = self.default_facing
 
             if 'name' not in line:
-                line['name'] = default_name
+                line['name'] = self.default_name
 
             if 'sound' not in line:
-                line['sound'] = default_sound
+                line['sound'] = self.default_sound
 
             if 'dialog' not in line:
-                line['dialog'] = default_dialog
+                line['dialog'] = self.default_dialog
 
             if 'minimum_time' not in line:
-                line['minimum_time'] = default_min_time
+                line['minimum_time'] = self.default_min_time
 
 
     def get_current_line(self):

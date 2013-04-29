@@ -1,9 +1,11 @@
+import collections
 import logging
 import random
 
 import action
 import camera
 import character
+import dialog
 import game
 import inputs
 import kidgine.collision
@@ -25,7 +27,8 @@ class Scene(object):
 
         self.updatables = set()
         self._triggers = dict()
-        self.blocking_event = None
+        self._blocking_events = collections.deque()
+        self._current_blocking_event = None
 
         self.player_character = None
         self.return_state = None
@@ -41,13 +44,13 @@ class Scene(object):
         self._inputs.update(self.drawable.keystate)
         self._collision_detector.start_frame()
 
-        if self.blocking_event is not None:
-            self.blocking_event.update(self._inputs, t, dt, self._collision_detector)
-            if not self.blocking_event.alive():
-                self.remove_blocking_event()
-
+        if self._current_blocking_event is not None:
+            self._current_blocking_event.update(self._inputs, t, dt, self._collision_detector)
+            if not self._current_blocking_event.alive():
                 if self.return_state:
                     return self.return_state
+
+                self._remove_blocking_event()
             return game.SceneState.in_progress
 
         # calculate collision forces
@@ -105,10 +108,34 @@ class Scene(object):
         except AttributeError:
             pass
 
+    def _remove_blocking_event(self):
+        if self._current_blocking_event is not None:
+            self._current_blocking_event.removed(self._collision_detector)
+            self.drawable.remove_renderable(self._current_blocking_event)
+            if len(self._blocking_events) > 0:
+                self._current_blocking_event,self.return_state = self._blocking_events.popleft()
+                self.drawable.add_renderable(self._current_blocking_event)
+            else:
+                self._current_blocking_event = None
 
     #
     # Subclass API starts here
     #
+
+
+    # Query Functions
+
+    def is_player_alive(self):
+        if self.player_character:
+            return self.player_character.alive()
+        else:
+            return False
+
+
+    def is_player_dead(self):
+        return not self.is_player_alive()
+
+    # Actions and Setters
 
     def add_updatable(self, c):
         self.updatables.add(c)
@@ -121,17 +148,13 @@ class Scene(object):
         self.drawable.remove_renderable(c)
 
 
-    def run_blocking_event(self, blocking_event):
-        self.remove_blocking_event()
-        self.drawable.add_renderable(blocking_event)
-        self.blocking_event = blocking_event
-
-
-    def remove_blocking_event(self):
-        if self.blocking_event is not None:
-            self.blocking_event.removed(self._collision_detector)
-            self.drawable.remove_renderable(self.blocking_event)
-            self.blocking_event = None
+    def add_blocking_event(self, blocking_event, ending_state = None):
+        if self._current_blocking_event is None:
+            self._current_blocking_event = blocking_event
+            self.drawable.add_renderable(self._current_blocking_event)
+            self.return_state = ending_state
+        else:
+            self._blocking_events.append((blocking_event, ending_state))
 
 
     def add_trigger(self, trigger, action):
@@ -145,24 +168,19 @@ class Scene(object):
 
 
     def end_with(self, state, updatable):
-        if self.return_state is None:
-            self.return_state = state
-            self.run_blocking_event(updatable)
+        self.add_blocking_event(updatable, ending_state = state)
+
+
+    def play_dialog(self, dialog_path, blocking = True):
+        d = dialog.Dialog(dialog_path)
+        if blocking:
+            self.add_blocking_event(d)
+        else:
+            self.add_updatable(d)
 
 
     def set_camera(self, cam):
         self.drawable.set_camera(cam)
-
-
-    def is_player_alive(self):
-        if self.player_character:
-            return self.player_character.alive()
-        else:
-            return False
-
-
-    def is_player_dead(self):
-        return not self.is_player_alive()
 
 
     def spawn_wave(self, position, enemy_type, num_enemies):
@@ -192,10 +210,15 @@ class ActOne(Scene):
         # set up some triggers
 
         # lose when the player dies
-        self.add_trigger(trigger.trigger(self, 'is_player_dead'),
-                         action.action(self, 'end_with',
-                                       game.SceneState.failed,
-                                       updatable.fade_to_black(0.5)))
+        self.add_trigger(
+            trigger.trigger(self, 'is_player_dead'),
+            action.action_list(
+                [
+                    action.action(self, 'play_dialog', 'data/dialog/death_dialog.json'),
+                    action.action(self, 'end_with',
+                                  game.SceneState.failed,
+                                  updatable.fade_to_black(0.5))])
+            )
 
         # play some dialog
 
