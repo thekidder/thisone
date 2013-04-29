@@ -26,9 +26,12 @@ class Scene(object):
         self.updatables = set()
         self.preemptible = None
 
+        self.return_state = None
+
         self.level = level.Level(level_name, self._collision_detector)
 
         self.add_updatable(self.level)
+
 
 
     def update(self, t, dt):
@@ -39,10 +42,11 @@ class Scene(object):
         if self.preemptible is not None:
             self.preemptible.update(self._inputs, t, dt, self._collision_detector)
             if not self.preemptible.alive():
-                self.preemptible.removed(self._collision_detector)
-                self.drawable.remove_renderable(self.preemptible)
-                self.preemptible = None
-            return
+                self.remove_preemptible()
+
+                if self.return_state:
+                    return self.return_state
+            return game.SceneState.in_progress
 
         # calculate collision forces
         all = self._collision_detector.all_collisions()
@@ -81,6 +85,8 @@ class Scene(object):
 
             self.remove_updatable(obj)
 
+        return game.SceneState.in_progress
+
 
     def _reset_force(self, obj):
         try:
@@ -117,12 +123,22 @@ class Scene(object):
 
 
     def run_preemptible(self, preemptible):
+        self.remove_preemptible()
         self.drawable.add_renderable(preemptible)
         self.preemptible = preemptible
 
 
-    def end_with(self, preemptible):
-        pass
+    def remove_preemptible(self):
+        if self.preemptible is not None:
+            self.preemptible.removed(self._collision_detector)
+            self.drawable.remove_renderable(self.preemptible)
+            self.preemptible = None
+
+
+    def end_with(self, state, preemptible):
+        if self.return_state is None:
+            self.return_state = state
+            self.run_preemptible(preemptible)
 
 
     def set_camera(self, cam):
@@ -136,10 +152,6 @@ class ActOne(Scene):
         self.player_character.position = Vector(32 * 10, 32 * 60)
         self.add_updatable(self.player_character)
 
-
-        self.fader = None
-        self.success = False
-
         self.set_camera(camera.VerticalPanningCamera(self.player_character, 32 * 11, 32 * 20))
 
         self.spawn_wave(Vector(10 * 32, 40 * 32), character.MeleeEnemy, 6)
@@ -150,19 +162,10 @@ class ActOne(Scene):
 
 
     def update(self, t, dt):
-        if self.player_character is None and not self.fader:
-            self.fader = updatable.fade_to_black(1.5)
-            self.add_updatable(self.fader)
+        if self.player_character is None:
+            self.end_with(game.SceneState.failed, updatable.fade_to_black(1.5))
 
-        super(ActOne, self).update(t, dt)
-
-        if self.fader and not self.fader.alive():
-            if self.success:
-                return game.SceneState.succeeded
-            else:
-                return game.SceneState.failed
-
-        return game.SceneState.in_progress
+        return super(ActOne, self).update(t, dt)
 
 
 class Cutscene(object):
