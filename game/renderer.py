@@ -26,8 +26,6 @@ class SceneRenderer(object):
         self.group = pyglet.graphics.NullGroup()
         self.ui_group = pyglet.graphics.NullGroup()
 
-        self.player_character = None
-
         self.renderables = dict()
         self.ui_renderables = dict()
 
@@ -72,8 +70,6 @@ class SceneRenderer(object):
 
 
     def add_renderable(self, d):
-        if len(self.renderables) == 0:
-            self.player_character = d
         self.renderables[d] = d.create_renderable()(self.batch, self.group)
 
 
