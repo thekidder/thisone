@@ -262,7 +262,7 @@ class ActOne(Scene):
             )
         )
 
-        # enemie waves
+        # enemy waves
         self.add_trigger(
             trigger.trigger(self, 'should_spawn_wave_2'),
             action.action_list(

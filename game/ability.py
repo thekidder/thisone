@@ -175,7 +175,7 @@ class Windblast(TimedAbility):
         eject_vector *= (eject_mag * dt)
         c.shape2.owner.apply_force(eject_vector)
         try:
-            c.shape2.owner.slow(t, self.slow)
+            c.shape2.owner.slow(t, self.slow, self)
         except AttributeError:
             pass
 
@@ -229,6 +229,6 @@ class Whirlpool(TimedAbility):
             pull_vector = start_vector.normalized().rotate(math.radians(-(45*(1-(self.size / (self.size + svmag))))))
             pull_vector *= pull_mag**0.5
             c.shape2.owner.apply_force(pull_vector)
-            c.shape2.owner.slow(t, min(self.min_slow, self.min_slow / (pull_mag * self.slow_scale)))
+            c.shape2.owner.slow(t, min(self.min_slow, self.min_slow / (pull_mag * self.slow_scale)), self)
         except AttributeError:
             pass

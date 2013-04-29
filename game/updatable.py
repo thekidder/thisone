@@ -1,8 +1,8 @@
-import data.animations
+import ability
 import collision
+import data.animations
 import kidgine.utils
 import renderable
-import kidgine.utils
 from kidgine.math.vector import Vector
 
 
@@ -51,6 +51,8 @@ class Bomb(object):
     counter = 0
     environment_filters = set([collision.Tags.ENVIRONMENT, kidgine.collision.shape.tags.IMPEEDS_MOVEMENT])
     damage = 10
+    slow_time = 0
+    slow_factor = 1.0
 
     def __init__(self, position, throw_vector):
         self.position = position
@@ -68,16 +70,24 @@ class Bomb(object):
         self.collidable = kidgine.collision.rectangle.Rectangle(self, tl, br)
         self.collidable.tags = set([
                 collision.Tags.PROJECTILE,
-                collision.Tags.PUSHABLE])
+                collision.Tags.PUSHABLE,
+                collision.Tags.NOT_SLOWED])
 
 
     def collides(self, t, shape):
         if collision.Tags.PLAYER in shape.tags and not self.explosion_triggered:
             self._trigger()
             shape.owner.damage(t, self.damage)
-        
+
         if collision.Tags.ENEMY in shape.tags and self.explosion_triggered:
-            shape.owner.damage(t, self.damage)    
+            shape.owner.damage(t, self.damage)
+
+
+    def slow(self, t, slow_factor, thing_that_is_slowing):
+        if isinstance(thing_that_is_slowing, ability.Whirlpool):
+            self.collidable.tags.discard(collision.Tags.NOT_SLOWED)
+            self.slow_factor = slow_factor
+            self.slow_time = t
 
 
     def is_ui(self):
@@ -111,7 +121,7 @@ class Bomb(object):
             if self.time_left <= 0.0:
                 self._trigger()
 
-            self.position = self.position + self.forces
+            self.position = self.position + self.forces * self.slow_factor
 
             all = collision_detector.collides(token=self.token,
                                               filters=self.environment_filters)
@@ -127,6 +137,14 @@ class Bomb(object):
         else:
             self.explosion_time_left -= dt
 
+        self.reset_slow(t)
+
+
+    def reset_slow(self, t):
+        # if we haven't been slowed in a while, reset
+        if t - self.slow_time > 0.4:
+            self.collidable.tags.add(collision.Tags.NOT_SLOWED)
+            self.slow_factor = 1.0
 
 
     def create_renderable(self):

@@ -256,7 +256,7 @@ class MeleeEnemy(CollidableCharacter):
         self.slow_time = 0
 
 
-    def slow(self, t, slow_factor):
+    def slow(self, t, slow_factor, thing_that_is_slowing):
         self.collidable.tags.discard(collision.Tags.NOT_SLOWED)
         self.slow_factor = slow_factor
         self.slow_time = t
