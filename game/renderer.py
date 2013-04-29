@@ -13,13 +13,12 @@ from kidgine.math.vector import Vector
 logger = logging.getLogger(__name__)
 
 class SceneRenderer(object):
-    def __init__(self, level):
+    def __init__(self):
         glClearColor(1.0, 1.0, 1.0, 1.0)
         glEnable(GL_BLEND)
 
         self.keystate = pyglet.window.key.KeyStateHandler()
 
-        self.level = level
         self.batch = pyglet.graphics.Batch()
         self.ui_batch = pyglet.graphics.Batch()
 
@@ -39,9 +38,6 @@ class SceneRenderer(object):
             i.update(t, dt)
 
         self.camera.apply()
-
-        if self.level:
-            self.level.draw()
 
         self.batch.draw()
 

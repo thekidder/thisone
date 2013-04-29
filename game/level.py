@@ -11,28 +11,22 @@ import kidgine.utils
 import tileset
 from kidgine.math.vector import Vector
 from collision import Tags
+import renderable
 
 
 logger = logging.getLogger(__name__)
 
-def load(filename, collision_detector=None):
-    with open(filename) as f:
-        json_level = json.load(f)
-
-    l = None
-    if collision_detector is not None:
-        l = Level(filename, json_level, collision_detector)
-    r= LevelRenderable(filename, json_level)
-
-    return l,r
-
-
 class Level(object):
-    def __init__(self, filename, json_level, collision_detector):
+    def __init__(self, filename, collision_detector):
+        with open(filename) as f:
+            json_level = json.load(f)
+
         tiles = _get_tileset(filename, json_level['tilesets'][0]['image'])
 
         width  = json_level['layers'][0]['width']
         height = json_level['layers'][0]['height']
+
+        self.filename = filename
 
         for layer in json_level['layers']:
             if not layer['visible']:
@@ -59,68 +53,18 @@ class Level(object):
                 collision_detector.update_collidable(token, c)
 
 
-class LevelRenderable(object):
-    tile_width = 32
-    tile_height = 32
-
-    def __init__(self, filename, json_level):
-        tiles = _get_tileset(filename, json_level['tilesets'][0]['image'])
-        self.batch = pyglet.graphics.Batch()
-        self.sprites = list()
-
-        width  = json_level['layers'][0]['width']
-        height = json_level['layers'][0]['height']
-        for layer in json_level['layers']:
-            if not layer['visible']:
-                continue
-            for i,tile in enumerate(layer['data']):
-                if tile == 0:
-                    continue
-
-                flipped = tile & tileset.FLIP_MASK
-                tile = tile & ~tileset.FLIP_MASK
-
-                x = i % width
-                y = height - i / width
-
-                #print 'loaded {} at {},{} with flippd {}'.format(tile,x,y,flipped)
-
-                img = tiles.get(tile)
-
-                flip_x = flipped & tileset.FLIPPED_HORIZONTAL
-                flip_y = flipped & tileset.FLIPPED_VERTICAL
-
-                if flipped & tileset.FLIPPED_DIAGONAL:
-                    if (flipped & tileset.FLIPPED_HORIZONTAL) and not (flipped & tileset.FLIPPED_VERTICAL):
-                        rotation = 90
-                        flip_x = False
-                    elif not (flipped & tileset.FLIPPED_HORIZONTAL) and (flipped & tileset.FLIPPED_VERTICAL):
-                        rotation = -90
-                        flip_y = False
-                    elif not (flipped & tileset.FLIPPED_HORIZONTAL) and not (flipped & tileset.FLIPPED_VERTICAL):
-                        rotation = -90
-                        flip_x = True
-                    else:
-                        rotation = 90
-                        flip_y = False
-                else:
-                    rotation = 0
-                img = img.get_transform(
-                    flip_x = flip_x,
-                    flip_y = flip_y,
-                    rotate = rotation)
-
-                img.anchor_x = 0
-                img.anchor_y = 0
-
-                s = pyglet.sprite.Sprite(img, batch=self.batch)
-                s.x = x * self.tile_width
-                s.y = y * self.tile_height
-                self.sprites.append(s)
+    def update(self, t, dt, collision_detector):
+        pass
 
 
-    def draw(self):
-        self.batch.draw()
+    def alive(self):
+        return True
+
+
+    def create_renderable(self):
+        def wrapped(batch, group):
+            return renderable.LevelRenderable(self.filename, batch, group)
+        return wrapped
 
 
 def _get_tileset(filename, path):

@@ -19,14 +19,16 @@ logger = logging.getLogger(__name__)
 class Scene(object):
     def __init__(self, level_name):
         self._collision_detector = kidgine.collision.CollisionDetector()
-        self.level,self.level_renderable = level.load(level_name, self._collision_detector)
-        self.drawable = renderer.SceneRenderer(self.level_renderable)
+        self.drawable = renderer.SceneRenderer()
 
         self.updatables = set()
 
         self._inputs = inputs.Inputs()
 
+        self.level = level.Level(level_name, self._collision_detector)
+
         self.player_character = character.GirlCharacter(self._inputs, self._collision_detector)
+        self.add_updatable(self.level)
         self.add_updatable(self.player_character)
 
         self.dialog = None

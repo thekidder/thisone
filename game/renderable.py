@@ -1,3 +1,4 @@
+import json
 import logging
 
 import pyglet.graphics
@@ -7,11 +8,81 @@ from pyglet.gl import *
 
 import dialog
 import imagecache
+import level
 import sprite
+import tileset
 import utils
 
 
 logger = logging.getLogger(__name__)
+
+class LevelRenderable(object):
+    tile_width = 32
+    tile_height = 32
+
+    def __init__(self, filename, batch, group):
+        with open(filename) as f:
+            json_level = json.load(f)
+
+        tiles = level._get_tileset(filename, json_level['tilesets'][0]['image'])
+        self.batch = batch
+        self.group = pyglet.graphics.OrderedGroup(0, group)
+        self.sprites = list()
+
+        width  = json_level['layers'][0]['width']
+        height = json_level['layers'][0]['height']
+        for layer in json_level['layers']:
+            if not layer['visible']:
+                continue
+            for i,tile in enumerate(layer['data']):
+                if tile == 0:
+                    continue
+
+                flipped = tile & tileset.FLIP_MASK
+                tile = tile & ~tileset.FLIP_MASK
+
+                x = i % width
+                y = height - i / width
+
+                #print 'loaded {} at {},{} with flippd {}'.format(tile,x,y,flipped)
+
+                img = tiles.get(tile)
+
+                flip_x = flipped & tileset.FLIPPED_HORIZONTAL
+                flip_y = flipped & tileset.FLIPPED_VERTICAL
+
+                if flipped & tileset.FLIPPED_DIAGONAL:
+                    if (flipped & tileset.FLIPPED_HORIZONTAL) and not (flipped & tileset.FLIPPED_VERTICAL):
+                        rotation = 90
+                        flip_x = False
+                    elif not (flipped & tileset.FLIPPED_HORIZONTAL) and (flipped & tileset.FLIPPED_VERTICAL):
+                        rotation = -90
+                        flip_y = False
+                    elif not (flipped & tileset.FLIPPED_HORIZONTAL) and not (flipped & tileset.FLIPPED_VERTICAL):
+                        rotation = -90
+                        flip_x = True
+                    else:
+                        rotation = 90
+                        flip_y = False
+                else:
+                    rotation = 0
+                img = img.get_transform(
+                    flip_x = flip_x,
+                    flip_y = flip_y,
+                    rotate = rotation)
+
+                img.anchor_x = 0
+                img.anchor_y = 0
+
+                s = pyglet.sprite.Sprite(img, batch=self.batch,group=self.group)
+                s.x = x * self.tile_width
+                s.y = y * self.tile_height
+                self.sprites.append(s)
+
+
+    def update(self, t, dt):
+        pass
+
 
 class StaticSpriteRenderable(object):
     def __init__(self, batch, group, parent, image, rotation = 0, order = 5):
