@@ -8,7 +8,8 @@ import kidgine.collision.shape
 import kidgine.math.vector
 import kidgine.utils
 import renderable
-from collision import Tags
+import collision
+import updatable
 from kidgine.math.vector import Vector
 
 
@@ -26,6 +27,7 @@ MoveDirection = kidgine.utils.enum(
     'rightbottom')
 
 class Character(object):
+    tags = set()
     idle_delay     = 3.0
     idle_delay_two = 4.0
 
@@ -73,6 +75,10 @@ class Character(object):
         pass
 
 
+    def get_tags(self):
+        return self.tags
+
+
     def update_idle(self, t, dt):
         if self.moving:
             self.time_to_idle = self.idle_delay
@@ -102,7 +108,7 @@ class Character(object):
 
 class CollidableCharacter(Character):
     counter = 0
-    environment_filters = set([Tags.ENVIRONMENT, kidgine.collision.shape.tags.IMPEEDS_MOVEMENT])
+    environment_filters = set([collision.Tags.ENVIRONMENT, kidgine.collision.shape.tags.IMPEEDS_MOVEMENT])
 
     def __init__(self, position):
         super(CollidableCharacter, self).__init__(position)
@@ -155,6 +161,7 @@ class CollidableCharacter(Character):
 
 
 class GirlCharacter(CollidableCharacter):
+    tags = set([updatable.Tags.player])
     max_health = 80.0
     regen_delay = 2
     regen_rate = 30 # units/sec
@@ -165,7 +172,7 @@ class GirlCharacter(CollidableCharacter):
 
         self.move_direction = MoveDirection.left
 
-        self.collidable.tags = set([kidgine.collision.shape.tags.IMPEEDS_MOVEMENT, Tags.PLAYER, Tags.MOVEABLE])
+        self.collidable.tags = set([kidgine.collision.shape.tags.IMPEEDS_MOVEMENT, collision.Tags.PLAYER, collision.Tags.MOVEABLE])
 
         self.ability_one   = ability.FireboltAbility
         self.ability_two   = ability.EarthquakeAbility
@@ -218,7 +225,8 @@ class GirlCharacter(CollidableCharacter):
 
 
 class MeleeEnemy(CollidableCharacter):
-    player_filter = set([Tags.PLAYER])
+    tags = set([updatable.Tags.enemy])
+    player_filter = set([collision.Tags.PLAYER])
     damage_delay = 0.5
     max_health = 60.0
     renderable_type = renderable.MeleeEnemyRenderable
@@ -228,22 +236,22 @@ class MeleeEnemy(CollidableCharacter):
         self.target = target
         self.collidable.tags = set([
                 kidgine.collision.shape.tags.IMPEEDS_MOVEMENT,
-                Tags.MOVEABLE,
-                Tags.ENEMY,
-                Tags.NOT_SLOWED])
+                collision.Tags.MOVEABLE,
+                collision.Tags.ENEMY,
+                collision.Tags.NOT_SLOWED])
         self.last_damage_time = 0
         self.slow_factor = 1.0
         self.slow_time = 0
 
 
     def slow(self, t, slow_factor):
-        self.collidable.tags.discard(Tags.NOT_SLOWED)
+        self.collidable.tags.discard(collision.Tags.NOT_SLOWED)
         self.slow_factor = slow_factor
         self.slow_time = t
 
 
     def collides(self, t, shape):
-        if Tags.PLAYER in shape.tags:
+        if collision.Tags.PLAYER in shape.tags:
             self.do_damage(t, shape)
 
 
@@ -263,13 +271,13 @@ class MeleeEnemy(CollidableCharacter):
             direction = (self.target.position - self.position).normalized()
             direction *= 90 * self.slow_factor
 
-        collision = collision_detector.collides(token=self.token, filters=self.player_filter)
-        if collision is not None:
-            self.do_damage(t, collision)
+        collision_info = collision_detector.collides(token=self.token, filters=self.player_filter)
+        if collision_info is not None:
+            self.do_damage(t, collision_info)
 
         super(MeleeEnemy, self).update(inputs, t, dt, direction, collision_detector)
 
         # if we haven't been slowed in a while, reset
         if t - self.slow_time > 0.4:
-            self.collidable.tags.add(Tags.NOT_SLOWED)
+            self.collidable.tags.add(collision.Tags.NOT_SLOWED)
             self.slow_factor = 1.0

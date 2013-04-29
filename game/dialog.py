@@ -3,6 +3,7 @@ import logging
 
 import kidgine.utils
 import renderable
+import updatable
 
 
 PortraitFacing = kidgine.utils.enum('left', 'right')
@@ -10,6 +11,7 @@ PortraitFacing = kidgine.utils.enum('left', 'right')
 logger = logging.getLogger(__name__)
 
 class Dialog(object):
+    tags = set([updatable.Tags.dialog])
     default_portrait = None
     default_facing   = PortraitFacing.left
     default_name     = None
@@ -78,6 +80,10 @@ class Dialog(object):
 
     def is_ui(self):
         return True
+
+
+    def get_tags(self):
+        return self.tags
 
 
     def _transition(self, t):

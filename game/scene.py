@@ -2,10 +2,11 @@ import collections
 import logging
 import random
 
+import dialog
+
 import action
 import camera
 import character
-import dialog
 import game
 import inputs
 import kidgine.collision
@@ -135,6 +136,13 @@ class Scene(object):
     def is_player_dead(self):
         return not self.is_player_alive()
 
+
+    def all_enemies_dead(self):
+        for u in self.updatables:
+            if updatable.Tags.enemy in u.get_tags():
+                return False
+        return True
+
     # Actions and Setters
 
     def add_updatable(self, c):
@@ -221,6 +229,13 @@ class ActOne(Scene):
                 ]
             )
         )
+
+        # win when all enemies are dead
+        self.add_trigger(
+            trigger.trigger(self, 'all_enemies_dead'),
+            action.action(self, 'end_with',
+                          game.SceneState.succeeded,
+                          updatable.fade_to_black(0.5)))
 
         # play some dialog
 

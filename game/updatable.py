@@ -1,6 +1,9 @@
 import kidgine.utils
 import renderable
+import kidgine.utils
 
+
+Tags = kidgine.utils.enum('enemy', 'boss', 'player', 'dialog', 'projectile', 'ability')
 
 class TriggeredUpdatable(object):
     def __init__(self, trigger, action):
@@ -21,6 +24,10 @@ class TriggeredUpdatable(object):
 
     def create_renderable(self):
         return None
+
+
+    def get_tags(self):
+        return set()
 
 
     def alive(self):
@@ -55,6 +62,10 @@ class OpacityFader(object):
 
     def is_ui(self):
         return True
+
+
+    def get_tags(self):
+        return set()
 
 
     def create_renderable(self):

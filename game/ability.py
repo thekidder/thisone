@@ -1,11 +1,12 @@
 import logging
 import math
+import random
 
+import collision
 import kidgine.collision.circle
 import kidgine.collision.rectangle
 import renderable
-import random
-from collision import Tags
+import updatable
 from kidgine.math.vector import Vector
 
 
@@ -27,7 +28,8 @@ class Ability(object):
 
 # stays around for a certain duration applying an effect to all collidables
 class TimedAbility(object):
-    filter = set([Tags.ENEMY])
+    tags = set([updatable.Tags.ability])
+    filter = set([collision.Tags.ENEMY])
     pulse = False
     order = 5
 
@@ -59,6 +61,10 @@ class TimedAbility(object):
 
     def alive(self):
         return self.time_left > 0.0
+
+
+    def get_tags(self):
+        return self.tags
 
 
     def create_renderable(self):
@@ -102,7 +108,7 @@ class Firebolt(TimedAbility):
 
 
 class Earthquake(TimedAbility):
-    filter = set([Tags.ENEMY, Tags.NOT_SLOWED])
+    filter = set([collision.Tags.ENEMY, collision.Tags.NOT_SLOWED])
     duration = 1.4
     slow = 0.5
     sprite_name = 'earth_peak'
@@ -134,7 +140,7 @@ class Earthquake(TimedAbility):
 
 
 class Windblast(TimedAbility):
-    filter = set([Tags.ENEMY])
+    filter = set([collision.Tags.ENEMY])
     duration = 0.7
     force = 500
 
@@ -177,7 +183,7 @@ class Windblast(TimedAbility):
 
 
 class Whirlpool(TimedAbility):
-    filter = set([Tags.ENEMY])
+    filter = set([collision.Tags.ENEMY])
     duration = 4
     sprite_name = 'water_peak'
     size = 48

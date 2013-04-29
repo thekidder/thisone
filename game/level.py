@@ -65,6 +65,10 @@ class Level(object):
         return True
 
 
+    def get_tags(self):
+        return set()
+
+
     def create_renderable(self):
         def wrapped(batch, group):
             return renderable.LevelRenderable(self.filename, batch, group)
