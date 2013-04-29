@@ -4,6 +4,12 @@ import kidgine.resource
 
 _all_tilesets = dict()
 
+FLIPPED_HORIZONTAL = 1 << 31
+FLIPPED_VERTICAL   = 1 << 30
+FLIPPED_DIAGONAL   = 1 << 29
+
+FLIP_MASK = (FLIPPED_HORIZONTAL | FLIPPED_VERTICAL | FLIPPED_DIAGONAL)
+
 def get_tileset(filename):
     if filename not in _all_tilesets:
         _all_tilesets[filename] = Tileset(filename)
@@ -31,6 +37,8 @@ class Tileset(object):
                     image.height - ((j + 1) * self.tile_height),
                     self.tile_width,
                     self.tile_height)
+                self.images[i + j*width+1].anchor_x = 16
+                self.images[i + j*width+1].anchor_y = 16
 
 
     def get(self, offset):
@@ -38,4 +46,5 @@ class Tileset(object):
 
 
     def collides(self, offset):
+        offset = offset & ~FLIP_MASK
         return offset in self.collidables
