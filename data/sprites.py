@@ -65,6 +65,8 @@ __all_sprites = {
     'bomb_lit'            : ('data/images/projectiles/bomb-lit.png',      0,    0,   32, 32, 16, 16),
     'bomb_unlit'          : ('data/images/projectiles/bomb-unlit.png',    0,    0,   32, 32, 16, 16),
     'bomb_explosion'      : ('data/images/projectiles/bomb-explosion.png',0,    0,  160, 32,  0,  0),
+    
+    'spear'      : ('data/images/projectiles/spear.png',0,    0,  20, 20,  0,  0),
 
     # dialog system
     'dialog_bg'           : ('data/images/ui/dialog-box-1.png',            0,    0, 800,270,  0,  0),

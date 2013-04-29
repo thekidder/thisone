@@ -36,6 +36,8 @@ all = {
 
     'bomb'                 : ('bomb',                10, 15,  2,       0.2),
     'bomb_explosion'       : ('bomb_explosion',      32, 32,  5,       0.2),
+    
+    'spear'                 : ('spear',                20, 20,  2,       0.2),
 }
 
 

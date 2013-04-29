@@ -9,6 +9,7 @@ from pyglet.gl import *
 import dialog
 import imagecache
 import level
+import math
 import sprite
 import tileset
 import utils
@@ -261,6 +262,27 @@ class BombRenderable(object):
         self.explosion.delete()
 
 
+class SpearRenderable(object):
+    def __init__(self, batch, group, spear):
+        group = pyglet.graphics.OrderedGroup(20, group)
+        self.spear = spear
+
+        self.sprite = sprite.AnimatedSprite(imagecache.get_animation('spear'),
+                                            batch = batch,
+                                            group = group)
+
+
+    def update(self, t, dt):
+        self.sprite.visible = True
+
+        utils.set_sprite_pos(self.sprite, self.spear.position)
+        self.sprite.rotation = math.degrees(self.spear.forces.to_radians()) * -1 + 225
+
+
+    def delete(self):
+        self.sprite.delete()
+
+        
 class CharacterRenderable(object):
     def __init__(self, batch, group, character, sprite_base):
         group = pyglet.graphics.OrderedGroup(10, group)

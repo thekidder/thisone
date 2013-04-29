@@ -335,6 +335,46 @@ class BombEnemy(MeleeEnemy):
         else:
             return []
 
+            
+class SpearEnemy(MeleeEnemy):
+    speed = 70
+    spear_speed = 250 * (1/60.)
+    throw_delay = 3
+
+
+    def __init__(self, position, target):
+        super(SpearEnemy, self).__init__(position, target)
+        self.last_damage_time = random.uniform(0.0, self.throw_delay)
+
+
+    def update(self, inputs, t, dt, collision_detector):
+        spear = None
+
+        direction = Vector(0.0,0.0)
+        if self.target:
+            target_vector = self.target.position - self.position
+            if target_vector.shorter_than(128):
+                # move away from target
+                direction = -target_vector.normalized()
+            elif target_vector.shorter_than(256) and t - self.last_damage_time > self.throw_delay:
+                self.last_damage_time = t
+                # throw spear
+                spear = updatable.Spear(self.position, target_vector.normalized() * self.spear_speed)
+            elif target_vector.shorter_than(512):
+                # move toward target
+                direction = target_vector.normalized()
+
+            direction *= self.speed * self.slow_factor
+
+        super(MeleeEnemy, self).update(inputs, t, dt, direction, collision_detector)
+
+        self.reset_slow(t)
+
+        if spear:
+            return [spear]
+        else:
+            return []
+
 
 class WarlordBoss(MeleeEnemy):
     tags = set([updatable.Tags.enemy, updatable.Tags.boss])
