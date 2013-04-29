@@ -15,6 +15,7 @@ logger = logging.getLogger(__name__)
 class SceneRenderer(object):
     def __init__(self, level):
         glClearColor(1.0, 1.0, 1.0, 1.0)
+        glEnable(GL_BLEND)
 
         self.keystate = pyglet.window.key.KeyStateHandler()
 

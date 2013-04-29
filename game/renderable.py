@@ -3,6 +3,7 @@ import logging
 import pyglet.graphics
 import pyglet.sprite
 import pyglet.text
+from pyglet.gl import *
 
 import dialog
 import imagecache
@@ -25,6 +26,33 @@ class StaticSpriteRenderable(object):
 
     def delete(self):
         self.sprite.delete()
+
+
+class OpacityFaderRenderable(object):
+    def __init__(self, batch, obj):
+        self.obj = obj
+        self.batch = batch
+        self.rect = None
+
+
+    def update(self, t, dt, window):
+        self.delete()
+
+        opacity = self.obj.opacity
+        self.rect = self.batch.add(
+            4,
+            GL_QUADS,
+            None,
+            ('v2f', (0.0, 0.0,
+                     0.0, window.height,
+                     window.width, window.height,
+                     window.width, 0.0)),
+            ('c4f', (self.obj.r, self.obj.g, self.obj.b, opacity) * 4))
+
+
+    def delete(self):
+        if self.rect:
+            self.rect.delete()
 
 
 class DialogRenderable(object):

@@ -1,6 +1,7 @@
 import logging
 import random
 
+import game
 import character
 import inputs
 import kidgine.collision
@@ -10,6 +11,7 @@ import kidgine.math.vector
 from kidgine.math.vector import Vector
 from collision import Tags
 import dialog
+import updatable
 
 
 logger = logging.getLogger(__name__)
@@ -99,7 +101,15 @@ class Scene(object):
     def remove_updatable(self, c):
         c.removed(self._collision_detector)
         self.updatables.remove(c)
-        self.drawable.remove_renderable(c)
+        if c in self.drawable.renderables:
+            self.drawable.remove_renderable(c)
+        else:
+            self.drawable.remove_ui_renderable(c)
+
+
+    def add_ui_updatable(self, u):
+        self.updatables.add(u)
+        self.drawable.add_ui_renderable(u)
 
 
     def add_updatable(self, c):
@@ -124,17 +134,39 @@ class ActOne(Scene):
         super(ActOne, self).__init__('data/levels/act_one.json')
         self.player_character.position = Vector(32 * 10, 32 * 60)
 
+        self.last_position = self.player_character.position
+        self.fader = None
+        self.success = False
+
         def camera_anchor():
             if self.player_character is None:
-                return Vector(32*11, 32*10)
+                return Vector(32*11, self.last_position.y)
+            self.last_position = self.player_character.position
             return Vector(32 * 11, self.player_character.position.y)
         c = kidgine.renderer.camera.CenteredCamera(camera_anchor, kidgine.math.vector.Vector(32*20, 1))
         self.drawable.set_camera(c)
 
-
         self.spawn_wave(Vector(10 * 32, 40 * 32), character.MeleeEnemy, 6)
 
         #self.run_dialog(dialog.Dialog('data/dialog/act_one_warlord_1.json'))
+
+        self.add_ui_updatable(updatable.fade_from_black(1.0))
+
+
+    def update(self, t, dt):
+        if self.player_character is None and not self.fader:
+            self.fader = updatable.fade_to_black(1.5)
+            self.add_ui_updatable(self.fader)
+
+        super(ActOne, self).update(t, dt)
+
+        if self.fader and not self.fader.alive():
+            if self.success:
+                return game.SceneState.succeeded
+            else:
+                return game.SceneState.failed
+
+        return game.SceneState.in_progress
 
 
 class Cutscene(object):

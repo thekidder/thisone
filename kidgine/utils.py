@@ -32,3 +32,7 @@ def remove_file_logger():
 
         logger.removeHandler(_fh)
         _fh.close()
+
+
+def lerp(t, start, end):
+    return t * (end - start) + start
