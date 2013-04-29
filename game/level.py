@@ -12,6 +12,7 @@ import tileset
 from kidgine.math.vector import Vector
 from collision import Tags
 import renderable
+import updatable
 
 
 logger = logging.getLogger(__name__)
@@ -66,7 +67,7 @@ class Level(object):
 
 
     def get_tags(self):
-        return set()
+        return set([updatable.Tags.level])
 
 
     def create_renderable(self):

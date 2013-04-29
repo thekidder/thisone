@@ -6,7 +6,7 @@ import kidgine.utils
 from kidgine.math.vector import Vector
 
 
-Tags = kidgine.utils.enum('enemy', 'boss', 'player', 'dialog', 'projectile', 'ability')
+Tags = kidgine.utils.enum('enemy', 'boss', 'player', 'dialog', 'projectile', 'ability', 'level')
 
 class TriggeredUpdatable(object):
     def __init__(self, trigger, action):
@@ -35,6 +35,13 @@ class TriggeredUpdatable(object):
 
     def alive(self):
         return not self.triggered
+
+
+class ActionEvent(TriggeredUpdatable):
+    def __init__(self, action):
+        def trigger(inputs, t, dt, collision_detector):
+            return True
+        super(ActionEvent, self).__init__(trigger, action)
 
 
 class Bomb(object):

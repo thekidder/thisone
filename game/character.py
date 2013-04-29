@@ -350,6 +350,7 @@ class WarlordBoss(MeleeEnemy):
     charge_length = 1
     charge_rest = 1.25
     charge_direction = None
+    first_spawn_delay = 2.0
 
     def slow(self, t, slow_factor):
         super(WarlordBoss, self).slow(t, slow_factor)
@@ -362,6 +363,8 @@ class WarlordBoss(MeleeEnemy):
         super(WarlordBoss, self).apply_force(force, debug)
 
     def update(self, inputs, t, dt, collision_detector):
+        self.first_spawn_delay = max(self.first_spawn_delay - dt, 0)
+
         direction = Vector(0.0,0.0)
         if self.target:
             # Adjusting position, preparing to charge.
@@ -371,7 +374,7 @@ class WarlordBoss(MeleeEnemy):
                 direction.x = 0
             else:
                 direction.y = 0
-            if self.charging or direction.magnitude() < 30.0:
+            if self.charging or (direction.magnitude() < 30.0 and self.first_spawn_delay == 0.0):
                 # Currently charging OR beginning a charge.
                 direction *= 0
                 if not self.charging:

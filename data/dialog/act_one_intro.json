@@ -1,0 +1,14 @@
+{
+    "lines"  : [
+	{
+	    "name"           : "WARLORD",
+	    "dialog"         : "So your King has sent another warrior. Typical.",
+	    "minimum_time"   : 0.5
+	},
+	{
+	    "name"           : "WARLORD",
+	    "dialog"         : "I eagerly await you in the north.",
+	    "minimum_time"   : 0.5
+	}
+    ]
+}

@@ -26,6 +26,9 @@ class Scene(object):
         self.drawable = renderer.SceneRenderer()
         self._inputs = inputs.Inputs()
 
+        # separate game time from scene time. scene time pauses during blocking events
+        self._scene_time = 0
+
         self.updatables = set()
         self._triggers = dict()
         self._blocking_events = collections.deque()
@@ -46,13 +49,19 @@ class Scene(object):
         self._collision_detector.start_frame()
 
         if self._current_blocking_event is not None:
-            self._current_blocking_event.update(self._inputs, t, dt, self._collision_detector)
+            to_add = self._current_blocking_event.update(self._inputs, t, dt, self._collision_detector)
             if not self._current_blocking_event.alive():
                 if self.return_state:
                     return self.return_state
 
                 self._remove_blocking_event()
+
+            if to_add is not None:
+                for u in to_add:
+                    self.add_updatable(u)
             return game.SceneState.in_progress
+
+        self._scene_time += dt
 
         # calculate collision forces
         all = self._collision_detector.all_collisions()
@@ -77,7 +86,7 @@ class Scene(object):
         # run all updatables
         all_new_objs = list()
         for obj in self.updatables:
-            new_things = obj.update(self._inputs, t, dt, self._collision_detector)
+            new_things = obj.update(self._inputs, self._scene_time, dt, self._collision_detector)
             if new_things is not None:
                 all_new_objs.extend(new_things)
 
@@ -156,6 +165,11 @@ class Scene(object):
         self.drawable.add_renderable(c)
 
 
+    def add_updatables(self, l):
+        for u in l:
+            self.add_updatable(u)
+
+
     def remove_updatable(self, c):
         c.removed(self._collision_detector)
         self.updatables.remove(c)
@@ -197,11 +211,14 @@ class Scene(object):
         self.drawable.set_camera(cam)
 
 
-    def spawn_wave(self, position, enemy_type, num_enemies):
+    def create_wave(self, position, enemy_type, num_enemies, spread):
+        all = list()
         for i in xrange(num_enemies):
-            p = position + Vector(random.uniform(-128,128), random.uniform(-128,128))
+            p = position + Vector(random.uniform(-spread,spread), random.uniform(-spread,spread))
             enemy = enemy_type(p, self.player_character)
-            self.add_updatable(enemy)
+            all.append(enemy)
+
+        return all
 
 
 class ActOne(Scene):
@@ -209,17 +226,26 @@ class ActOne(Scene):
         super(ActOne, self).__init__('data/levels/act_one.json')
 
         # create player
-        self.player_character = character.GirlCharacter(Vector(32 * 10, 32 * 60))
+        self.player_character = character.GirlCharacter(Vector(32 * 10, 32 * 3))
+        self.player_character.facing = character.Facing.top
         self.add_updatable(self.player_character)
 
         # set camera
-        self.set_camera(camera.VerticalPanningCamera(self.player_character, 32 * 11, 32 * 20))
+        self.set_camera(camera.VerticalPanningCamera(self.player_character,
+                                                     32 * 11, # center x
+                                                     32 * 20, # width
+                                                     32 * 8)) # min_y
 
         # create some enemies
-        self.spawn_wave(Vector(10 * 32, 55 * 32), character.BombEnemy, 6)
+        self.add_updatables(self.create_wave(Vector(4 * 32, 8 * 32), character.MeleeEnemy, 2, 48))
+        self.add_updatables(self.create_wave(Vector(13 * 32, 9 * 32), character.MeleeEnemy, 3, 48))
 
-        # start by fading from black
-        self.add_updatable(updatable.fade_from_black(1.0))
+
+        # fade from black
+        self.add_blocking_event(updatable.fade_from_black(1.0))
+        # play some dialog
+        self.play_dialog('data/dialog/act_one_intro.json')
+
 
         # set up some triggers
 
@@ -236,12 +262,33 @@ class ActOne(Scene):
             )
         )
 
-        # win when all enemies are dead
+        # enemie waves
         self.add_trigger(
-            trigger.trigger(self, 'all_enemies_dead'),
+            trigger.trigger(self, 'should_spawn_wave_2'),
             action.action_list(
                 [
-                    action.add_updatable(character.WarlordBoss(Vector(32 * 10, 32 * 60),
+                    action.add_updatables(self.create_wave(Vector(3 * 32, 21 * 32), character.MeleeEnemy, 4, 48)),
+                    action.add_updatables(self.create_wave(Vector(17 * 32, 24 * 32), character.MeleeEnemy, 3, 48))
+                ]
+            )
+        )
+
+        self.add_trigger(
+            trigger.trigger(self, 'should_spawn_wave_3'),
+            action.action_list(
+                [
+                    action.add_updatables(self.create_wave(Vector(2 * 32, 33 * 32), character.MeleeEnemy, 4, 48)),
+                    action.add_updatables(self.create_wave(Vector(12 * 32, 36 * 32), character.MeleeEnemy, 5, 64))
+                ]
+            )
+        )
+
+        # boss, dialog, win when all enemies are dead
+        self.add_trigger(
+            trigger.trigger(self, 'should_spawn_boss'),
+            action.action_list(
+                [
+                    action.add_updatable(character.WarlordBoss(Vector(random.uniform(32*5,32*15), 32 * 48 - 8),
                                                                self.player_character)),
                     action.add_trigger(
                         self,
@@ -260,9 +307,16 @@ class ActOne(Scene):
         )
 
 
-        # play some dialog
+    def should_spawn_boss(self):
+        return self.all_enemies_dead() and self.player_character.position.y > (43 * 32)
 
-        #self.play_dialog('data/dialog/act_one_warlord_1.json')
+
+    def should_spawn_wave_2(self):
+        return self.all_enemies_dead() and self.player_character.position.y > (15 * 32)
+
+
+    def should_spawn_wave_3(self):
+        return self.all_enemies_dead() and self.player_character.position.y > (27 * 32)
 
 
 class Cutscene(object):

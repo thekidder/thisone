@@ -308,9 +308,9 @@ class CharacterRenderable(object):
 
 
     def update(self, t, dt):
-        if hasattr(self.character, 'charging') and self.character.charging:
-            used_sprite_index = 9
-        elif self.character.idle:
+        #if hasattr(self.character, 'charging') and self.character.charging:
+        #    used_sprite_index = 9
+        if self.character.idle:
             used_sprite_index = 8
         else:
             used_sprite_index = self.character.facing
@@ -384,6 +384,13 @@ class WarlordRenderable(MeleeEnemyRenderable):
         self.sprites.append(sprite.AnimatedSprite(imagecache.get_animation(self.sprite_name + '_spin'),
                                                   batch = batch,
                                                   group = group))
+
+
+    # def update(self, t, dt):
+    #     super(WarlordRenderable, self).update(t, dt)
+    #     print 'visibility:'
+    #     for i,s in enumerate(self.sprites):
+    #         print 'i {} v: {} p: {},{} o:{} s:{},{}'.format(i,s.visible,s.x,s.y,s.opacity, s.width,s.height)
 
 
 class GirlRenderable(CharacterRenderable):

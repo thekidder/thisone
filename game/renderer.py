@@ -8,6 +8,7 @@ import kidgine.math.vector
 import kidgine.renderer.camera
 import kidgine.renderer.utils
 from kidgine.math.vector import Vector
+import updatable
 
 
 logger = logging.getLogger(__name__)
@@ -19,6 +20,7 @@ class SceneRenderer(object):
 
         self.keystate = pyglet.window.key.KeyStateHandler()
 
+        self.level_batch = pyglet.graphics.Batch()
         self.batch = pyglet.graphics.Batch()
         self.ui_batch = pyglet.graphics.Batch()
 
@@ -39,6 +41,7 @@ class SceneRenderer(object):
 
         self.camera.apply()
 
+        self.level_batch.draw()
         self.batch.draw()
 
         for i in self.ui_renderables.itervalues():
@@ -74,6 +77,10 @@ class SceneRenderer(object):
             renderable = type(self.ui_batch, self.ui_group)
             self.ui_renderables[obj] = renderable
         else:
+            b = self.batch
+            if updatable.Tags.level in obj.get_tags():
+                b = self.level_batch
+
             renderable = type(self.batch, self.group)
             self.renderables[obj] = renderable
 

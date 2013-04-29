@@ -27,6 +27,13 @@ def add_updatable(updatable):
     return wrapped
 
 
+def add_updatables(updatables):
+    def wrapped(inputs, t, dt, collision_detector):
+        return updatables
+
+    return wrapped
+
+
 def add_trigger(scene, trigger, action):
     def wrapped(inputs, t, dt, collision_detector):
         t = updatable.TriggeredUpdatable(trigger, action)

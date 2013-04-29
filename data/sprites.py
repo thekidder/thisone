@@ -47,12 +47,12 @@ __all_sprites = {
     'warlord_right'       : ('data/images/bosses/warlord/boss-right.png', 0,    0,   41, 48, 12,  0),
     'warlord_top'         : ('data/images/bosses/warlord/boss-up.png',   0,    0,   41, 48, 12,  0),
     'warlord_bottom'      : ('data/images/bosses/warlord/boss.png',0,    0,   41, 48, 12,  0),
-    'warlord_walk_right'  : ('data/images/bosses/warlord/boss-right.png', 0,    0,   41, 48, 12,  0),
-    'warlord_walk_left'   : ('data/images/bosses/warlord/boss-left.png',  0,    0,   41, 48, 12,  0),
-    'warlord_walk_top'    : ('data/images/bosses/warlord/boss-up.png',   0,    0,   41, 48, 12,  0),
-    'warlord_walk_bottom' : ('data/images/bosses/warlord/boss.png',0,    0,   41, 48, 12,  0),
-    'warlord_idle'        : ('data/images/bosses/warlord/boss.png',       0,    0,   41, 48, 12,  0),
-    'warlord_spin'        : ('data/images/bosses/warlord/boss-spin.png',       0,    0,   41, 48, 12,  0),
+    'warlord_walk_right'  : ('data/images/bosses/warlord/boss-right.png', 0,    0,  207, 48, 0,  0),
+    'warlord_walk_left'   : ('data/images/bosses/warlord/boss-left.png',  0,    0,  207, 48, 0,  0),
+    'warlord_walk_top'    : ('data/images/bosses/warlord/boss-up.png',   0,    0,   205, 48, 0,  0),
+    'warlord_walk_bottom' : ('data/images/bosses/warlord/boss.png',0,    0,  205, 48, 0,  0),
+    'warlord_idle'        : ('data/images/bosses/warlord/boss.png',       0,    0,  205, 48, 0,  0),
+    'warlord_spin'        : ('data/images/bosses/warlord/boss-spin.png',       0,    0,  328, 48, 0,  0),
 
     # attacks
     'fire_peak'           : ('data/images/fire_peak.png',               0,    0,   96, 96, 48, 48),
