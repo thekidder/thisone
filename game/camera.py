@@ -13,3 +13,14 @@ class VerticalPanningCamera(kidgine.renderer.camera.CenteredCamera):
             return Vector(self._x, self._last)
 
         super(VerticalPanningCamera, self).__init__(anchor_fn, Vector(width))
+
+
+class PlayerCamera(kidgine.renderer.camera.CenteredCamera):
+    def __init__(self, anchor, width):
+        self.anchor = anchor
+        def anchor_fn():
+            if self.anchor is not None:
+                return self.anchor.position
+            return Vector()
+
+        super(PlayerCamera, self).__init__(anchor_fn, Vector(width))
