@@ -89,6 +89,10 @@ class Character(object):
                     self.time_to_idle = self.idle_time
 
 
+    def is_ui(self):
+        return False
+
+
     def create_renderable(self):
         def wrapped(batch, group):
             return self.renderable_type(batch, group, self)

@@ -65,24 +65,24 @@ class SceneRenderer(object):
             self.camera.window_size = kidgine.math.vector.Vector(width, height)
 
 
-    def add_renderable(self, d):
-        self.renderables[d] = d.create_renderable()(self.batch, self.group)
+    def add_renderable(self, obj):
+        if obj.is_ui():
+            renderable = obj.create_renderable()(self.ui_batch, self.ui_group)
+            self.ui_renderables[obj] = renderable
+        else:
+            renderable = obj.create_renderable()(self.batch, self.group)
+            self.renderables[obj] = renderable
 
 
-    def remove_renderable(self, object):
-        r = self.renderables[object]
-        r.delete()
-        del self.renderables[object]
-
-
-    def add_ui_renderable(self, d):
-        self.ui_renderables[d] = d.create_renderable()(self.ui_batch, self.ui_group)
-
-
-    def remove_ui_renderable(self, object):
-        r = self.ui_renderables[object]
-        r.delete()
-        del self.ui_renderables[object]
+    def remove_renderable(self, obj):
+        if obj.is_ui():
+            r = self.ui_renderables[obj]
+            r.delete()
+            del self.ui_renderables[obj]
+        else:
+            r = self.renderables[obj]
+            r.delete()
+            del self.renderables[obj]
 
 
     def on_key_press(self, symbol, modifiers):

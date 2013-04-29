@@ -53,6 +53,10 @@ class TimedAbility(object):
                 self.apply(t, dt, c)
 
 
+    def is_ui(self):
+        return False
+
+
     def alive(self):
         return self.time_left > 0.0
 

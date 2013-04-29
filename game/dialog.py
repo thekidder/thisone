@@ -72,6 +72,10 @@ class Dialog(object):
                 self._transition(t)
 
 
+    def is_ui(self):
+        return True
+
+
     def _transition(self, t):
         self.current_line += 1
         self.last_transition_time = t

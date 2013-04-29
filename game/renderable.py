@@ -84,6 +84,11 @@ class LevelRenderable(object):
         pass
 
 
+    def delete(self):
+        for s in self.sprites:
+            s.delete()
+
+
 class StaticSpriteRenderable(object):
     def __init__(self, batch, group, parent, image, rotation = 0, order = 5):
         group = pyglet.graphics.OrderedGroup(order, group)

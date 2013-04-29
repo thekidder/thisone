@@ -42,7 +42,7 @@ class Scene(object):
         if self.dialog is not None:
             self.dialog.update(self._inputs, t, dt)
             if self.dialog.is_done():
-                self.drawable.remove_ui_renderable(self.dialog)
+                self.drawable.remove_renderable(self.dialog)
                 self.dialog = None
             return
 
@@ -103,15 +103,7 @@ class Scene(object):
     def remove_updatable(self, c):
         c.removed(self._collision_detector)
         self.updatables.remove(c)
-        if c in self.drawable.renderables:
-            self.drawable.remove_renderable(c)
-        else:
-            self.drawable.remove_ui_renderable(c)
-
-
-    def add_ui_updatable(self, u):
-        self.updatables.add(u)
-        self.drawable.add_ui_renderable(u)
+        self.drawable.remove_renderable(c)
 
 
     def add_updatable(self, c):
@@ -127,7 +119,7 @@ class Scene(object):
 
 
     def run_dialog(self, dialog):
-        self.drawable.add_ui_renderable(dialog)
+        self.drawable.add_renderable(dialog)
         self.dialog = dialog
 
 
@@ -152,13 +144,13 @@ class ActOne(Scene):
 
         #self.run_dialog(dialog.Dialog('data/dialog/act_one_warlord_1.json'))
 
-        self.add_ui_updatable(updatable.fade_from_black(1.0))
+        self.add_updatable(updatable.fade_from_black(1.0))
 
 
     def update(self, t, dt):
         if self.player_character is None and not self.fader:
             self.fader = updatable.fade_to_black(1.5)
-            self.add_ui_updatable(self.fader)
+            self.add_updatable(self.fader)
 
         super(ActOne, self).update(t, dt)
 

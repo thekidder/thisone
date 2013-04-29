@@ -27,6 +27,10 @@ class OpacityFader(object):
         return self.time_left >= 0
 
 
+    def is_ui(self):
+        return True
+
+
     def create_renderable(self):
         def wrapped(batch, group):
             return renderable.OpacityFaderRenderable(batch, group, self)

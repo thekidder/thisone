@@ -57,6 +57,10 @@ class Level(object):
         pass
 
 
+    def is_ui(self):
+        return False
+
+
     def alive(self):
         return True
 
