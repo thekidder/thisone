@@ -53,6 +53,12 @@ __all_sprites = {
     'warlord_walk_bottom' : ('data/images/bosses/warlord/boss.png',0,    0,  205, 48, 0,  0),
     'warlord_idle'        : ('data/images/bosses/warlord/boss.png',       0,    0,  205, 48, 0,  0),
     'warlord_spin'        : ('data/images/bosses/warlord/boss-spin.png',       0,    0,  328, 48, 0,  0),
+    
+    'hermit_left'           : ('data/images/hermit/hermit_left.png',          0,    0,   32, 48, 16,  0),
+    'hermit_right'          : ('data/images/hermit/hermit_right.png',         0,    0,   32, 48, 16,  0),
+    'hermit_top'            : ('data/images/hermit/hermit_top.png',           0,    0,   32, 48, 16,  0),
+    'hermit_bottom'         : ('data/images/hermit/hermit_bottom.png',        0,    0,   32, 48, 16,  0),
+    'hermit_idle'         : ('data/images/hermit/hermit_bottom.png',        0,    0,   32, 48, 16,  0),
 
     # attacks
     'fire_peak'           : ('data/images/fire_peak.png',               0,    0,   96, 96, 48, 48),
