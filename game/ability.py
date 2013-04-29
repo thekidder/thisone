@@ -232,9 +232,3 @@ class Whirlpool(TimedAbility):
             c.shape2.owner.slow(t, min(self.min_slow, self.min_slow / (pull_mag * self.slow_scale)))
         except AttributeError:
             pass
-
-
-FireboltAbility   = Ability(Firebolt, 0.8)
-EarthquakeAbility = Ability(Earthquake, 1.6)
-WindblastAbility  = Ability(Windblast, 2.5)
-WhirlpoolAbility  = Ability(Whirlpool, 4.5)
