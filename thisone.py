@@ -30,12 +30,12 @@ def create_cvars():
     return c
 
 
-def main():
+def main(easy_mode):
     kidgine.utils.add_file_logger('this_one', 'client')
 
     configs = kidgine.config.GameConfigs(None, create_cvars())
 
-    g = game.Game(configs)
+    g = game.Game(easy_mode, configs)
     pyglet.app.run()
 
 
@@ -44,4 +44,8 @@ if __name__ == '__main__':
         import cProfile
         cProfile.run('main()', '.cprofile')
     else:
-        main()
+        if '--easy' in sys.argv:
+            easy_mode = True
+        else:
+            easy_mode = False
+        main(easy_mode)

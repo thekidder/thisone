@@ -3,6 +3,7 @@ import sys
 
 import pyglet.clock
 
+import character
 import kidgine.math.vector
 import kidgine.renderer
 import kidgine.utils
@@ -17,7 +18,10 @@ logger = logging.getLogger(__name__)
 class Game(object):
     FRAME_TIME = 1/60.
 
-    def __init__(self, configs):
+    def __init__(self, easy_mode, configs):
+        if easy_mode:
+            character.health_scaling = 0.1
+
         pyglet.clock.schedule_interval(self.frame, self.FRAME_TIME)
         self._accumulator = 0.0
         self._gametime = 0.0

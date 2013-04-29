@@ -15,6 +15,7 @@ import random
 
 
 logger = logging.getLogger(__name__)
+health_scaling = 1.0
 
 Facing = kidgine.utils.enum('left', 'right', 'top', 'bottom')
 MoveDirection = kidgine.utils.enum(
@@ -40,7 +41,10 @@ class Character(object):
         self.time_to_idle = self.idle_delay
         self.idle = False
         self.idle_time = data.animations.animation_duration(self.renderable_type.sprite_name + '_idle')
-        self.health = self.max_health
+        if isinstance(self, GirlCharacter):
+            self.health = self.max_health
+        else:
+            self.health = self.max_health * health_scaling
         self.last_hit = 0
 
     def update(self, t, dt, direction):
@@ -335,7 +339,7 @@ class BombEnemy(MeleeEnemy):
         else:
             return []
 
-            
+
 class SpearEnemy(MeleeEnemy):
     speed = 70
     spear_speed = 250 * (1/60.)
