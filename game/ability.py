@@ -29,6 +29,7 @@ class Ability(object):
 class TimedAbility(object):
     filter = set([Tags.ENEMY])
     pulse = False
+    order = 5
 
     def __init__(self):
         self.time_left = self.duration
@@ -58,7 +59,8 @@ class TimedAbility(object):
 
     def create_renderable(self):
         def wrapped(batch, group):
-            return renderable.StaticSpriteRenderable(batch, group, self, self.sprite_name, rotation=self.rotation)
+            return renderable.StaticSpriteRenderable(batch, group, self,
+                                                     self.sprite_name, rotation=self.rotation, order=self.order)
         return wrapped
 
 
@@ -66,6 +68,7 @@ class Firebolt(TimedAbility):
     damage = 80 # per second
     duration = 0.2
     sprite_name = 'fire_peak'
+    order = 15
 
     def __init__(self, parent, collision_detector):
         super(Firebolt, self).__init__()
@@ -144,6 +147,8 @@ class Windblast(TimedAbility):
     size = 48
     slow = 0.1
     duration = 1.0
+
+    order = 15
 
     def __init__(self, parent, collision_detector):
         super(Windblast, self).__init__()

@@ -14,8 +14,9 @@ import utils
 logger = logging.getLogger(__name__)
 
 class StaticSpriteRenderable(object):
-    def __init__(self, batch, group, parent, image, rotation = 0):
-        self.sprite = pyglet.sprite.Sprite(imagecache.get_sprite(image), batch = batch)
+    def __init__(self, batch, group, parent, image, rotation = 0, order = 5):
+        group = pyglet.graphics.OrderedGroup(order, group)
+        self.sprite = pyglet.sprite.Sprite(imagecache.get_sprite(image), batch = batch, group = group)
         self.sprite.rotation = rotation
         self.parent = parent
 
@@ -151,6 +152,8 @@ class DialogRenderable(object):
 
 class CharacterRenderable(object):
     def __init__(self, batch, group, character, sprite_base):
+        group = pyglet.graphics.OrderedGroup(10, group)
+
         self.character = character
         self.last_sprite_index = 0
 
@@ -160,23 +163,37 @@ class CharacterRenderable(object):
         # 8   : idle
 
         # stationary
-        self.sprites.append(pyglet.sprite.Sprite(imagecache.get_sprite(sprite_base + '_left'), batch = batch))
-        self.sprites.append(pyglet.sprite.Sprite(imagecache.get_sprite(sprite_base + '_right'), batch = batch))
-        self.sprites.append(pyglet.sprite.Sprite(imagecache.get_sprite(sprite_base + '_top'), batch = batch))
-        self.sprites.append(pyglet.sprite.Sprite(imagecache.get_sprite(sprite_base + '_bottom'), batch = batch))
+        self.sprites.append(pyglet.sprite.Sprite(imagecache.get_sprite(sprite_base + '_left'),
+                                                 batch = batch,
+                                                 group = group))
+        self.sprites.append(pyglet.sprite.Sprite(imagecache.get_sprite(sprite_base + '_right'),
+                                                 batch = batch,
+                                                 group = group))
+        self.sprites.append(pyglet.sprite.Sprite(imagecache.get_sprite(sprite_base + '_top'),
+                                                 batch = batch,
+                                                 group = group))
+        self.sprites.append(pyglet.sprite.Sprite(imagecache.get_sprite(sprite_base + '_bottom'),
+                                                 batch = batch,
+                                                 group = group))
 
         # walk
         self.sprites.append(sprite.AnimatedSprite(imagecache.get_animation(sprite_base + '_walk_left'),
-                                                  batch = batch))
+                                                  batch = batch,
+                                                  group = group))
         self.sprites.append(sprite.AnimatedSprite(imagecache.get_animation(sprite_base + '_walk_right'),
-                                                  batch = batch))
+                                                  batch = batch,
+                                                  group = group))
         self.sprites.append(sprite.AnimatedSprite(imagecache.get_animation(sprite_base + '_walk_top'),
-                                                  batch = batch))
+                                                  batch = batch,
+                                                  group = group))
         self.sprites.append(sprite.AnimatedSprite(imagecache.get_animation(sprite_base + '_walk_bottom'),
-                                                  batch = batch))
+                                                  batch = batch,
+                                                  group = group))
 
         #idle
-        self.sprites.append(sprite.AnimatedSprite(imagecache.get_animation(sprite_base + '_idle'), batch = batch))
+        self.sprites.append(sprite.AnimatedSprite(imagecache.get_animation(sprite_base + '_idle'),
+                                                  batch = batch,
+                                                  group = group))
 
 
     def update(self, t, dt):
