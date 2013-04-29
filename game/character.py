@@ -397,7 +397,7 @@ class WarlordBoss(MeleeEnemy):
     first_spawn_delay = 2.0
 
     def slow(self, t, slow_factor, thing_that_is_slowing):
-        super(WarlordBoss, self).slow(t, slow_factor)
+        super(WarlordBoss, self).slow(t, slow_factor, thing_that_is_slowing)
         # Reduce slows by 90%
         self.slow_factor = (1.0 - (1.0 - self.slow_factor) * 0.1)
 
