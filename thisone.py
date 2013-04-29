@@ -30,7 +30,7 @@ def create_cvars():
     return c
 
 
-def main(easy_mode):
+def main(easy_mode=False):
     kidgine.utils.add_file_logger('this_one', 'client')
 
     configs = kidgine.config.GameConfigs(None, create_cvars())
