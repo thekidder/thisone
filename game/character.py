@@ -183,9 +183,9 @@ class GirlCharacter(CollidableCharacter):
                 collision.Tags.MOVEABLE])
 
         self.ability_one   = ability.Ability(ability.Firebolt,   0.8)
-        self.ability_two   = ability.Ability(ability.Whirlpool,  1.6)
+        self.ability_two   = ability.Ability(ability.Whirlpool,  4.5)
         self.ability_three = ability.Ability(ability.Windblast,  2.5)
-        self.ability_four  = ability.Ability(ability.Earthquake, 4.5)
+        self.ability_four  = ability.Ability(ability.Earthquake, 1.6)
 
 
     def update(self, inputs, t, dt, collision_detector):
