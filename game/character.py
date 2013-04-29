@@ -274,19 +274,20 @@ class MeleeEnemy(CollidableCharacter):
             direction = (self.target.position - self.position).normalized()
             direction *= self.speed * self.slow_factor
 
-        collision = collision_detector.collides(token=self.token, filters=self.player_filter)
-        if collision is not None:
-            self.do_damage(t, collision)
+        collision_info = collision_detector.collides(token=self.token, filters=self.player_filter)
+        if collision_info is not None:
+            self.do_damage(t, collision_info)
 
         super(MeleeEnemy, self).update(inputs, t, dt, direction, collision_detector)
 
         # if we haven't been slowed in a while, reset
         if t - self.slow_time > 0.4:
-            self.collidable.tags.add(Tags.NOT_SLOWED)
+            self.collidable.tags.add(collision.Tags.NOT_SLOWED)
             self.slow_factor = 1.0
 
 
 class WarlordBoss(MeleeEnemy):
+    tags = set([updatable.Tags.enemy, updatable.Tags.boss])
     max_health = 300.0
     base_damage = 35
     base_force = 30.0

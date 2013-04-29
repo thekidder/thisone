@@ -210,7 +210,7 @@ class ActOne(Scene):
         self.set_camera(camera.VerticalPanningCamera(self.player_character, 32 * 11, 32 * 20))
 
         # create some enemies
-        self.spawn_wave(Vector(10 * 32, 40 * 32), character.MeleeEnemy, 6)
+        self.spawn_wave(Vector(10 * 32, 40 * 32), character.MeleeEnemy, 1)
 
         # start by fading from black
         self.add_updatable(updatable.fade_from_black(1.0))
@@ -233,9 +233,18 @@ class ActOne(Scene):
         # win when all enemies are dead
         self.add_trigger(
             trigger.trigger(self, 'all_enemies_dead'),
-            action.action(self, 'end_with',
-                          game.SceneState.succeeded,
-                          updatable.fade_to_black(0.5)))
+            action.action_list(
+                [
+                    action.add_updatable(character.WarlordBoss(Vector(32 * 10, 32 * 60),
+                                                               self.player_character)),
+                    action.add_trigger(self,
+                                  trigger.trigger(self, 'all_enemies_dead'),
+                                  action.action(self, 'end_with',
+                                                game.SceneState.succeeded,
+                                                updatable.fade_to_black(0.5)))
+                ]
+            )
+        )
 
         # play some dialog
 

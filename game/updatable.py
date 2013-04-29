@@ -14,8 +14,8 @@ class TriggeredUpdatable(object):
 
     def update(self, inputs, t, dt, collision_detector):
         if self.trigger(inputs, t, dt, collision_detector):
-            self.action(inputs, t, dt, collision_detector)
             self.triggered = True
+            return self.action(inputs, t, dt, collision_detector)
 
 
     def removed(self, collision_detector):
