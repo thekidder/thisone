@@ -61,9 +61,9 @@ __all_sprites = {
     'water_peak'          : ('data/images/water_peak.png',              0,    0,   96, 96, 48, 48),
 
     # dialog system
-    'dialog_bg'           : ('data/images/ui/dialog_bg.png',            0,    0,  874,195,  0,  0),
-    'dialog_name_bg'      : ('data/images/ui/dialog_name_bg.png',       0,    0,  214, 57,  0,  0),
-    'dialog_next'         : ('data/images/ui/dialog_next.png',          0,    0,   83, 47,  0,  0),
+    'dialog_bg'           : ('data/images/ui/dialog-box-1.png',            0,    0, 800,270,  0,  0),
+    'dialog_name_bg'      : ('data/images/ui/dialog-box-2.png',       0,    0,  214, 57,  0,  0),
+    'dialog_next'         : ('data/images/ui/dialog-box-3.png',          0,    0,   83, 47,  0,  0),
 }
 
 

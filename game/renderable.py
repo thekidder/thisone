@@ -201,7 +201,7 @@ class DialogRenderable(object):
             self.dialog_name_background.x = (window.width
                                              - self.dialog_name_background.x
                                              - self.dialog_name_background.width)
-        self.dialog_name_background.y = 220
+        self.dialog_name_background.y = 280
 
         self.dialog_next.x = window.width - (window.width - self.dialog_background.width) / 2 - 120
         self.dialog_next.y = 60
@@ -213,11 +213,11 @@ class DialogRenderable(object):
 
         if self.name_text:
             self.name_text.x = self.dialog_name_background.x + 20
-            self.name_text.y = 240
+            self.name_text.y = self.dialog_name_background.y + 15
 
         if self.text:
-            self.text.x = self.dialog_background.x + 20
-            self.text.y = 180
+            self.text.x = self.dialog_background.x + 50
+            self.text.y = self.dialog_background.y + 190
 
 
     def delete(self):
