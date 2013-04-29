@@ -253,6 +253,7 @@ class ActOne(Scene):
             )
         )
 
+
         # play some dialog
 
         #self.play_dialog('data/dialog/act_one_warlord_1.json'))
