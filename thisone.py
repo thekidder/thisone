@@ -30,12 +30,12 @@ def create_cvars():
     return c
 
 
-def main(easy_mode=False):
+def main(scene_index = 0, easy_mode=False):
     kidgine.utils.add_file_logger('this_one', 'client')
 
     configs = kidgine.config.GameConfigs(None, create_cvars())
 
-    g = game.Game(easy_mode, configs)
+    g = game.Game(scene_index, easy_mode, configs)
     pyglet.app.run()
 
 
@@ -44,8 +44,11 @@ if __name__ == '__main__':
         import cProfile
         cProfile.run('main()', '.cprofile')
     else:
+        scene_index = 0
+        if '--scene' in sys.argv:
+            scene_index = int(sys.argv[sys.argv.index('--scene') + 1])
         if '--easy' in sys.argv:
             easy_mode = True
         else:
             easy_mode = False
-        main(easy_mode)
+        main(scene_index, easy_mode)

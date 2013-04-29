@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 class Game(object):
     FRAME_TIME = 1/60.
 
-    def __init__(self, easy_mode, configs):
+    def __init__(self, scene_index, easy_mode, configs):
         if easy_mode:
             character.health_scaling = 0.1
 
@@ -35,7 +35,7 @@ class Game(object):
         self._renderer.add_drawable(20, debug.DebugOverlay())
 
         self.scene_list = [scene.ActOne, scene.ActTwo]
-        self.current_scene = 0
+        self.current_scene = scene_index
 
         self.set_scene(self.scene_list[self.current_scene]())
 
