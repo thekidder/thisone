@@ -140,7 +140,7 @@ class Earthquake(TimedAbility):
 
 
 class Windblast(TimedAbility):
-    filter = set([collision.Tags.ENEMY])
+    filter = set([collision.Tags.PUSHABLE])
     duration = 0.7
     force = 500
 
@@ -174,7 +174,10 @@ class Windblast(TimedAbility):
         eject_vector = start_vector.normalized().rotate((random.random() - 0.5) * self.spread)
         eject_vector *= (eject_mag * dt)
         c.shape2.owner.apply_force(eject_vector)
-        c.shape2.owner.slow(t, self.slow)
+        try:
+            c.shape2.owner.slow(t, self.slow)
+        except AttributeError:
+            pass
 
     def update(self, inputs, t, dt, collision_detector):
         self.position = self.parent.position + Vector(0, 16)
@@ -183,7 +186,7 @@ class Windblast(TimedAbility):
 
 
 class Whirlpool(TimedAbility):
-    filter = set([collision.Tags.ENEMY])
+    filter = set([collision.Tags.PUSHABLE])
     duration = 4
     sprite_name = 'water_peak'
     size = 48

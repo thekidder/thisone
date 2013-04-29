@@ -6,4 +6,5 @@ Tags = kidgine.utils.enum(
     PLAYER = 3,
     ENEMY = 4,
     NOT_SLOWED = 5,
-	PROJECTILE = 6)
+    PROJECTILE = 6,
+    PUSHABLE = 7)

@@ -1,6 +1,9 @@
+import data.animations
+import collision
 import kidgine.utils
 import renderable
 import kidgine.utils
+from kidgine.math.vector import Vector
 
 
 Tags = kidgine.utils.enum('enemy', 'boss', 'player', 'dialog', 'projectile', 'ability')
@@ -32,6 +35,96 @@ class TriggeredUpdatable(object):
 
     def alive(self):
         return not self.triggered
+
+
+class Bomb(object):
+    explosion_time = data.animations.animation_duration('bomb_explosion')
+    time = 1.5
+    tags = set([Tags.projectile])
+    counter = 0
+    environment_filters = set([collision.Tags.ENVIRONMENT, kidgine.collision.shape.tags.IMPEEDS_MOVEMENT])
+    damage = 10
+
+    def __init__(self, position, throw_vector):
+        self.position = position
+        self.forces = throw_vector
+        self.time_left = self.time
+        self.explosion_time_left = self.explosion_time
+        self.explosion_triggered = False
+
+
+        tl = Vector(-32, -32)
+        br = Vector( 32,  32)
+
+        self.token = 'bomb{}'.format(Bomb.counter)
+        Bomb.counter += 1
+        self.collidable = kidgine.collision.rectangle.Rectangle(self, tl, br)
+        self.collidable.tags = set([
+                collision.Tags.PROJECTILE,
+                collision.Tags.PUSHABLE])
+
+
+    def collides(self, t, shape):
+        if collision.Tags.PLAYER in shape.tags:
+            if not self.explosion_triggered:
+                self._trigger()
+                shape.owner.damage(t, self.damage)
+
+
+    def is_ui(self):
+        return False
+
+
+    def alive(self):
+        return self.explosion_time_left >= 0
+
+
+    def apply_force(self, force):
+        self.forces += force
+
+
+    def removed(self, collision_detector):
+        collision_detector.remove_collidable(self.token)
+
+
+    def get_tags(self):
+        return self.tags
+
+
+    def _trigger(self):
+        self.explosion_triggered = True
+
+
+    def update(self, inputs, t, dt, collision_detector):
+        if not self.explosion_triggered:
+            self.time_left -= dt
+
+            if self.time_left <= 0.0:
+                self._trigger()
+
+            self.position = self.position + self.forces
+
+            all = collision_detector.collides(token=self.token,
+                                              filters=self.environment_filters)
+            if len(all) > 0:
+                normal = Vector()
+                for c in all:
+                    if normal.dot(c.translation_vector) == 0:
+                        normal += c.translation_vector
+                self.position += normal
+
+            collision_detector.update_collidable(self.token, self.collidable)
+
+        else:
+            self.explosion_time_left -= dt
+
+
+
+    def create_renderable(self):
+        def wrapped(batch, group):
+            return renderable.BombRenderable(batch, group, self)
+        return wrapped
+
 
 
 class OpacityFader(object):

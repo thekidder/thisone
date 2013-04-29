@@ -57,11 +57,17 @@ class Scene(object):
         # calculate collision forces
         all = self._collision_detector.all_collisions()
         for c in all:
+            try:
+                c.shape1.owner.collides(t, c.shape2)
+            except AttributeError:
+                pass
+            try:
+                c.shape2.owner.collides(t, c.shape1)
+            except AttributeError:
+                pass
+
             if Tags.MOVEABLE not in c.shape1.tags or Tags.MOVEABLE not in c.shape2.tags:
                 continue
-
-            c.shape1.owner.collides(t, c.shape2)
-            c.shape2.owner.collides(t, c.shape1)
 
             force = c.translation_vector * 0.4
 
@@ -210,7 +216,7 @@ class ActOne(Scene):
         self.set_camera(camera.VerticalPanningCamera(self.player_character, 32 * 11, 32 * 20))
 
         # create some enemies
-        self.spawn_wave(Vector(10 * 32, 40 * 32), character.MeleeEnemy, 1)
+        self.spawn_wave(Vector(10 * 32, 55 * 32), character.BombEnemy, 6)
 
         # start by fading from black
         self.add_updatable(updatable.fade_from_black(1.0))

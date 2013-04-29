@@ -197,7 +197,8 @@ class CollisionDetector(object):
 
 
     def remove_collidable(self, token):
-        self.spatial_hash.remove(token)
+        if self.spatial_hash.contains(token):
+            self.spatial_hash.remove(token)
 
 
     def collides(self, token=None, collidable=None, position=None, filters=set()):

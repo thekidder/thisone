@@ -34,6 +34,8 @@ all = {
     'warlord_idle'         : ('warlord_idle',        41, 48,  5,       0.25),
     'warlord_spin'         : ('warlord_spin',        41, 48,  8,       0.1),
 
+    'bomb'                 : ('bomb',                10, 15,  2,       0.2),
+    'bomb_explosion'       : ('bomb_explosion',      32, 32,  5,       0.2),
 }
 
 

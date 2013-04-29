@@ -11,6 +11,7 @@ import renderable
 import collision
 import updatable
 from kidgine.math.vector import Vector
+import random
 
 
 logger = logging.getLogger(__name__)
@@ -241,6 +242,7 @@ class MeleeEnemy(CollidableCharacter):
                 kidgine.collision.shape.tags.IMPEEDS_MOVEMENT,
                 collision.Tags.MOVEABLE,
                 collision.Tags.ENEMY,
+                collision.Tags.PUSHABLE,
                 collision.Tags.NOT_SLOWED])
         self.last_damage_time = 0
         self.slow_factor = 1.0
@@ -268,22 +270,67 @@ class MeleeEnemy(CollidableCharacter):
                 pass
 
 
+    def reset_slow(self, t):
+        # if we haven't been slowed in a while, reset
+        if t - self.slow_time > 0.4:
+            self.collidable.tags.add(collision.Tags.NOT_SLOWED)
+            self.slow_factor = 1.0
+
+
     def update(self, inputs, t, dt, collision_detector):
         direction = kidgine.math.vector.constant_zero
         if self.target:
             direction = (self.target.position - self.position).normalized()
             direction *= self.speed * self.slow_factor
 
-        collision_info = collision_detector.collides(token=self.token, filters=self.player_filter)
-        if collision_info is not None:
-            self.do_damage(t, collision_info)
+        super(MeleeEnemy, self).update(inputs, t, dt, direction, collision_detector)
+
+        self.reset_slow(t)
+
+
+class BombEnemy(MeleeEnemy):
+    speed = 70
+    bomb_speed = 150 * (1/60.)
+    throw_delay = 3.5
+
+
+    def __init__(self, position, target):
+        super(BombEnemy, self).__init__(position, target)
+        self.last_damage_time = random.uniform(0.0, self.throw_delay)
+
+
+    def collides(self, t, shape):
+        # no melee attack
+        pass
+
+
+    def update(self, inputs, t, dt, collision_detector):
+        bomb = None
+
+        direction = Vector(0.0,0.0)
+        if self.target:
+            target_vector = self.target.position - self.position
+            if target_vector.shorter_than(128):
+                # move away from target
+                direction = -target_vector.normalized()
+            elif target_vector.shorter_than(256) and t - self.last_damage_time > self.throw_delay:
+                self.last_damage_time = t
+                # throw bomb
+                bomb = updatable.Bomb(self.position, target_vector.normalized() * self.bomb_speed)
+            elif target_vector.shorter_than(512):
+                # move toward target
+                direction = target_vector.normalized()
+
+            direction *= self.speed * self.slow_factor
 
         super(MeleeEnemy, self).update(inputs, t, dt, direction, collision_detector)
 
-        # if we haven't been slowed in a while, reset
-        if t - self.slow_time > 0.4:
-            self.collidable.tags.add(collision.Tags.NOT_SLOWED)
-            self.slow_factor = 1.0
+        self.reset_slow(t)
+
+        if bomb:
+            return [bomb]
+        else:
+            return []
 
 
 class WarlordBoss(MeleeEnemy):
@@ -357,7 +404,4 @@ class WarlordBoss(MeleeEnemy):
 
         super(MeleeEnemy, self).update(inputs, t, dt, direction, collision_detector)
 
-        # if we haven't been slowed in a while, reset
-        if t - self.slow_time > 0.4:
-            self.collidable.tags.add(collision.Tags.NOT_SLOWED)
-            self.slow_factor = 1.0
+        self.reset_slow(t)
