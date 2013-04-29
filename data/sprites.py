@@ -43,6 +43,16 @@ __all_sprites = {
     'barbarian_walk_bottom' : ('data/images/barb/enemy_2.png',0,    0,   37, 48, 12,  0),
     'barbarian_idle'        : ('data/images/barb/enemy_2.png',       0,    0,   37, 48, 12,  0),
 
+    'warlord_left'        : ('data/images/bosses/warlord/boss.png',  0,    0,   41, 48, 12,  0),
+    'warlord_right'       : ('data/images/bosses/warlord/boss.png', 0,    0,   41, 48, 12,  0),
+    'warlord_top'         : ('data/images/bosses/warlord/boss.png',   0,    0,   41, 48, 12,  0),
+    'warlord_bottom'      : ('data/images/bosses/warlord/boss.png',0,    0,   41, 48, 12,  0),
+    'warlord_walk_right'  : ('data/images/bosses/warlord/boss.png', 0,    0,   41, 48, 12,  0),
+    'warlord_walk_left'   : ('data/images/bosses/warlord/boss.png',  0,    0,   41, 48, 12,  0),
+    'warlord_walk_top'    : ('data/images/bosses/warlord/boss.png',   0,    0,   41, 48, 12,  0),
+    'warlord_walk_bottom' : ('data/images/bosses/warlord/boss.png',0,    0,   41, 48, 12,  0),
+    'warlord_idle'        : ('data/images/bosses/warlord/boss.png',       0,    0,   41, 48, 12,  0),
+
     # attacks
     'fire_peak'           : ('data/images/fire_peak.png',               0,    0,   96, 96, 48, 48),
     'earth_peak'          : ('data/images/earth_peak.png',              0,    0,   96, 96, 48, 48),

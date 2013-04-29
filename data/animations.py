@@ -27,6 +27,12 @@ all = {
     'barbarian_walk_bottom'  : ('barbarian_walk_bottom', 37, 48,  1,       1.0),
     'barbarian_idle'         : ('barbarian_idle',        37, 48,  1,       1.0),
 
+    'warlord_walk_right'   : ('warlord_walk_right',  41, 48,  5,       0.25),
+    'warlord_walk_left'    : ('warlord_walk_left',   41, 48,  5,       0.25),
+    'warlord_walk_top'     : ('warlord_walk_top',    41, 48,  5,       0.25),
+    'warlord_walk_bottom'  : ('warlord_walk_bottom', 41, 48,  5,       0.25),
+    'warlord_idle'         : ('warlord_idle',        41, 48,  5,       0.25),
+
 }
 
 
