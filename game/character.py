@@ -118,8 +118,8 @@ class CollidableCharacter(Character):
     def __init__(self, position):
         super(CollidableCharacter, self).__init__(position)
 
-        tl = Vector(-16,   0)
-        br = Vector( 16,  32)
+        tl = Vector(-10, -8)
+        br = Vector( 10,  8)
 
         self.token = 'character{}'.format(CollidableCharacter.counter)
         CollidableCharacter.counter += 1

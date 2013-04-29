@@ -370,5 +370,15 @@ class ActTwo(Scene):
         """
 
 
-class Cutscene(object):
-    pass
+class ActThree(Scene):
+    def __init__(self):
+        super(ActThree, self).__init__('data/levels/act_three.json')
+        # create player
+        self.player_character = character.GirlCharacter(Vector(32 * 11, 32 * 5))
+        self.player_character.ability_one = None
+        self.add_updatable(self.player_character)
+
+        self.set_camera(camera.VerticalPanningCamera(self.player_character,
+                                                     32 * 10, # center x
+                                                     32 * 20, # width
+                                                     32 * 7)) # min_y
