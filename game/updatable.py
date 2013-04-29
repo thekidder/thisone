@@ -72,10 +72,12 @@ class Bomb(object):
 
 
     def collides(self, t, shape):
-        if collision.Tags.PLAYER in shape.tags:
-            if not self.explosion_triggered:
-                self._trigger()
-                shape.owner.damage(t, self.damage)
+        if collision.Tags.PLAYER in shape.tags and not self.explosion_triggered:
+            self._trigger()
+            shape.owner.damage(t, self.damage)
+        
+        if collision.Tags.ENEMY in shape.tags and self.explosion_triggered:
+            shape.owner.damage(t, self.damage)    
 
 
     def is_ui(self):

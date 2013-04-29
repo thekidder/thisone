@@ -325,12 +325,14 @@ class ActTwo(Scene):
 
         # create player
         self.player_character = character.GirlCharacter(Vector(32 * 9, 32 * 78))
+        self.player_character.ability_one = None
         self.add_updatable(self.player_character)
 
         # set camera
         self.set_camera(camera.PlayerCamera(self.player_character, 32 * 20))
 
         # create some enemies
+        self.add_updatables(self.create_wave(Vector(32 * 9, 32 * 81), character.BombEnemy, 1, 0))
 
         # start by fading from black
         self.add_updatable(updatable.fade_from_black(1.0))
