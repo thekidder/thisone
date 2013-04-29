@@ -134,7 +134,7 @@ class Earthquake(TimedAbility):
     def apply(self, t, dt, c):
         self.last_trigger_time = t
         try:
-            c.shape2.owner.slow(t, self.slow)
+            c.shape2.owner.slow(t, self.slow, self)
         except AttributeError:
             pass
 

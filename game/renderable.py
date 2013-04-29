@@ -133,6 +133,10 @@ class OpacityFaderRenderable(object):
             self.rect.delete()
 
 
+class HUDRenderable(object):
+    pass
+
+
 class DialogRenderable(object):
     def __init__(self, batch, group, dialog):
         self.batch = batch
@@ -282,7 +286,7 @@ class SpearRenderable(object):
     def delete(self):
         self.sprite.delete()
 
-        
+
 class CharacterRenderable(object):
     def __init__(self, batch, group, character, sprite_base):
         group = pyglet.graphics.OrderedGroup(10, group)
