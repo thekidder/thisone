@@ -4,22 +4,30 @@
 	    "portrait"       : "warlord",
 	    "portrait_facing": "left",
 	    "name"           : "WARLORD",
-	    "dialog"         : "This one has great power.",
+	    "dialog"         : "Oh? What is fire but unbridled fury?",
 	    "minimum_time"   : 1.0
 	},
 	{
 	    "portrait"       : "warlord",
 	    "portrait_facing": "left",
 	    "name"           : "WARLORD",
-	    "dialog"         : "You embrace the flame.",
+	    "dialog"         : "The Earth, too, is so stubborn.",
 	    "minimum_time"   : 1.0
 	},
 	{
 	    "portrait"       : "warlord",
 	    "portrait_facing": "left",
 	    "name"           : "WARLORD",
-	    "dialog"         : "I am honored to be bested by such rage.",
+	    "dialog"         : "The Wind, too, is such chaos.",
+	    "minimum_time"   : 1.0
+	},
+	{
+	    "portrait"       : "warlord",
+	    "portrait_facing": "left",
+	    "name"           : "WARLORD",
+	    "dialog"         : "Even the water, too, consumes.",
 	    "minimum_time"   : 1.0
 	}
+
     ]
 }
