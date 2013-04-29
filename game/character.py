@@ -221,6 +221,9 @@ class MeleeEnemy(CollidableCharacter):
     player_filter = set([Tags.PLAYER])
     damage_delay = 0.5
     max_health = 60.0
+    base_damage = 10
+    base_force = 16
+    speed = 90
     renderable_type = renderable.MeleeEnemyRenderable
 
     def __init__(self, position, target):
@@ -251,8 +254,8 @@ class MeleeEnemy(CollidableCharacter):
         if t - self.last_damage_time > self.damage_delay:
             self.last_damage_time = t
             try:
-                shape.owner.damage(t, 10)
-                shape.owner.apply_force((shape.owner.position - self.position).normalized() * 16)
+                shape.owner.damage(t, self.base_damage)
+                shape.owner.apply_force((shape.owner.position - self.position).normalized() * self.base_force)
             except AttributeError:
                 pass
 
@@ -261,7 +264,83 @@ class MeleeEnemy(CollidableCharacter):
         direction = kidgine.math.vector.constant_zero
         if self.target:
             direction = (self.target.position - self.position).normalized()
-            direction *= 90 * self.slow_factor
+            direction *= self.speed * self.slow_factor
+
+        collision = collision_detector.collides(token=self.token, filters=self.player_filter)
+        if collision is not None:
+            self.do_damage(t, collision)
+
+        super(MeleeEnemy, self).update(inputs, t, dt, direction, collision_detector)
+
+        # if we haven't been slowed in a while, reset
+        if t - self.slow_time > 0.4:
+            self.collidable.tags.add(Tags.NOT_SLOWED)
+            self.slow_factor = 1.0
+
+
+class WarlordBoss(MeleeEnemy):
+    max_health = 300.0
+    base_damage = 35
+    base_force = 30.0
+    normal_speed = 45
+    charge_speed = 450
+    speed = 45
+    renderable_type = renderable.WarlordRenderable
+    charging = None
+    charge_delay = 0.75
+    charge_length = 1
+    charge_rest = 1.25
+    charge_direction = None
+
+    def slow(self, t, slow_factor):
+        super(WarlordBoss, self).slow(t, slow_factor)
+        # Reduce slows by 90%
+        self.slow_factor = (1.0 - (1.0 - self.slow_factor) * 0.1)
+
+    def apply_force(self, force, debug=False):
+        # Reduce forces by 90%
+        force *= 0.1
+        super(WarlordBoss, self).apply_force(force, debug)
+
+    def update(self, inputs, t, dt, collision_detector):
+        direction = Vector(0.0,0.0)
+        if self.target:
+            # Adjusting position, preparing to charge.
+            target_vector = self.target.position - self.position
+            direction = self.target.position - self.position
+            if abs(direction.x) > abs(direction.y):
+                direction.x = 0
+            else:
+                direction.y = 0
+            if self.charging or direction.magnitude() < 30.0:
+                # Currently charging OR beginning a charge.
+                direction *= 0
+                if not self.charging:
+                    self.charging = t
+                elif t - (self.charge_delay + self.charge_length + self.charge_rest) > self.charging:
+                    # Done resting.
+                    self.charging = None
+                    self.charge_direction = None
+                    self.speed = self.normal_speed
+                elif t - (self.charge_delay + self.charge_length) > self.charging:
+                    # Resting from a charge.
+                    pass
+                elif t - self.charge_delay > self.charging:
+                    # Waited a full second, charging now.
+                    if not self.charge_direction:
+                        if abs(target_vector.x) > abs(target_vector.y):
+                            direction.x = math.copysign(1, target_vector.x)
+                        else:
+                            direction.y = math.copysign(1, target_vector.y)
+                        self.charge_direction = direction.normalized()
+                    else:
+                        direction = self.charge_direction.normalized()
+                    self.speed = self.charge_speed
+                else:
+                    direction = kidgine.math.vector.constant_zero
+
+            direction = direction.normalized()
+            direction *= self.speed * self.slow_factor
 
         collision = collision_detector.collides(token=self.token, filters=self.player_filter)
         if collision is not None:

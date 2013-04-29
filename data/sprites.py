@@ -33,7 +33,15 @@ __all_sprites = {
     'enemy_1_walk_bottom' : ('data/images/derp/enemy_1_walk_bottom.png',0,    0,   60, 33,  0,  0),
     'enemy_1_idle'        : ('data/images/derp/enemy_1_idle.png',       0,    0,   30, 33,  0,  0),
 
-    'barbarian'           : ('data/images/barb/enemy_2.png',            0,    0,   37, 46, 18,  0),
+    'barbarian_left'        : ('data/images/barb/enemy_2.png',  0,    0,   37, 48, 12,  0),
+    'barbarian_right'       : ('data/images/barb/enemy_2.png', 0,    0,   37, 48, 12,  0),
+    'barbarian_top'         : ('data/images/barb/enemy_2.png',   0,    0,   37, 48, 12,  0),
+    'barbarian_bottom'      : ('data/images/barb/enemy_2.png',0,    0,   37, 48, 12,  0),
+    'barbarian_walk_right'  : ('data/images/barb/enemy_2.png', 0,    0,   37, 48, 12,  0),
+    'barbarian_walk_left'   : ('data/images/barb/enemy_2.png',  0,    0,   37, 48, 12,  0),
+    'barbarian_walk_top'    : ('data/images/barb/enemy_2.png',   0,    0,   37, 48, 12,  0),
+    'barbarian_walk_bottom' : ('data/images/barb/enemy_2.png',0,    0,   37, 48, 12,  0),
+    'barbarian_idle'        : ('data/images/barb/enemy_2.png',       0,    0,   37, 48, 12,  0),
 
     # attacks
     'fire_peak'           : ('data/images/fire_peak.png',               0,    0,   96, 96, 48, 48),

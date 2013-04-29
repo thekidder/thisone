@@ -21,6 +21,12 @@ all = {
     'enemy_1_walk_bottom'  : ('enemy_1_walk_bottom', 15, 33,  2,       0.25),
     'enemy_1_idle'         : ('enemy_1_idle',        15, 33,  2,       0.25),
 
+    'barbarian_walk_right'   : ('barbarian_walk_right',  37, 48,  1,       1.0),
+    'barbarian_walk_left'    : ('barbarian_walk_left',   37, 48,  1,       1.0),
+    'barbarian_walk_top'     : ('barbarian_walk_top',    37, 48,  1,       1.0),
+    'barbarian_walk_bottom'  : ('barbarian_walk_bottom', 37, 48,  1,       1.0),
+    'barbarian_idle'         : ('barbarian_idle',        37, 48,  1,       1.0),
+
 }
 
 
