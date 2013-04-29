@@ -30,7 +30,7 @@ class Game(object):
         self._renderer = kidgine.renderer.Renderer(configs, 'This One', icon)
         self._renderer.add_drawable(20, debug.DebugOverlay())
 
-        self.scene_list = [scene.ActOne]
+        self.scene_list = [scene.ActOne, scene.ActTwo]
         self.current_scene = 0
 
         self.set_scene(self.scene_list[self.current_scene]())

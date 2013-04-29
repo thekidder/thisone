@@ -134,6 +134,66 @@ class Bomb(object):
 
 
 
+class Spear(Bomb):
+    time = 1.0
+    time_left = 0
+    tags = set([Tags.projectile])
+    counter = 0
+    environment_filters = set([collision.Tags.ENVIRONMENT, kidgine.collision.shape.tags.IMPEEDS_MOVEMENT])
+    damage = 10
+
+    def __init__(self, position, throw_vector):
+        self.position = position
+        self.forces = throw_vector
+        self.forced = False
+        self.time_left = self.time
+
+        tl = Vector(-20, -20)
+        br = Vector( 20,  20)
+
+        self.token = 'spear{}'.format(Spear.counter)
+        Spear.counter += 1
+        self.collidable = kidgine.collision.rectangle.Rectangle(self, tl, br)
+        self.collidable.tags = set([
+                collision.Tags.PUSHABLE])
+
+    def collides(self, t, shape):
+        if collision.Tags.PLAYER in shape.tags or \
+                collision.Tags.ENEMY in shape.tags and self.forced:
+            shape.owner.damage(t, self.damage)
+            self.time_left = 0
+
+    def alive(self):
+        return self.time_left >= 0
+
+    def apply_force(self, force):
+        self.forces += force
+        self.forced = True
+        self.time_left = 1.0
+
+    def update(self, inputs, t, dt, collision_detector):
+        self.time_left -= dt
+
+        self.position = self.position + self.forces
+
+        all = collision_detector.collides(token=self.token,
+                                          filters=self.environment_filters)
+        if len(all) > 0:
+            normal = Vector()
+            for c in all:
+                if normal.dot(c.translation_vector) == 0:
+                    normal += c.translation_vector
+            self.position += normal
+
+        collision_detector.update_collidable(self.token, self.collidable)
+
+    def create_renderable(self):
+        def wrapped(batch, group):
+            return renderable.SpearRenderable(batch, group, self)
+        return wrapped
+
+
+
 class OpacityFader(object):
     def __init__(self, color, start, end, duration):
         self.r,self.g,self.b = color
