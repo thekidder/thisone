@@ -345,14 +345,14 @@ class ActOne(Scene):
 
             def get_tags(self, *args, **kwargs):
                 return []
-            
+
             def update(self, inputs, t, dt, c):
                 #player_character.facing = character.Facing.top
                 if not self.start_time:
                     self.start_time = t
                 elif t - 2.0 > self.start_time:
                     self.live = False
-                
+
             def create_renderable(self):
                 def wrapped(batch, group):
                     class Nope:
@@ -363,10 +363,10 @@ class ActOne(Scene):
 
                     return Nope()
                 return wrapped
-            
+
             def is_ui(self, *args, **kwargs):
                 return False
-            
+
             def alive(self):
                 return self.live
 
@@ -388,19 +388,23 @@ class ActTwo(Scene):
     def __init__(self):
         super(ActTwo, self).__init__('data/levels/act_two.json')
 
+        self.hermited = False
+
         # create player
-        self.player_character = character.GirlCharacter(Vector(32 * 11, 32 * 5))
+        self.player_character = character.GirlCharacter(Vector(32 * 20, 32 * 10))
         self.player_character.ability_one = None
         self.add_updatable(self.player_character)
 
-        self.hermit = character.HermitCharacter(Vector(32 * 9, 32 * 43))
+        self.hermit = character.HermitCharacter(Vector(32 * 18 + 16, 32 * 52))
         self.add_updatable(self.hermit)
+        self.hermit.facing = character.Facing.left
 
         # set camera
         self.set_camera(camera.PlayerCamera(self.player_character, 32 * 20))
 
         # create some enemies
-        self.add_updatables(self.create_wave(Vector(32 * 10, 32 * 8), character.MeleeEnemy, 1, 0))
+        self.add_updatables(self.create_wave(Vector(32 * 13, 32 * 18), character.BombEnemy, 3, 96))
+        self.add_updatables(self.create_wave(Vector(32 * 27, 32 * 18), character.BombEnemy, 3, 96))
 
         # start by fading from black
         self.add_updatable(updatable.fade_from_black(1.0))
@@ -421,21 +425,45 @@ class ActTwo(Scene):
         )
 
         self.add_trigger(
-            trigger.trigger(self, 'should_start_hermit'),
-            action.action_list(
-                [
-                    action.action(self, 'play_dialog', 'data/dialog/act_two_hermit.json'),
-                    action.action(self, 'end_with',
-                                  game.SceneState.succeeded,
-                                  updatable.fade_to_black(0.5))
-                ]
-            )
-        )
+                trigger.trigger(self, 'should_start_hermit'),
+                action.action_list([
+                        action.add_updatables(self.create_wave(Vector(32 * 25, 32 * 40), character.BombEnemy, 2, 48)),
+                        action.add_updatables(self.create_wave(Vector(32 * 15, 32 * 40), character.BombEnemy, 2, 48)),
+                        action.action(self, 'do_hermit')]))
+
+        self.add_trigger(
+                trigger.trigger(self, 'should_spawn_wave'),
+                action.action_list([
+                        action.add_updatables(self.create_wave(Vector(32 * 25, 32 * 30), character.BombEnemy, 2, 48)),
+                        action.add_updatables(self.create_wave(Vector(32 * 15, 32 * 30), character.BombEnemy, 2, 48))
+                        ]))
+
+
+
+        self.add_trigger(
+            trigger.trigger(self, 'victory'),
+            action.action(self, 'do_victory'))
+
+
+    def should_spawn_wave(self):
+        return self.player_character.position.y > (32 * 32) and self.all_enemies_dead()
+
+
+    def do_hermit(self):
+        self.hermited = True
+        self.play_dialog('data/dialog/act_two_hermit.json')
 
 
     def should_start_hermit(self):
-        return self.player_character.position.y > (40 * 32)  # and self.all_enemies_dead()
+        return self.player_character.position.y > (50 * 32) and self.all_enemies_dead()
 
+
+    def victory(self):
+        return self.all_enemies_dead() and self.hermited
+
+
+    def do_victory(self):
+        self.end_with(game.SceneState.succeeded, updatable.fade_to_black(0.5))
 
 
 class ActThree(Scene):
