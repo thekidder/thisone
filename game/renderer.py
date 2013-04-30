@@ -24,8 +24,8 @@ class SceneRenderer(object):
         self.batch = pyglet.graphics.Batch()
         self.ui_batch = pyglet.graphics.Batch()
 
-        self.group = pyglet.graphics.NullGroup()
-        self.ui_group = pyglet.graphics.NullGroup()
+        self.group = pyglet.graphics.Group()
+        self.ui_group = pyglet.graphics.Group()
 
         self.renderables = dict()
         self.ui_renderables = dict()

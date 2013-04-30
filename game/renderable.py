@@ -222,15 +222,15 @@ class DialogRenderable(object):
         self.dialog_background = pyglet.sprite.Sprite(
             imagecache.get_sprite('dialog_bg'),
             batch = batch,
-            group = pyglet.graphics.OrderedGroup(0, self.group))
+            group = pyglet.graphics.OrderedGroup(0))
         self.dialog_name_background = pyglet.sprite.Sprite(
             imagecache.get_sprite('dialog_name_bg'),
             batch = batch,
-            group = pyglet.graphics.OrderedGroup(1, self.group))
+            group = pyglet.graphics.OrderedGroup(1))
         self.dialog_next = pyglet.sprite.Sprite(
             imagecache.get_sprite('dialog_next'),
             batch = batch,
-            group = pyglet.graphics.OrderedGroup(2, self.group))
+            group = pyglet.graphics.OrderedGroup(2))
 
         self.text = None
         self.name_text = None
@@ -249,7 +249,7 @@ class DialogRenderable(object):
             self.name_text = pyglet.text.HTMLLabel(
                 text = self.dialog.get_current_line()['name'],
                 batch = self.batch,
-                group = pyglet.graphics.OrderedGroup(10, self.group))
+                group = pyglet.graphics.OrderedGroup(10))
             self.set_style(self.name_text)
             self.name_text.set_style('font_size', 24)
 
@@ -258,7 +258,7 @@ class DialogRenderable(object):
             width = 700,
             multiline = True,
             batch = self.batch,
-            group = pyglet.graphics.OrderedGroup(10, self.group))
+            group = pyglet.graphics.OrderedGroup(10))
 
         self.set_style(self.text)
         self.text.set_style('font_size', 18)
