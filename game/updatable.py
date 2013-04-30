@@ -1,12 +1,15 @@
+import math
+
 import ability
 import collision
 import data.animations
 import kidgine.utils
 import renderable
+import kidgine.math.vector
 from kidgine.math.vector import Vector
+import random
 
-
-Tags = kidgine.utils.enum('enemy', 'boss', 'player', 'dialog', 'projectile', 'ability', 'level')
+Tags = kidgine.utils.enum('enemy', 'boss', 'player', 'dialog', 'projectile', 'ability', 'level', 'spike')
 
 class TriggeredUpdatable(object):
     def __init__(self, trigger, action):
@@ -104,6 +107,72 @@ class HUD(object):
         def wrapped(batch, group):
             return renderable.HUDRenderable(batch, group, self)
         return wrapped
+
+
+class Spike(object):
+    counter = 0
+    tags = set([Tags.spike])
+    damage = 20
+    added = False
+    last_damage_time = 0
+    cooldown = 0.4
+
+    def __init__(self, position):
+        self.position = position
+
+        tl = Vector(-16, -16)
+        br = Vector( 16,  16)
+
+        self.token = 'spike{}'.format(Spike.counter)
+        Spike.counter += 1
+        self.collidable = kidgine.collision.rectangle.Rectangle(self, tl, br)
+        self.collidable.tags = set([
+                collision.Tags.ENVIRONMENT])
+
+
+    def collides(self, t, shape):
+        if collision.Tags.PLAYER in shape.tags or collision.Tags.ENEMY in shape.tags:
+            if t - self.last_damage_time > self.cooldown:
+                self.last_damage_time = t
+                shape.owner.damage(t, self.damage)
+                shape.owner.apply_force(-shape.owner.last.normalized() * 24)
+
+
+    def slow(self, t, slow_factor, thing_that_is_slowing):
+        pass
+
+
+    def is_ui(self):
+        return False
+
+
+    def alive(self):
+        return True
+
+
+    def apply_force(self, force):
+        pass
+
+
+    def removed(self, collision_detector):
+        collision_detector.remove_collidable(self.token)
+
+
+    def get_tags(self):
+        return self.tags
+
+
+    def update(self, inputs, t, dt, collision_detector):
+        if not self.added:
+            collision_detector.update_collidable(self.token, self.collidable)
+            self.added = True
+
+
+    def create_renderable(self):
+        def wrapped(batch, group):
+            return renderable.StaticSpriteRenderable(batch, group, self, 'spike', order = 1)
+        return wrapped
+
 
 
 class Bomb(object):

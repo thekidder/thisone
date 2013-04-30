@@ -374,11 +374,31 @@ class ActThree(Scene):
     def __init__(self):
         super(ActThree, self).__init__('data/levels/act_three.json')
         # create player
-        self.player_character = character.GirlCharacter(Vector(32 * 11, 32 * 5))
+        self.player_character = character.GirlCharacter(Vector(32 * 10, 32 * 10))
         self.player_character.ability_one = None
+        self.player_character.ability_two = None
         self.add_updatable(self.player_character)
 
         self.set_camera(camera.VerticalPanningCamera(self.player_character,
                                                      32 * 10, # center x
                                                      32 * 20, # width
                                                      32 * 7)) # min_y
+
+        self.add_blocking_event(updatable.fade_from_black(1.0))
+        self.boss = character.ChieftainBoss(Vector(32 * 10, 32 * 8), self.player_character)
+        self.add_updatable(self.boss)
+
+        self.add_updatable(updatable.Spike(Vector(32 * 7, 32 * 18)))
+        self.add_updatable(updatable.Spike(Vector(32 *14, 32 * 26)))
+        self.add_updatable(updatable.Spike(Vector(32 * 5, 32 * 32)))
+        self.add_updatable(updatable.Spike(Vector(32 *15, 32 * 30)))
+        self.add_updatable(updatable.Spike(Vector(32 *17, 32 * 20)))
+
+        # self.add_trigger(
+        #     trigger.trigger(self, 'should_spawn_boss'),
+        #     action.add_updatable(character.WarlordBoss(Vector(random.uniform(32*5,32*15), 32 * 12),
+        #                                                self.player_character)))
+
+
+    def should_spawn_boss(self):
+        return self.all_enemies_dead()

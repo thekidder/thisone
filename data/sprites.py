@@ -54,6 +54,17 @@ __all_sprites = {
     'warlord_idle'        : ('data/images/bosses/warlord/boss.png',       0,    0,  205, 48, 0,  0),
     'warlord_spin'        : ('data/images/bosses/warlord/boss-spin.png',       0,    0,  328, 48, 0,  0),
 
+    'chieftain_left'        : ('data/images/bosses/chieftain/chieftain_left.png',  0,    0,   41, 48, 12,  0),
+    'chieftain_right'       : ('data/images/bosses/chieftain/chieftain_right.png', 0,    0,   41, 48, 12,  0),
+    'chieftain_top'         : ('data/images/bosses/chieftain/chieftain_up.png',   0,    0,   41, 48, 12,  0),
+    'chieftain_bottom'      : ('data/images/bosses/chieftain/chieftain_bottom.png',0,    0,   41, 48, 12,  0),
+    'chieftain_walk_right'  : ('data/images/bosses/chieftain/chieftain_right.png', 0,    0,  207, 48, 0,  0),
+    'chieftain_walk_left'   : ('data/images/bosses/chieftain/chieftain_left.png',  0,    0,  207, 48, 0,  0),
+    'chieftain_walk_top'    : ('data/images/bosses/chieftain/chieftain_up.png',   0,    0,   205, 48, 0,  0),
+    'chieftain_walk_bottom' : ('data/images/bosses/chieftain/chieftain_bottom.png',0,    0,  205, 48, 0,  0),
+    'chieftain_idle'        : ('data/images/bosses/chieftain/chieftain_up.png',       0,    0,  205, 48, 0,  0),
+    'chieftain_spin'        : ('data/images/bosses/chieftain/chieftain_up.png',       0,    0,  328, 48, 0,  0),
+
     # attacks
     'fire_peak'           : ('data/images/fire_peak.png',               0,    0,   96, 96, 48, 48),
     'earth_peak'          : ('data/images/earth_peak.png',              0,    0,   96, 96, 48, 48),
@@ -84,6 +95,8 @@ __all_sprites = {
     'wind_pressed_hud'    : ('data/images/ui/elementbuttons-pressed.png', 48,    0,  24, 27,  0,  0),
     'earth_pressed_hud'   : ('data/images/ui/elementbuttons-pressed.png', 72,    0,  24, 27,  0,  0),
 
+    # misc
+    'spike'           : ('data/images/spikes.png',               0,    0,   32, 32, 16, 16),
 }
 
 

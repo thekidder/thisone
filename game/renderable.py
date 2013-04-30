@@ -459,11 +459,8 @@ class WarlordRenderable(MeleeEnemyRenderable):
                                                   group = group))
 
 
-    # def update(self, t, dt):
-    #     super(WarlordRenderable, self).update(t, dt)
-    #     print 'visibility:'
-    #     for i,s in enumerate(self.sprites):
-    #         print 'i {} v: {} p: {},{} o:{} s:{},{}'.format(i,s.visible,s.x,s.y,s.opacity, s.width,s.height)
+class ChieftainRenderable(WarlordRenderable):
+    sprite_name = 'chieftain'
 
 
 class GirlRenderable(CharacterRenderable):

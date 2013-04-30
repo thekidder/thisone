@@ -34,9 +34,16 @@ all = {
     'warlord_idle'         : ('warlord_idle',        41, 48,  5,       0.25),
     'warlord_spin'         : ('warlord_spin',        41, 48,  8,       0.1),
 
+    'chieftain_walk_right'   : ('chieftain_walk_right',  41, 48,  5,       0.25),
+    'chieftain_walk_left'    : ('chieftain_walk_left',   41, 48,  5,       0.25),
+    'chieftain_walk_top'     : ('chieftain_walk_top',    41, 48,  5,       0.25),
+    'chieftain_walk_bottom'  : ('chieftain_walk_bottom', 41, 48,  5,       0.25),
+    'chieftain_idle'         : ('chieftain_idle',        41, 48,  5,       0.25),
+    'chieftain_spin'         : ('chieftain_spin',        41, 48,  8,       0.1),
+
     'bomb'                 : ('bomb',                10, 15,  2,       0.2),
     'bomb_explosion'       : ('bomb_explosion',      32, 32,  5,       0.2),
-    
+
     'spear'                 : ('spear',                20, 20,  2,       0.2),
 }
 

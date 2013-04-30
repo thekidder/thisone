@@ -32,6 +32,7 @@ class Character(object):
     tags = set()
     idle_delay     = 3.0
     idle_delay_two = 4.0
+    last = Vector()
 
     """represents a character, player controlled or otherwise. has position and a facing"""
     def __init__(self, position):
@@ -49,6 +50,7 @@ class Character(object):
 
     def update(self, t, dt, direction):
         if direction.magnitude_sqr() > 0.1:
+            self.last = direction
             self.moving = True
             if math.fabs(direction.x) > math.fabs(direction.y):
                 if direction.x > 0:
@@ -118,8 +120,8 @@ class CollidableCharacter(Character):
     def __init__(self, position):
         super(CollidableCharacter, self).__init__(position)
 
-        tl = Vector(-10, -8)
-        br = Vector( 10,  8)
+        tl = Vector(-16, 0)
+        br = Vector( 16, 32)
 
         self.token = 'character{}'.format(CollidableCharacter.counter)
         CollidableCharacter.counter += 1
@@ -455,3 +457,20 @@ class WarlordBoss(MeleeEnemy):
         super(MeleeEnemy, self).update(inputs, t, dt, direction, collision_detector)
 
         self.reset_slow(t)
+
+
+class ChieftainBoss(WarlordBoss):
+    tags = set([updatable.Tags.enemy, updatable.Tags.boss])
+    max_health = 100.0
+    base_damage = 25
+    base_force = 30.0
+    normal_speed = 45
+    charge_speed = 450
+    speed = 45
+    renderable_type = renderable.ChieftainRenderable
+    charging = None
+    charge_delay = 0.45
+    charge_length = 1
+    charge_rest = 1.25
+    charge_direction = None
+    first_spawn_delay = 2.0
