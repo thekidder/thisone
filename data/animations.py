@@ -41,6 +41,12 @@ all = {
     'chieftain_idle'         : ('chieftain_idle',        41, 48,  5,       0.25),
     'chieftain_spin'         : ('chieftain_spin',        41, 48,  8,       0.1),
 
+    'hermit_walk_right'      : ('hermit_walk_right',     32, 48,  3,       0.25),
+    'hermit_walk_left'       : ('hermit_walk_left',      32, 48,  3,       0.25),
+    'hermit_walk_top'        : ('hermit_walk_top',       32, 48,  4,       0.25),
+    'hermit_walk_bottom'     : ('hermit_walk_bottom',    32, 48,  4,       0.25),
+    'hermit_idle'            : ('hermit_idle',           32, 48, 1,       1.0),
+
     'bomb'                 : ('bomb',                10, 15,  2,       0.2),
     'bomb_explosion'       : ('bomb_explosion',      32, 32,  5,       0.2),
 

@@ -473,3 +473,9 @@ class GirlRenderable(CharacterRenderable):
     def update(self, t, dt):
         super(GirlRenderable, self).update(t, dt)
         self.blinker.update(t, dt)
+
+
+class HermitRenderable(CharacterRenderable):
+    sprite_name = 'hermit'
+    def __init__(self, batch, group, character):
+        super(HermitRenderable, self).__init__(batch, group, character, self.sprite_name)

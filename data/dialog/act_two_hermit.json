@@ -1,0 +1,40 @@
+{
+    "lines"  : [
+	{
+	    "portrait"       : "hermit",
+	    "portrait_facing": "left",
+	    "name"           : "HERMIT",
+	    "dialog"         : "This one thinks herself a prodigy?",
+	    "minimum_time"   : 1.0
+	},
+	{
+	    "portrait"       : "hermit",
+	    "portrait_facing": "left",
+	    "name"           : "HERMIT",
+	    "dialog"         : "This one is already missing a pillar.",
+	    "minimum_time"   : 1.0
+	},
+	{
+	    "portrait"       : "hermit",
+	    "portrait_facing": "left",
+	    "name"           : "HERMIT",
+	    "dialog"         : "Your sorcery is gaudy and redundant.",
+	    "minimum_time"   : 1.0
+	},
+	{
+	    "portrait"       : "hermit",
+	    "portrait_facing": "left",
+	    "name"           : "HERMIT",
+	    "dialog"         : "You would split into four what is truly two. Does and does not.",
+	    "minimum_time"   : 1.0
+	},
+	{
+	    "portrait"       : "hermit",
+	    "portrait_facing": "left",
+	    "name"           : "HERMIT",
+	    "dialog"         : "For each pillar that falls, so too will the others crumble under the weight.",
+	    "minimum_time"   : 1.0
+	}
+
+    ]
+}
