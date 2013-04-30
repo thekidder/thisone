@@ -243,7 +243,7 @@ class Title(Scene):
 
         self.add_updatable(updatable.Title())
         self.add_trigger(trigger.key_pressed, action.action(self, 'end_with', game.SceneState.succeeded,
-                                                            updatable.fade_to_black(0.5)))
+                                                            updatable.fade_to_black(0.1)))
 
         # bogus
         self.set_camera(camera.PlayerCamera(None, 32 * 20))

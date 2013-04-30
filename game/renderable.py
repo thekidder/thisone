@@ -137,14 +137,29 @@ class OpacityFaderRenderable(object):
 
 class TitleRenderable(object):
     def __init__(self, batch, group):
-        self.sprite = pyglet.sprite.Sprite(imagecache.get_sprite('title'),batch=batch, group=group)
+        self.sprite = pyglet.sprite.Sprite(imagecache.get_sprite('title'),batch=batch,
+                                           group=pyglet.graphics.OrderedGroup(0, group))
+        self.text = pyglet.text.Label(
+            "ENTER",
+            batch = batch,
+            group = pyglet.graphics.OrderedGroup(10, group),
+            font_name = "Courier New",
+            color = (230,169,149,255),
+            font_size = 36)
 
+        self.fire = sprite.AnimatedSprite(imagecache.get_animation('girl_walk_right'),batch=batch,
+                                           group=pyglet.graphics.OrderedGroup(10, group))
 
     def update(self, t, dt, window):
-        pass
+        self.text.x = (window.width - self.text.content_width) / 2
+        self.text.y = window.height - 500
+        self.fire.y = self.text.y - 12
+        self.fire.x = self.text.x - 48
 
     def delete(self):
         self.sprite.delete()
+        self.text.delete()
+        self.fire.delete()
 
 
 class HUDRenderable(object):
