@@ -32,7 +32,7 @@ class Game(object):
         icon = pyglet.image.load(icon_path, file, decoder=pyglet.image.codecs.pil.PILImageDecoder())
 
         self._renderer = kidgine.renderer.Renderer(configs, 'This One', icon)
-        self._renderer.add_drawable(20, debug.DebugOverlay())
+        #self._renderer.add_drawable(20, debug.DebugOverlay())
 
         self.scene_list = [scene.ActOne, scene.ActTwo, scene.ActThree]
         self.current_scene = scene_index
