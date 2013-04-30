@@ -12,10 +12,11 @@ import random
 Tags = kidgine.utils.enum('enemy', 'boss', 'player', 'dialog', 'projectile', 'ability', 'level', 'spike')
 
 class TriggeredUpdatable(object):
-    def __init__(self, trigger, action):
+    def __init__(self, trigger, action, persistent = False):
         self.trigger = trigger
         self.action = action
         self.triggered = False
+        self.persistent = persistent
 
 
     def update(self, inputs, t, dt, collision_detector):
@@ -37,7 +38,7 @@ class TriggeredUpdatable(object):
 
 
     def alive(self):
-        return not self.triggered
+        return not self.triggered and not self.persistent
 
 
 class ActionEvent(TriggeredUpdatable):
@@ -107,6 +108,55 @@ class HUD(object):
         def wrapped(batch, group):
             return renderable.HUDRenderable(batch, group, self)
         return wrapped
+
+
+class Blinker(object):
+    def __init__(self, parent, timer, color):
+        self.last_blink = 0
+        self.frame = 0
+        self.parent = parent
+        self.time_left = timer
+        self.color = color
+        self.parent.renderable.blinker.enable(False)
+
+
+    def removed(self, c):
+        self.parent.renderable.blinker.enable(True)
+
+
+    def update(self, i, t, dt, c):
+        self.time_left -= dt
+        self.last_blink += dt
+
+        blink_time = 0.4
+
+        if self.last_blink > blink_time:
+            self.last_blink = 0
+            self.frame += 1
+            if self.frame == 2:
+                self.frame = 0
+
+        if self.frame == 1:
+            self.parent.renderable.sprites[self.parent.renderable.used_sprite_index].color = self.color
+        else:
+            self.parent.renderable.sprites[self.parent.renderable.used_sprite_index].color = (255, 255, 255)
+
+
+    def alive(self):
+        return self.time_left > 0.0
+
+
+    def is_ui(self):
+        return False
+
+
+    def get_tags(self):
+        return set()
+
+
+    def create_renderable(self):
+        return None
+
 
 
 class Spike(object):

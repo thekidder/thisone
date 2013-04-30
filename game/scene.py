@@ -159,7 +159,21 @@ class Scene(object):
                 return False
         return True
 
+
+    def enemy_count(self):
+        c = 0
+        for u in self.updatables:
+            if updatable.Tags.enemy in u.get_tags():
+                c += 1
+        return c
+
     # Actions and Setters
+
+    def remove_abilities(self):
+        for u in list(self.updatables):
+            if updatable.Tags.ability in u.get_tags():
+                self.updatables.remove(u)
+
 
     def add_updatable(self, c):
         self.updatables.add(c)
@@ -186,8 +200,8 @@ class Scene(object):
             self._blocking_events.append((blocking_event, ending_state))
 
 
-    def add_trigger(self, trigger, action):
-        t = updatable.TriggeredUpdatable(trigger, action)
+    def add_trigger(self, trigger, action, persistent = False):
+        t = updatable.TriggeredUpdatable(trigger, action, persistent)
         self._triggers[trigger] = t
         self.add_updatable(t)
 
@@ -328,7 +342,7 @@ class ActTwo(Scene):
         self.player_character = character.GirlCharacter(Vector(32 * 11, 32 * 5))
         self.player_character.ability_one = None
         self.add_updatable(self.player_character)
-        
+
         self.hermit = character.HermitCharacter(Vector(32 * 9, 32 * 43))
         self.add_updatable(self.hermit)
 
@@ -388,8 +402,8 @@ class ActThree(Scene):
                                                      32 * 20, # width
                                                      32 * 7)) # min_y
 
-        self.add_blocking_event(updatable.fade_from_black(1.0))
-        self.boss = character.ChieftainBoss(Vector(32 * 10, 32 * 8), self.player_character)
+        #self.add_blocking_event(updatable.fade_from_black(1.0))
+        self.boss = character.ChieftainBoss(Vector(random.uniform(32*5,32*15), 32 * 20), self.player_character)
         self.add_updatable(self.boss)
 
         self.add_updatable(updatable.Spike(Vector(32 * 7, 32 * 18)))
@@ -398,11 +412,84 @@ class ActThree(Scene):
         self.add_updatable(updatable.Spike(Vector(32 *15, 32 * 30)))
         self.add_updatable(updatable.Spike(Vector(32 *17, 32 * 20)))
 
+        self.play_dialog('data/dialog/act_three_chieftan_1.json')
+
+        self.add_updatables(self.create_wave(Vector(32 * 5, 32 * 10), character.SpearEnemy, 4, 64))
+        self.add_updatables(self.create_wave(Vector(32 * 16, 32 * 16), character.SpearEnemy, 3, 64))
+
+
+        # lose when the player dies
+        self.add_trigger(
+            trigger.trigger(self, 'is_player_dead'),
+            action.action_list(
+                [
+                    action.action(self, 'play_dialog', 'data/dialog/death_dialog.json'),
+                    action.action(self, 'end_with',
+                                  game.SceneState.failed,
+                                  updatable.fade_to_black(0.5))
+                ]
+            )
+        )
+
         # self.add_trigger(
-        #     trigger.trigger(self, 'should_spawn_boss'),
-        #     action.add_updatable(character.WarlordBoss(Vector(random.uniform(32*5,32*15), 32 * 12),
-        #                                                self.player_character)))
+        #     trigger.trigger(self, 'should_spawn_wave'),
+        #     action.add_updatables(self.create_wave(Vector(
+        #                 random.uniform(5*32,15*32),
+        #                 random.uniform(5*32,25*32)), character.SpearEnemy, 4, 64)), True)
+
+
+        self.add_trigger(
+            trigger.trigger(self, 'should_do_dialog_one'),
+            action.action(self, 'dialog_one'))
+
+        self.add_trigger(
+            trigger.trigger(self, 'should_do_dialog_two'),
+            action.action(self, 'dialog_two'))
+
+        self.add_trigger(
+            trigger.trigger(self, 'should_do_dialog_final'),
+            action.action(self, 'dialog_final'))
+
+
+    def should_spawn_wave(self):
+        return self.enemy_count() < 4
+
+
+    def dialog_one(self):
+        self.remove_abilities()
+        self.player_character.facing = character.Facing.bottom
+        self.player_character.ability_three = None
+        self.add_blocking_event(updatable.Blinker(self.player_character, 2.0, (128,255,128)))
+        self.play_dialog('data/dialog/act_three_chieftan_2.json')
+
+
+    def dialog_two(self):
+        self.remove_abilities()
+        self.player_character.facing = character.Facing.bottom
+        self.player_character.ability_four = None
+        self.add_blocking_event(updatable.Blinker(self.player_character, 2.0, (255,255,128)))
+        self.play_dialog('data/dialog/act_three_chieftan_3.json')
+
+
+
+    def dialog_final(self):
+        self.remove_abilities()
+        self.player_character.facing = character.Facing.bottom
+        self.play_dialog('data/dialog/act_three_chieftan_4.json')
+        self.end_with(game.SceneState.succeeded,updatable.fade_to_black(5.0))
 
 
     def should_spawn_boss(self):
         return self.all_enemies_dead()
+
+
+    def should_do_dialog_one(self):
+        return self.boss.health <= 60.0
+
+
+    def should_do_dialog_two(self):
+        return self.boss.health <= 20.0
+
+
+    def should_do_dialog_final(self):
+        return self.boss is None or self.boss.health <= 0

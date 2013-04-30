@@ -227,7 +227,7 @@ class DialogRenderable(object):
 
         self.text = pyglet.text.HTMLLabel(
             text = self.dialog.get_current_line()['dialog'],
-            width = 800,
+            width = 700,
             multiline = True,
             batch = self.batch,
             group = pyglet.graphics.OrderedGroup(10, self.group))
@@ -384,24 +384,24 @@ class CharacterRenderable(object):
         #if hasattr(self.character, 'charging') and self.character.charging:
         #    used_sprite_index = 9
         if self.character.idle:
-            used_sprite_index = 8
+            self.used_sprite_index = 8
         else:
-            used_sprite_index = self.character.facing
+            self.used_sprite_index = self.character.facing
             if self.character.moving:
-                used_sprite_index += 4
+                self.used_sprite_index += 4
 
-        if used_sprite_index != self.last_sprite_index:
-            new = self.sprites[used_sprite_index]
+        if self.used_sprite_index != self.last_sprite_index:
+            new = self.sprites[self.used_sprite_index]
             if isinstance(new, sprite.AnimatedSprite):
                 new.set_frame(0)
                 new.play()
 
-            self.last_sprite_index = used_sprite_index
+            self.last_sprite_index = self.used_sprite_index
 
         for i,s in enumerate(self.sprites):
-            s.visible = (used_sprite_index == i)
+            s.visible = (self.used_sprite_index == i)
 
-        utils.set_sprite_pos(self.sprites[used_sprite_index], self.character.position)
+        utils.set_sprite_pos(self.sprites[self.used_sprite_index], self.character.position)
 
 
     def delete(self):
@@ -414,9 +414,17 @@ class BlinkOnDamage(object):
         self.last_blink = 0
         self.frame = 0
         self.parent = parent
+        self.disabled = False
+
+
+    def enable(self,enable):
+        self.disabled = not enable
 
 
     def update(self, t, dt):
+        if self.disabled:
+            return
+
         if self.parent.character.max_health - self.parent.character.health < 10.1:
             self.frame = 0
         else:
