@@ -323,6 +323,8 @@ class ActOne(Scene):
                         action.action_list(
                             [
                                 action.action(self, 'play_dialog', 'data/dialog/act_one_warlord_1.json'),
+                                action.action(self, 'girl_points'),
+                                action.action(self, 'play_dialog', 'data/dialog/act_one_warlord_2.json'),
                                 action.action(self, 'end_with',
                                               game.SceneState.succeeded,
                                               updatable.fade_to_black(0.5))
@@ -333,6 +335,42 @@ class ActOne(Scene):
             )
         )
 
+    def girl_points(self):
+        player_character = self.player_character
+        class Pointer:
+            start_time = None
+            live = True
+            def removed(self, c):
+                pass
+
+            def get_tags(self, *args, **kwargs):
+                return []
+            
+            def update(self, inputs, t, dt, c):
+                #player_character.facing = character.Facing.top
+                if not self.start_time:
+                    self.start_time = t
+                elif t - 2.0 > self.start_time:
+                    self.live = False
+                
+            def create_renderable(self):
+                def wrapped(batch, group):
+                    class Nope:
+                        def update(self, *args, **kwargs):
+                            pass
+                        def delete(self, *args, **kwargs):
+                            pass
+
+                    return Nope()
+                return wrapped
+            
+            def is_ui(self, *args, **kwargs):
+                return False
+            
+            def alive(self):
+                return self.live
+
+        return self.add_blocking_event(Pointer())
 
     def should_spawn_boss(self):
         return self.all_enemies_dead() and self.player_character.position.y > (43 * 32)
