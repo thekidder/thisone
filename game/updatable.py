@@ -48,6 +48,29 @@ class ActionEvent(TriggeredUpdatable):
         super(ActionEvent, self).__init__(trigger, action)
 
 
+class Title(object):
+    def removed(self, c):
+        pass
+
+    def update(self, inputs, t, dt, collision_detector):
+        pass
+
+    def alive(self):
+        return True
+
+    def is_ui(self):
+        return True
+
+    def get_tags(self):
+        return set()
+
+    def create_renderable(self):
+        def wrapped(batch, group):
+            return renderable.TitleRenderable(batch, group)
+        return wrapped
+
+
+
 class HUD(object):
     def __init__(self, scene):
         self.scene = scene

@@ -59,8 +59,9 @@ class Inputs(object):
         if keys[self.ability_four_key]:
             self.four = True
 
-        if keys[self.dialog_dismiss_key]:
-            self.dialog_dismiss = True
+        for k in keys.values():
+            if k:
+                self.dialog_dismiss = True
 
         if self.up:
             self.updown = 1

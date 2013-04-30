@@ -37,10 +37,11 @@ class Scene(object):
         self.player_character = None
         self.return_state = None
 
-        self.level = level.Level(level_name, self._collision_detector)
+        if level_name:
+            self.level = level.Level(level_name, self._collision_detector)
+            self.add_updatable(self.level)
 
-        self.add_updatable(self.level)
-        self.add_updatable(updatable.HUD(self))
+            self.add_updatable(updatable.HUD(self))
 
 
 
@@ -235,6 +236,17 @@ class Scene(object):
 
         return all
 
+
+class Title(Scene):
+    def __init__(self):
+        super(Title, self).__init__(None)
+
+        self.add_updatable(updatable.Title())
+        self.add_trigger(trigger.key_pressed, action.action(self, 'end_with', game.SceneState.succeeded,
+                                                            updatable.fade_to_black(0.5)))
+
+        # bogus
+        self.set_camera(camera.PlayerCamera(None, 32 * 20))
 
 class ActOne(Scene):
     def __init__(self):

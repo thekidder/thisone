@@ -10,3 +10,7 @@ def trigger(obj, method, *args, **kwargs):
         return getattr(obj,method)(*args, **kwargs)
 
     return wrapped
+
+
+def key_pressed(inputs, t, dt, c):
+    return inputs.dialog_dismiss

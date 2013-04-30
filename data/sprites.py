@@ -53,7 +53,7 @@ __all_sprites = {
     'warlord_walk_bottom' : ('data/images/bosses/warlord/boss.png',0,    0,  205, 48, 0,  0),
     'warlord_idle'        : ('data/images/bosses/warlord/boss.png',       0,    0,  205, 48, 0,  0),
     'warlord_spin'        : ('data/images/bosses/warlord/boss-spin.png',       0,    0,  328, 48, 0,  0),
-    
+
     'hermit_left'           : ('data/images/hermit/hermit_left.png',          0,    0,   32, 48, 16,  0),
     'hermit_right'          : ('data/images/hermit/hermit_right.png',         0,    0,   32, 48, 16,  0),
     'hermit_top'            : ('data/images/hermit/hermit_top.png',           0,    0,   32, 48, 16,  0),
@@ -95,6 +95,8 @@ __all_sprites = {
     'dialog_next'         : ('data/images/ui/dialog-box-3.png',          0,    0,   83, 47,  0,  0),
 
     # HUD
+    'title'               : ('data/images/ui/title.png',               0,    0,1280,720,  0,  0),
+
     'fire_hud'            : ('data/images/ui/elementbuttons.png',      0,    0,  24, 27,  0,  0),
     'water_hud'           : ('data/images/ui/elementbuttons.png',     24,    0,  24, 27,  0,  0),
     'wind_hud'            : ('data/images/ui/elementbuttons.png',     48,    0,  24, 27,  0,  0),

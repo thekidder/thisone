@@ -134,6 +134,19 @@ class OpacityFaderRenderable(object):
             self.rect.delete()
 
 
+
+class TitleRenderable(object):
+    def __init__(self, batch, group):
+        self.sprite = pyglet.sprite.Sprite(imagecache.get_sprite('title'),batch=batch, group=group)
+
+
+    def update(self, t, dt, window):
+        pass
+
+    def delete(self):
+        self.sprite.delete()
+
+
 class HUDRenderable(object):
     scale = 2
 
