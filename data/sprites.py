@@ -21,6 +21,10 @@ __all_sprites = {
     'girl_walk_left'      : ('data/images/girl/girl_walk_left.png',     0,    0,  128, 48,  0,  0),
     'girl_walk_top'       : ('data/images/girl/girl_walk_top.png',      0,    0,   64, 48,  0,  0),
     'girl_walk_bottom'    : ('data/images/girl/girl_walk_bottom.png',   0,    0,   64, 48,  0,  0),
+    'girl_point_right'     : ('data/images/girl/girl_point_right.png',    0,    0,  32, 48,  0,  0),
+    'girl_point_left'      : ('data/images/girl/girl_point.png',     0,    0,  32, 48,  0,  0),
+    'girl_point_top'       : ('data/images/girl/girl_point.png',      0,    0,   32, 48,  0,  0),
+    'girl_point_bottom'    : ('data/images/girl/girl_point.png',   0,    0,   32, 48,  0,  0),
     'girl_idle'           : ('data/images/girl/girl_idle.png',          0,    0,  416, 48,  0,  0),
 
     'enemy_1_left'        : ('data/images/derp/enemy_1_walk_left.png',  0,    0,   24, 33, 12,  0),

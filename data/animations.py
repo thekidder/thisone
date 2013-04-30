@@ -14,6 +14,10 @@ all = {
     'girl_walk_top'        : ('girl_walk_top',       32, 48,  2,       0.25),
     'girl_walk_bottom'     : ('girl_walk_bottom',    32, 48,  2,       0.25),
     'girl_idle'            : ('girl_idle',           32, 48, 13,       0.04),
+    'girl_point_right'      : ('girl_point_right',     32, 48,  1,       0.25),
+    'girl_point_left'       : ('girl_point_left',      32, 48,  1,       0.25),
+    'girl_point_top'        : ('girl_point_top',       32, 48,  1,       0.25),
+    'girl_point_bottom'     : ('girl_point_bottom',    32, 48,  1,       0.25),
 
     'enemy_1_walk_right'   : ('enemy_1_walk_right',  24, 33,  4,       0.25),
     'enemy_1_walk_left'    : ('enemy_1_walk_left',   24, 33,  4,       0.25),
