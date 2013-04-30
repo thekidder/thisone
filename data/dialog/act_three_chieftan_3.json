@@ -1,0 +1,9 @@
+{
+    "lines"  : [
+	{
+	    "name"           : "CHIEFTAN",
+	    "dialog"         : "Pitiful.  You are powerless now.  I will end you!"
+	    "minimum_time"   : 0.5
+	}
+    ]
+}

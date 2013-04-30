@@ -1,0 +1,9 @@
+{
+    "lines"  : [
+	{
+	    "name"           : "CHIEFTAN",
+	    "dialog"         : "It... seems I underestimated you.  You are free to revel in your hollow victory.  But what will your king make of his hollow shell of a champion?"
+	    "minimum_time"   : 0.5
+	}
+    ]
+}

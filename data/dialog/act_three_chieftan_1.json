@@ -1,0 +1,14 @@
+{
+    "lines"  : [
+	{
+	    "name"           : "CHIEFTAN",
+	    "dialog"         : "Once again he sends his crippled warrior to my lands.",
+	    "minimum_time"   : 0.5
+	},
+	{
+	    "name"           : "CHIEFTAN",
+	    "dialog"         : "This is an insult!  You use trickery and misdirection. You cannot fight.",
+	    "minimum_time"   : 0.5
+	}
+    ]
+}

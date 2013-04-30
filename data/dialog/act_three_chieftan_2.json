@@ -1,0 +1,9 @@
+{
+    "lines"  : [
+	{
+	    "name"           : "CHIEFTAN",
+	    "dialog"         : "Feh! Already you defeat yourself!"
+	    "minimum_time"   : 0.5
+	}
+    ]
+}
