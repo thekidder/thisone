@@ -164,6 +164,18 @@ class CollidableCharacter(Character):
 
         self.reset_force()
 
+        
+class HermitCharacter(Character):
+    renderable_type = renderable.HermitRenderable
+    max_health = 1
+
+    def update(self, inputs, t, dt, collision_detector):
+        super(HermitCharacter, self).update(t, dt, Vector(0, 0))
+    
+    def __init__(self, position):
+        super(HermitCharacter, self).__init__(position)
+        self.facing = Facing.bottom
+
 
 class GirlCharacter(CollidableCharacter):
     tags = set([updatable.Tags.player])

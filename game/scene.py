@@ -328,6 +328,9 @@ class ActTwo(Scene):
         self.player_character = character.GirlCharacter(Vector(32 * 11, 32 * 5))
         self.player_character.ability_one = None
         self.add_updatable(self.player_character)
+        
+        self.hermit = character.HermitCharacter(Vector(32 * 9, 32 * 43))
+        self.add_updatable(self.hermit)
 
         # set camera
         self.set_camera(camera.PlayerCamera(self.player_character, 32 * 20))

@@ -58,6 +58,10 @@ __all_sprites = {
     'hermit_right'          : ('data/images/hermit/hermit_right.png',         0,    0,   32, 48, 16,  0),
     'hermit_top'            : ('data/images/hermit/hermit_top.png',           0,    0,   32, 48, 16,  0),
     'hermit_bottom'         : ('data/images/hermit/hermit_bottom.png',        0,    0,   32, 48, 16,  0),
+    'hermit_walk_left'           : ('data/images/hermit/hermit_left.png',          0,    0,   32, 48, 16,  0),
+    'hermit_walk_right'          : ('data/images/hermit/hermit_right.png',         0,    0,   32, 48, 16,  0),
+    'hermit_walk_top'            : ('data/images/hermit/hermit_top.png',           0,    0,   32, 48, 16,  0),
+    'hermit_walk_bottom'         : ('data/images/hermit/hermit_bottom.png',        0,    0,   32, 48, 16,  0),
     'hermit_idle'         : ('data/images/hermit/hermit_bottom.png',        0,    0,   32, 48, 16,  0),
 
     # attacks
