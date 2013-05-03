@@ -98,6 +98,10 @@ class SpatialHash(object):
         self.hash[info.index][token] = info
 
 
+    def size(self):
+        return len(self.collidables)
+
+
     def remove(self, token):
         del self.hash[self.collidables[token].index][token]
         del self.collidables[token]
@@ -170,7 +174,7 @@ class CollisionDetector(object):
         self.total_vectors = vector.counter
 
 
-    def log_stats(self, level):
+    def print_stats(self):
         broad = 0.0
         narrow = 0.0
 
@@ -178,13 +182,17 @@ class CollisionDetector(object):
             broad = 1.0 * self.broad_phase_checks / self.num_checks
             narrow = 1.0 * self.narrow_phase_checks / self.num_checks
 
-        logger.log(level, '-----------COLLISION DETECTOR-----------')
+        print('-----------COLLISION DETECTOR-----------')
         stats1 = '\t {:4d} collision checks; avg. {:6.1f} broad phase checks and {:6.1f} narrow phase checks'
         stats2 = '\t                       total {:6d} broad phase checks and {:6d} narrow phase checks'
         stats3 = '\t {} vector creations last frame'
-        logger.log(level, stats1.format(self.num_checks, broad, narrow))
-        logger.log(level, stats2.format(self.broad_phase_checks, self.narrow_phase_checks))
-        logger.log(level, stats3.format(self.vectors_per_frame))
+        print(stats1.format(self.num_checks, broad, narrow))
+        print(stats2.format(self.broad_phase_checks, self.narrow_phase_checks))
+        print(stats3.format(self.vectors_per_frame))
+
+
+    def size(self):
+        return self.spatial_hash.size()
 
 
     def clear(self):
